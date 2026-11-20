@@ -2,6 +2,8 @@
 
 **Ouvrir l’appli : https://nthfv.github.io/lectio/**
 
+Propriétaire : **nthfv** (© 2026) — voir [LICENSE.md](LICENSE.md).
+
 Lectio est une appli de lecture de la Bible catholique, à installer sur son téléphone :
 
 - **la Bible en entier** (73 livres du canon catholique, deutérocanoniques compris) dans la traduction catholique d’Augustin Crampon (néo-Crampon Libre) ;
@@ -23,14 +25,15 @@ Les versets aimés, l’endroit où l’on en est dans la Bible et dans le fil s
 
 ## Pour publier une nouvelle version
 
-1. Modifier les fichiers, changer `BUILD` (dans `index.html` et `sw.js`, même valeur).
-2. Publier sur la branche `main` : GitHub Pages met le site à jour, puis l’appli propose la mise à jour.
+1. Modifier les fichiers (l’appli tient dans `index.html` ; les textes sont dans `data/`).
+2. Lancer `python3 outils/nouvelle-version.py` : nouveau numéro de version dans `index.html` et `sw.js`, et nouvelles empreintes des fichiers de `data/`.
+3. Publier sur la branche `main` : GitHub Pages met le site à jour en une minute environ, puis l’appli installée propose « Mettre à jour ».
 
 Règles à respecter pour ne jamais perdre les données des utilisateurs :
 
 - ne jamais renommer ni vider la clé de stockage `lectio.state` (objet versionné, champ `v`) : une nouvelle version doit relire l’ancien format et le faire évoluer ;
 - ne pas changer l’adresse du site (nom du dépôt) : le stockage est lié à l’adresse ;
-- les fichiers de `data/` sont appelés avec une empreinte (`?v=…`) : en changer le contenu suffit, l’appli retélécharge seulement les fichiers modifiés.
+- toujours lancer `outils/nouvelle-version.py` avant de publier : sans nouvelle empreinte, un fichier de `data/` modifié ne serait pas retéléchargé par les téléphones.
 
 ## Sources et licences
 
