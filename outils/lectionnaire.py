@@ -63,6 +63,8 @@ def items(spec, bid, chap):
     if bid == 'est' and chap == 4 and re.search(r'17\s*[a-z]', spec):
         # ajouts grecs d'Esther (4, 17a-17z… dans la liturgie) : chapitres 13 et 14 dans Crampon
         # 4, 17a-i : prière de Mardochée (Crampon 13, 8-18) ; 4, 17k et suivants : prière d'Esther (Crampon 14, 1-19)
+        if re.sub(r'\s', '', spec).startswith('17n.p-r.aa.bb.gg.hh'):
+            return [('est-esther-extraits',)]   # jeudi de la 1re semaine de carême : extraits de la prière
         return [('est-esther',)] if re.search(r'17\s*[k-z]|[a-z]{2}', spec) else [('est-mardochee',)]
     out = []
     for it in re.split(r'\s*[.,]\s*', spec.strip()):
@@ -101,7 +103,11 @@ def parse_one(ref, typ):
             # « 22 (23) », « 18b (19) », « 146 (147A) », « 114 (116 A) », « 44, (45) », « 9a »
             pm = re.match(r'^(\d+)\s*([ABab])?\s*,?\s*(?:\((\d+)\s*[ABab]?\))?\s*(?:,\s*(.*))?$', rest)
             if not pm: raise RefError('psaume illisible : ' + rest)
-            chap = int(pm.group(3)) if pm.group(3) else lit_to_heb(int(pm.group(1)), pm.group(2) or '')
+            # le numéro liturgique fait foi ; le numéro hébreu entre parenthèses sert à choisir 9/10 et 114/115
+            # (et une coquille de l'AELF comme « Ps 129 (103) » ne fait pas afficher le mauvais psaume)
+            lit = lit_to_heb(int(pm.group(1)), pm.group(2) or '')
+            ok = {9: (9, 10), 113: (114, 115)}.get(int(pm.group(1)), (lit,))
+            chap = int(pm.group(3)) if pm.group(3) and int(pm.group(3)) in ok else lit
             spec = pm.group(4) or ''
             found = items(spec, bid, chap) if spec else [(chap, 1, 999)]
         elif book['n'] == 1 and ',' not in rest:
@@ -126,8 +132,20 @@ def parse_one(ref, typ):
                     found = items(spec, bid, chap)
         for f in found:
             if f[0] == 'est-esther': segs.append([bid, 14, 1, 19, 'esther'])
+            elif f[0] == 'est-esther-extraits':
+                # Crampon 14, 1 (Esther se réfugie auprès du Seigneur), 3-5 (« Mon Seigneur, notre Roi… »),
+                # 12-14 (« Souvenez-vous de nous… je n'ai que vous, Seigneur ») : contrôlé sur le texte AELF
+                segs += [[bid, 14, 1, 1, 'esther'], [bid, 14, 3, 5, 'esther'], [bid, 14, 12, 14, 'esther']]
             elif f[0] == 'est-mardochee': segs.append([bid, 13, 8, 18, 'mardochee'])
-            else: segs.append([bid, f[0], f[1], f[2]])
+            else:
+                c, a, b = f
+                vm = VMAP.get((bid, c))
+                if vm and (a in vm or b in vm):
+                    segs.append([bid, c, vm[a][0] if a in vm else a, vm[b][1] if b in vm and b != 999 else b, 'approx'])
+                elif bid in APPROX_BOOKS:
+                    segs.append([bid, c, a, b, 'approx'])
+                else:
+                    segs.append([bid, c, a, b])
     # vérification, bornes, fusion des passages contigus
     out = []
     for sg in segs:
@@ -138,14 +156,44 @@ def parse_one(ref, typ):
         if a < 1 or a > chs[c] or b < a: raise RefError(f'versets absents : {bid} {c}, {a}-{b} (max {chs[c]})')
         # numérotation un peu différente dans Crampon (Siracide…) : passage borné et signalé
         sg = [bid, c, a, min(b, chs[c])] + (sg[4:] or (['approx'] if b > chs[c] else []))
-        if out and out[-1][0] == bid and out[-1][1] == c and len(out[-1]) == 4 and len(sg) == 4 and a <= out[-1][3] + 1 and a >= out[-1][2]:
-            out[-1][3] = max(out[-1][3], b)
-        elif not (out and out[-1] == sg):
+        b = sg[3]
+        prev = out[-1] if out else None
+        if (prev and prev[0] == bid and prev[1] == c and prev[4:] in ([], ['approx']) and sg[4:] in ([], ['approx'])
+                and prev[2] <= a <= prev[3] + 1):
+            prev[3] = max(prev[3], b)                       # passages contigus : un seul bloc
+            if sg[4:] and not prev[4:]: prev.append('approx')
+        elif not (prev and prev == sg):
             out.append(sg)
     return out
 
+# Passages où la numérotation de la Bible Crampon diffère de celle de la liturgie (néo-Vulgate) :
+# verset liturgique -> (premier, dernier) verset Crampon. Chaque correspondance a été contrôlée sur le texte
+# (outils/verifier-lectures.py compare chaque lecture au texte officiel).
+VMAP = {
+    ('si', 3): {20: (19, 19), 28: (26, 26), 29: (27, 27), 30: (28, 28), 31: (29, 29)},
+    ('si', 17): {24: (19, 19), 25: (20, 20), 26: (21, 21), 27: (22, 22), 28: (23, 23), 29: (24, 24)},
+    ('si', 36): {16: (14, 14), 17: (15, 15), 18: (16, 16), 19: (17, 17), 20: (18, 18), 21: (18, 18), 22: (19, 19)},
+    ('tb', 13): {2: (1, 2), 7: (6, 6), 8: (7, 8)},
+    ('jdt', 13): {18: (23, 24), 19: (25, 25), 20: (25, 26)},
+}
+# Judith : Crampon suit la Vulgate, la liturgie le grec ; tout passage non contrôlé est signalé.
+APPROX_BOOKS = {'jdt'}
+# Coquilles connues dans les références publiées par l'AELF (référence sans espaces -> référence corrigée)
+CORRECTIONS = {'Rm8,28,30': 'Rm 8, 28-30'}
+
+def fix_ref(ref, typ=''):
+    """Corrige les coquilles connues de l'AELF dans une référence (texte affiché et passage)."""
+    r = CORRECTIONS.get(re.sub(r'\s', '', ref), ref)
+    m = re.match(r'^(\s*(?:(?:Cantique\s+)?Ps\.?\s*)?)(\d+)\s*([ABab])?\s*,?\s*\((\d+)\s*[ABab]?\)', r)
+    if m and (typ.startswith('psaume') or 'Ps' in m.group(1)):
+        n = int(m.group(2)); lit = lit_to_heb(n, m.group(3) or '')
+        if int(m.group(4)) not in {9: (9, 10), 113: (114, 115)}.get(n, (lit,)):
+            r = r[:m.start(4)] + str(lit) + r[m.end(4):]      # « Ps 129 (103) » -> « Ps 129 (130) »
+    return r
+
 def parse(ref, typ):
     """Une référence (avec d'éventuelles variantes « … ou … ») -> liste de variantes, chacune liste de passages."""
+    ref = fix_ref(ref, typ)
     try:
         return [parse_one(alt, typ) for alt in re.split(r'\s+ou\s+', ref.strip())]
     except (RefError, ValueError, IndexError) as e:
@@ -183,7 +231,7 @@ def entry(j):
     for m in j.get('messes') or []:
         lec = []
         for l in m.get('lectures') or []:
-            ref = clean(l.get('ref'))
+            ref = fix_ref(clean(l.get('ref')), clean(l.get('type')))
             if not ref: continue
             lec.append([clean(l.get('type')), ref, parse(ref, clean(l.get('type')))])
         masses.append([clean(m.get('nom')), lec])
@@ -223,7 +271,7 @@ def main():
         d = json.loads(json.dumps(old.get('d', {})))
         for e in d.values():
             for m in e.get('m', []):
-                for l in m[1]: l[2] = parse(l[1], l[0])
+                for l in m[1]: l[1] = fix_ref(l[1], l[0]); l[2] = parse(l[1], l[0])
     else:
         d = download(old.get('d', {}))
     report(d)
