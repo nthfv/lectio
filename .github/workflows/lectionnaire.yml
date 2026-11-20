@@ -1,0 +1,34 @@
+# Chaque semaine, ajoute à l'appli les lectures et célébrations que l'AELF vient de publier
+# (références uniquement). L'appli les reçoit seule, sans nouvelle version à installer.
+name: Lectionnaire (AELF)
+on:
+  schedule:
+    - cron: '17 3 * * 1'
+  workflow_dispatch:
+permissions:
+  contents: write
+  pages: write
+concurrency:
+  group: lectionnaire
+  cancel-in-progress: false
+jobs:
+  maj:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Télécharger les références publiées par l'AELF
+        run: python3 outils/lectionnaire.py
+      - name: Publier si quelque chose a changé
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if git diff --quiet -- data/lectionnaire.json && [ -z "$(git ls-files --others --exclude-standard data/lectionnaire.json)" ]; then
+            echo "Rien de nouveau"; exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/lectionnaire.json
+          git commit -m "Lectionnaire : mise à jour automatique (AELF, références uniquement)"
+          git push
+          gh api -X POST "repos/${GITHUB_REPOSITORY}/pages/builds" || echo "Reconstruction du site demandée par le push"
