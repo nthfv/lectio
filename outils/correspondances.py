@@ -84,7 +84,9 @@ def liens():
         if n <= 146: return [str(n - 1)]
         if n == 147: return ['146', '147']
         return [str(n)]
-    est = {11: [0, 10], 12: [0], 13: [3, 4], 14: [4], 15: [4, 5], 16: [8]}
+    # Esther : correspondances relues dans l'appli elle-même (ajouts grecs regroupés à la fin dans la Vulgate)
+    m = re.search(r"b\.id === 'est'\) \{ const m = (\{[^}]*\})", h)
+    est = {int(k): v for k, v in json.loads(re.sub(r'(\d+):', r'"\1":', m.group(1))).items()}
     urls = []
     for b in books:
         if b['id'] == 'ps':
