@@ -63,8 +63,6 @@ def items(spec, bid, chap):
     if bid == 'est' and chap == 4 and re.search(r'17\s*[a-z]', spec):
         # ajouts grecs d'Esther (4, 17a-17z… dans la liturgie) : chapitres 13 et 14 dans Crampon
         # 4, 17a-i : prière de Mardochée (Crampon 13, 8-18) ; 4, 17k et suivants : prière d'Esther (Crampon 14, 1-19)
-        if re.sub(r'\s', '', spec).startswith('17n.p-r.aa.bb.gg.hh'):
-            return [('est-esther-extraits',)]   # jeudi de la 1re semaine de carême : extraits de la prière
         return [('est-esther',)] if re.search(r'17\s*[k-z]|[a-z]{2}', spec) else [('est-mardochee',)]
     out = []
     for it in re.split(r'\s*[.,]\s*', spec.strip()):
@@ -132,10 +130,6 @@ def parse_one(ref, typ):
                     found = items(spec, bid, chap)
         for f in found:
             if f[0] == 'est-esther': segs.append([bid, 14, 1, 19, 'esther'])
-            elif f[0] == 'est-esther-extraits':
-                # Crampon 14, 1 (Esther se réfugie auprès du Seigneur), 3-5 (« Mon Seigneur, notre Roi… »),
-                # 12-14 (« Souvenez-vous de nous… je n'ai que vous, Seigneur ») : contrôlé sur le texte AELF
-                segs += [[bid, 14, 1, 1, 'esther'], [bid, 14, 3, 5, 'esther'], [bid, 14, 12, 14, 'esther']]
             elif f[0] == 'est-mardochee': segs.append([bid, 13, 8, 18, 'mardochee'])
             else:
                 c, a, b = f
@@ -170,10 +164,14 @@ def parse_one(ref, typ):
 # verset liturgique -> (premier, dernier) verset Crampon. Chaque correspondance a été contrôlée sur le texte
 # (outils/verifier-lectures.py compare chaque lecture au texte officiel).
 VMAP = {
-    ('si', 3): {20: (19, 19), 28: (26, 26), 29: (27, 27), 30: (28, 28), 31: (29, 29)},
-    ('si', 17): {24: (19, 19), 25: (20, 20), 26: (21, 21), 27: (22, 22), 28: (23, 23), 29: (24, 24)},
-    ('si', 36): {16: (14, 14), 17: (15, 15), 18: (16, 16), 19: (17, 17), 20: (18, 18), 21: (18, 18), 22: (19, 19)},
-    ('tb', 13): {2: (1, 2), 7: (6, 6), 8: (7, 8)},
+    ('si', 3): {20: (19, 19), 21: (20, 20), 22: (21, 21), 23: (22, 22), 24: (23, 23), 26: (24, 24), 27: (25, 25),
+                28: (26, 26), 29: (27, 27), 30: (28, 28), 31: (29, 29)},
+    ('si', 17): {24: (19, 19), 25: (20, 20), 26: (21, 21), 27: (22, 22), 28: (23, 23), 29: (24, 24), 30: (25, 25),
+                 31: (26, 26), 32: (27, 27)},
+    ('si', 36): {16: (13, 13), 17: (14, 14), 18: (15, 15), 19: (16, 16), 20: (17, 17), 21: (18, 18), 22: (19, 19),
+                 23: (20, 20), 24: (21, 21), 25: (22, 22), 26: (23, 23), 27: (24, 24), 28: (25, 25), 29: (26, 26),
+                 30: (27, 27), 31: (28, 28)},
+    ('tb', 13): {7: (6, 6), 8: (6, 6)},
     ('jdt', 13): {18: (23, 24), 19: (25, 25), 20: (25, 26)},
 }
 # Judith : Crampon suit la Vulgate, la liturgie le grec ; tout passage non contrôlé est signalé.
