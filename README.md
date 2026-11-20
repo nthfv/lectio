@@ -1,5 +1,7 @@
 # Lectio — Bible catholique
 
+**Ouvrir l’appli : https://nthfv.github.io/lectio/**
+
 Lectio est une appli de lecture de la Bible catholique, à installer sur son téléphone :
 
 - **la Bible en entier** (73 livres du canon catholique, deutérocanoniques compris) dans la traduction catholique d’Augustin Crampon (néo-Crampon Libre) ;
