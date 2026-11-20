@@ -12,12 +12,14 @@ Lectio est une appli de lecture de la Bible catholique, à installer sur son té
 - un **fil de versets** à faire défiler et à aimer, et la page **Mes versets** ;
 - la **messe du jour** : lectures (dans la Bible Crampon, avec le lien vers le texte officiel AELF), fêtes et mémoires des saints du calendrier pour la France ;
 - le temps liturgique du jour (couleur, année A, B ou C, semaine du psautier) ;
-- des **comptes** (nom d’utilisateur ou e-mail + mot de passe) pour retrouver ses versets et sa progression sur un autre téléphone.
+- des **comptes** (nom d’utilisateur ou e-mail + mot de passe) pour retrouver ses versets et sa progression sur un autre téléphone ;
+- des **paramètres** d’affichage : thème (automatique, clair, sépia, sombre, nuit), taille, police et interligne du texte, numéros des versets, intertitres et notes, un verset par ligne, lecture plein écran, écran allumé pendant la lecture, page d’ouverture.
 
 ## Installer l’appli
 
 - **Android (Chrome)** : ouvrir le site, puis « Installer l’appli » (ou menu ⋮ › Installer l’application).
 - **iPhone (Safari)** : ouvrir le site, puis Partager › Sur l’écran d’accueil. Utiliser ensuite Lectio depuis son icône.
+- **Ordinateur (Chrome ou Edge)** : ouvrir le site, puis « Installer l’appli » sur la page d’accueil, l’icône d’installation dans la barre d’adresse, ou menu du navigateur › Installer Lectio. Sur Mac avec Safari : Fichier › Ajouter au Dock.
 
 L’appli fonctionne ensuite sans connexion.
 
@@ -58,6 +60,14 @@ L’onglet **Calendrier** présente l’année liturgique : temps liturgiques, s
 - Les célébrations de chaque jour viennent de `data/lectionnaire.json` (calendrier officiel de l’AELF pour la France, complété chaque semaine). Au-delà, l’appli calcule les dimanches, solennités et fêtes (`LIT`, dans `index.html`).
 - Les explications sont dans `data/calendrier.json` : `temps` (un texte par temps liturgique), `dimanche`, `fetes` (mots-clés `k` cherchés dans le nom de la célébration, date `d` « MM-JJ » pour les fêtes fixes), `types` (texte pour les mémoires sans fiche propre, selon le type de saint) et `jours` (journées et périodes, avec leur règle de date : `date`, `periode`, `mois`, `paques` (+ n jours), `paquesPeriode`, `nDimanche` (n-ième ou, si négatif, avant-dernier/dernier dimanche du mois), `dimTO` (n-ième dimanche du temps ordinaire)).
 - Après toute modification de `data/calendrier.json` : `python3 outils/nouvelle-version.py`, puis publier.
+
+## Paramètres
+
+Page `#parametres` (roue dentée, en haut à droite). Les réglages sont propres à chaque appareil : ils sont gardés dans `lectio.state`, champ facultatif `prefs` (le format reste `v: 2` ; la taille du texte reste dans `fs`). Ils ne sont ni envoyés au compte, ni mis dans le code de sauvegarde.
+
+- Clés (valeur par défaut en premier) : `theme` (auto, clair, sepia, sombre, nuit), `font` (classique, confort, moderne), `lh` (normal, serre, aere), `width` (normale, etroite, large), `justify` (non), `contrast` (non), `vn` numéros des versets (oui), `vpl` un verset par ligne (non), `heads` intertitres (oui), `notes` (oui), `immersive` lecture plein écran (non), `awake` écran allumé pendant la lecture (non), `med` méditations du fil (oui), `start` page d’ouverture (accueil, messe, calendrier, fil, reprendre, favoris), `calm` animations réduites (non).
+- Un petit script dans `<head>` pose le thème avant l’affichage (pas de flash blanc en thème sombre).
+- Pour ajouter un réglage : une clé et sa valeur par défaut dans `PREF0`, une ligne dans `renderPrefs`, son effet dans `applyPrefs` (classe sur `<html>` ou variable CSS). Les réglages déjà enregistrés restent valables : une clé absente prend sa valeur par défaut.
 
 ## Mise à jour de chaque année
 
