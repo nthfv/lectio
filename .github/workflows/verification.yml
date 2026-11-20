@@ -1,0 +1,19 @@
+# Vérifie, à la demande, que chaque lecture de la messe affichée par l'appli correspond bien
+# au passage lu à la messe (comparaison mot à mot avec le texte AELF, sans rien recopier).
+# Lancer : onglet Actions › « Vérification des lectures » › Run workflow.
+name: Vérification des lectures
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verifier:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Comparer les lectures (Crampon) au lectionnaire officiel (AELF)
+        run: python3 outils/verifier-lectures.py
