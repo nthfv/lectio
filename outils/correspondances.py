@@ -51,8 +51,30 @@ def aelf(book, c):
     tags = sorted(set(re.findall(r'<(\w+)[^>]*class="([^"]+)"', h)))[:80]
     raise RuntimeError(f'numéros de versets introuvables ; balises vues : {tags}')
 
+def messe(arg):
+    """« 2027-02-18:lecture_1:est/14 » : phrase par phrase, verset Crampon le plus proche dans ce chapitre."""
+    day, typ, target = arg.split(':')
+    bid, cc = target.split('/')
+    req = urllib.request.Request(f'https://api.aelf.org/v1/messes/{day}/france', headers={'User-Agent': UA})
+    j = json.load(urllib.request.urlopen(req, timeout=30))
+    C = crampon(bid, int(cc)); CS = {v: stems(t) for v, t in C.items()}
+    for m in j.get('messes') or []:
+        for l in m.get('lectures') or []:
+            if l.get('type') != typ: continue
+            t = html.unescape(re.sub(r'<[^>]+>', '\n', l.get('contenu') or ''))
+            sents = [s for s in re.split(r'(?<=[.;:!?»])\s+|\n+', t) if len(stems(s)) >= 3]
+            out = []
+            for k, s in enumerate(sents, 1):
+                S = stems(s)
+                sc = sorted(((len(S & CS[v]) / len(S) if S else 0, v) for v in CS), reverse=True)
+                out.append(f'{k}→{sc[0][1]}({sc[0][0]:.2f}' + (f';{sc[1][1]}:{sc[1][0]:.2f}' if sc[1][0] > sc[0][0] * 0.7 else '') + ')')
+            print(f'== {day} {typ} ({m.get("nom")}) {l.get("ref")} : {len(sents)} phrases -> Crampon {bid} {cc}')
+            print('  ' + '  '.join(out))
+
 def main():
     for arg in sys.argv[1:]:
+        if arg.count(':') == 2:
+            messe(arg); continue
         a, _, b = arg.partition(':')
         book, c = a.split('/')
         bid, cc = (b.split('/') if b else (book.lower(), c))
