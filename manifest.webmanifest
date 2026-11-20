@@ -1,0 +1,61 @@
+{
+ "name": "Lectio — Bible catholique",
+ "short_name": "Lectio",
+ "description": "La Bible catholique en entier (traduction Crampon), avec une analyse de chaque livre, les liens vers la traduction liturgique officielle (AELF) et un fil de versets.",
+ "lang": "fr",
+ "dir": "ltr",
+ "id": "./",
+ "start_url": "./",
+ "scope": "./",
+ "display": "standalone",
+ "orientation": "any",
+ "background_color": "#ffffff",
+ "theme_color": "#ffffff",
+ "categories": [
+  "books",
+  "education",
+  "lifestyle"
+ ],
+ "icons": [
+  {
+   "src": "icons/icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "icons/icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "icons/icon-maskable-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
+  }
+ ],
+ "shortcuts": [
+  {
+   "name": "Fil de versets",
+   "url": "./#fil",
+   "icons": [
+    {
+     "src": "icons/icon-192.png",
+     "sizes": "192x192"
+    }
+   ]
+  },
+  {
+   "name": "Mes versets",
+   "url": "./#favoris",
+   "icons": [
+    {
+     "src": "icons/icon-192.png",
+     "sizes": "192x192"
+    }
+   ]
+  }
+ ]
+}

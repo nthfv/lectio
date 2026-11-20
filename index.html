@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lectio — Bible catholique</title>
+<meta name="description" content="La Bible catholique en entier (traduction Crampon), avec une analyse de chaque livre, les liens vers la traduction liturgique officielle (AELF) et un fil de versets à faire défiler.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121110" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Lectio">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" crossorigin="anonymous">
+<style>
+/* VOICE: recueilli, clair, sans fioritures — un missel que l’on garde sur soi.
+   IDEA: le missel romain : texte noir, rubriques rouges, signets de soie aux couleurs liturgiques.
+   PICTURE: le signet du jour (couleur liturgique) et la page elle-même : chapitres, fil de versets.
+   COLOUR and TYPE: blanc, encre, rouge des rubriques ; couleur liturgique en accent. EB Garamond pour l’Écriture, Inter pour l’interface.
+   LAYOUT: une colonne de lecture de 680 px ; navigation en bas sur téléphone, en haut sur grand écran. */
+:root{color-scheme:light dark;
+ --bg:#ffffff;--panel:#f6f5f3;--ink:#1b1a19;--muted:#6e6a64;--rule:#e7e4df;--red:#a3161c;
+ --sel:#fbeaea;--redbtn:#a3161c;--lit:#2f7d4f;--shadow:0 1px 2px rgba(0,0,0,.06);
+ --serif:"EB Garamond",Garamond,"Times New Roman",serif;--sans:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;--fs:20px}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#121110;--panel:#1c1b19;--ink:#ecebe7;--muted:#a7a39c;--rule:#2e2c29;--red:#ee6a6d;--sel:#3a2020;--redbtn:#b3262c;--shadow:0 1px 2px rgba(0,0,0,.4)}}
+:root[data-theme=dark]{--bg:#121110;--panel:#1c1b19;--ink:#ecebe7;--muted:#a7a39c;--rule:#2e2c29;--red:#ee6a6d;--sel:#3a2020;--redbtn:#b3262c;--shadow:0 1px 2px rgba(0,0,0,.4)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+[hidden]{display:none!important}
+html{scroll-padding-top:72px;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--sans);overflow-x:clip}
+a{color:inherit}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+button,a,input{-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:2px solid var(--red);outline-offset:2px;border-radius:6px}
+.wrap{max-width:1040px;margin:0 auto;padding:0 max(4vw,16px,env(safe-area-inset-right)) 0 max(4vw,16px,env(safe-area-inset-left))}
+.col{max-width:700px;margin:0 auto}
+/* barre */
+header.top{position:sticky;top:0;z-index:20;padding-top:env(safe-area-inset-top);background:var(--bg);background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.topin{display:flex;align-items:center;gap:16px;height:58px}
+.brand{font:500 25px/1 var(--serif);letter-spacing:.01em;text-decoration:none;display:flex;align-items:center;gap:10px;white-space:nowrap}
+.brand b{color:var(--red);font-weight:500}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--lit);flex:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--lit) 22%,transparent)}
+nav.tabs{margin-left:auto;display:flex;gap:4px}
+nav.tabs a{display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;text-decoration:none;font-weight:500;font-size:14.5px;color:var(--muted)}
+nav.tabs a[aria-current=page]{color:var(--ink);background:var(--panel)}
+nav.tabs svg{width:19px;height:19px}
+@media(max-width:700px){
+ header.top{backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--bg)}
+ nav.tabs{position:fixed;left:0;right:0;bottom:0;margin:0;justify-content:space-around;background:var(--bg);border-top:1px solid var(--rule);padding:6px 6px calc(6px + env(safe-area-inset-bottom));z-index:30}
+ nav.tabs a{flex-direction:column;gap:2px;font-size:11.5px;padding:6px 10px;border-radius:12px}
+ nav.tabs a[aria-current=page]{background:none;color:var(--red)}
+ body{padding-bottom:72px}
+ .topin{height:52px}
+}
+main{min-height:60vh}
+.view{display:none}.view.on{display:block}
+/* carte liturgique */
+.litcard{position:relative;margin:28px 0 8px;padding:26px 64px 24px 0;border-bottom:1px solid var(--rule)}
+.ribbon{position:absolute;top:-28px;right:10px;width:22px;height:118px;background:var(--lit);background:linear-gradient(90deg,color-mix(in srgb,var(--lit) 82%,#000) 0,var(--lit) 35%,color-mix(in srgb,var(--lit) 80%,#fff) 60%,var(--lit) 100%);clip-path:polygon(0 0,100% 0,100% 100%,50% 86%,0 100%);box-shadow:var(--shadow)}
+.kick{font:600 11.5px/1.2 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--red)}
+.litdate{font:400 15px var(--sans);color:var(--muted);margin:10px 0 4px}
+.litname{font:500 clamp(28px,4.6vw,44px)/1.08 var(--serif);margin:0;text-wrap:balance}
+.litmeta{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font-size:14px;color:var(--muted)}
+.litmeta span{white-space:nowrap}
+.litmeta i{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--lit);margin-right:7px;vertical-align:1px}
+.btnrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.btn{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:10px 16px;border-radius:999px;border:1px solid var(--rule);text-decoration:none;font-weight:500;font-size:14.5px;background:var(--bg)}
+.btn.red{background:var(--redbtn);border-color:var(--redbtn);color:#fff}
+.btn svg{width:17px;height:17px}
+/* verset du jour */
+.vday{margin:26px 0 6px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:start}
+.vday blockquote{margin:6px 0 0;font:400 23px/1.45 var(--serif);text-wrap:pretty}
+.vday .ref{margin-top:8px}
+.ref{font:600 13px var(--sans);color:var(--red);letter-spacing:.02em}
+.heart{width:48px;height:48px;display:grid;place-items:center;border-radius:50%}
+.heart svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.7}
+.heart[aria-pressed=true]{color:var(--red)}.heart[aria-pressed=true] svg{fill:currentColor}
+/* recherche */
+.search{position:relative;margin:30px 0 8px}
+.search input{width:100%;font:400 16px var(--sans);padding:14px 16px 14px 46px;border-radius:14px;border:1px solid var(--rule);background:var(--panel);color:var(--ink)}
+.search input::placeholder{color:var(--muted)}
+.search svg{position:absolute;left:15px;top:15px;width:20px;height:20px;color:var(--muted)}
+.sugg{margin-top:8px}
+.sugg a,.sugg button{display:flex;justify-content:space-between;gap:12px;width:100%;text-align:left;padding:12px 4px;border-bottom:1px solid var(--rule);text-decoration:none}
+.sugg small{color:var(--muted)}
+.resume{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:18px 0 0;padding:14px 16px;border-radius:14px;background:var(--panel);text-decoration:none}
+.resume b{font:500 19px var(--serif)}
+/* table des livres */
+.testament{margin:42px 0 0}
+.testament>h2{font:500 30px/1.1 var(--serif);margin:0 0 4px}
+.testament>p{color:var(--muted);margin:0 0 6px;font-size:14.5px}
+.group{margin-top:22px}
+.group h3{margin:0 0 6px}
+.toc{columns:2 300px;column-gap:44px;margin:0;padding:0;list-style:none}
+.toc li{break-inside:avoid}
+.toc a{display:flex;align-items:baseline;gap:8px;padding:9px 0;text-decoration:none;min-height:44px}
+.toc .nm{font:400 20px/1.2 var(--serif)}
+.toc .lead{flex:1;border-bottom:1px dotted var(--rule);border-bottom:1px dotted color-mix(in srgb,var(--muted) 60%,transparent);transform:translateY(-4px)}
+.toc .nc{font-size:13px;color:var(--muted);white-space:nowrap}
+.toc .ab{font-size:12px;color:var(--red);font-weight:600;width:2.6em;flex:none}
+/* page livre */
+.crumb{display:flex;align-items:center;gap:8px;margin:20px 0 0;font-size:14px;color:var(--muted)}
+.crumb a{text-decoration:none}
+.bh{margin:18px 0 0}
+.bh h1{font:500 clamp(34px,6vw,52px)/1.05 var(--serif);margin:6px 0 8px;text-wrap:balance}
+.bh .sub{color:var(--muted);font-size:15px}
+.chgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:8px;margin:22px 0 6px}
+.chgrid a{display:grid;place-items:center;min-height:48px;border-radius:12px;background:var(--panel);text-decoration:none;font:500 17px var(--serif);line-height:1.05;text-align:center;padding:4px 2px}
+.chgrid a small{display:block;font:500 10.5px var(--sans);color:var(--muted)}
+.chgrid a.last{outline:1.5px solid var(--red)}
+.anal{margin-top:34px}
+.anal .lead{font:400 22px/1.5 var(--serif);margin:0 0 6px;text-wrap:pretty}
+.sec{margin-top:34px}
+.sec h2{font:600 12px/1.2 var(--sans);letter-spacing:.09em;text-transform:uppercase;color:var(--red);margin:0 0 12px}
+.sec p{margin:0;font:400 18.5px/1.6 var(--serif)}
+.plan{list-style:none;margin:0;padding:0}
+.plan li{display:grid;grid-template-columns:7.2em minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.plan a{font:600 13.5px var(--sans);color:var(--red);text-decoration:none;white-space:nowrap}
+.plan span{font:400 18px/1.4 var(--serif)}
+dl.th{margin:0}dl.th dt{font:500 19px var(--serif);margin-top:12px}dl.th dd{margin:2px 0 0;color:var(--muted);font-size:15.5px}
+.keys{list-style:none;margin:0;padding:0}
+.keys a{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:baseline;padding:12px 0;border-bottom:1px solid var(--rule);text-decoration:none}
+.keys b{font:400 19px/1.35 var(--serif)}
+.keys span{font:600 13px var(--sans);color:var(--red);white-space:nowrap}
+.medit{border-left:3px solid var(--red);padding:4px 0 4px 18px;font:italic 400 21px/1.5 var(--serif)}
+.note{font-size:13px;color:var(--muted)}
+/* lecteur */
+.rbar{position:sticky;top:calc(58px + env(safe-area-inset-top));z-index:15;background:var(--bg);background:color-mix(in srgb,var(--bg) 94%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+@media(max-width:700px){.rbar{top:calc(52px + env(safe-area-inset-top))}}
+.rbin{display:flex;align-items:center;gap:6px;height:52px}
+.rbin .ttl{font:500 19px var(--serif);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:none;flex:1}
+.ib{width:44px;height:44px;display:grid;place-items:center;border-radius:12px;flex:none}
+.ib svg{width:20px;height:20px}
+@media(hover:hover){.ib:hover,.btn:hover{background:var(--panel)}.btn.red:hover{background:color-mix(in srgb,var(--redbtn) 86%,#000)}}
+.chhead{text-align:center;margin:34px 0 8px}
+.chhead .k{font:600 12px var(--sans);letter-spacing:.09em;text-transform:uppercase;color:var(--red)}
+.chhead h1{font:500 clamp(36px,7vw,58px)/1 var(--serif);margin:8px 0 6px}
+.chhead .lt{color:var(--muted);font-size:14.5px}
+.aelf{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:16px 0 26px}
+.text{font:400 var(--fs)/1.68 var(--serif);hyphens:auto;-webkit-hyphens:auto}
+.text .p{margin:0 0 .85em}
+.text .stanza{margin-top:1.1em}
+.text .p+.q,.text .q+.p{margin-top:.6em}
+.text .q{padding-left:1.6em;text-indent:-1.1em;margin:0}
+.text .q2{padding-left:2.9em}
+.text .d{font-style:italic;color:var(--muted);font-size:.9em;margin:0 0 .5em}
+.text .vn{font:600 .52em var(--sans);color:var(--red);vertical-align:.62em;margin:0 .28em 0 .1em;letter-spacing:0}
+.text .v{cursor:pointer;border-radius:3px;transition:background .15s}
+.text .v.sel{background:var(--sel)}
+.text .v.hl{background:var(--sel);background:color-mix(in srgb,var(--lit) 16%,transparent)}
+.text .nd{font-variant-caps:small-caps;letter-spacing:.02em}
+.text .fm{font:600 .55em var(--sans);color:var(--red);vertical-align:.62em;margin-left:.1em}
+.text .liked .vn{background:var(--red);color:#fff;border-radius:999px;padding:0 .35em}
+.h-ms{text-align:center;font:500 .8em/1.4 var(--serif);letter-spacing:.06em;color:var(--red);margin:1.8em 0 .6em}
+.h-s1{font:600 1.05em/1.3 var(--serif);margin:1.6em 0 .4em}
+.h-s2{font:italic 400 .84em/1.5 var(--serif);color:var(--muted);margin:.3em 0 .9em}
+.h-r{font:400 12.5px/1.4 var(--sans);color:var(--muted);margin:-.3em 0 .9em}
+.h-qa,.h-sp{font:600 12px/1.4 var(--sans);letter-spacing:.08em;color:var(--red);margin:1.2em 0 .3em}
+.h-sp{text-transform:uppercase}
+.h-xp{font:italic 400 .86em/1.5 var(--serif);color:var(--muted);margin:.4em 0 .9em}
+.caps{font-variant-caps:all-small-caps;letter-spacing:.05em}
+.intro{font:italic 400 .9em/1.6 var(--serif);color:var(--muted);border-left:2px solid var(--rule);padding-left:14px;margin:0 0 1.4em}
+details.notes{margin:34px 0 0;border-top:1px solid var(--rule);padding-top:14px}
+details.introbox{margin:0 0 26px;border-top:0;border-bottom:1px solid var(--rule);padding:0 0 6px}
+summary{list-style:none}summary::-webkit-details-marker{display:none}
+details.notes summary::after,details.backup summary::after{content:"+";margin-left:auto;padding-left:12px;font:300 24px/1 var(--sans);color:var(--muted)}
+details[open].notes>summary::after,details[open].backup>summary::after{content:"−"}
+details.notes summary{cursor:pointer;font:600 12px var(--sans);letter-spacing:.09em;text-transform:uppercase;color:var(--red);min-height:44px;display:flex;align-items:center}
+.notes ol{list-style:none;margin:0;padding:0}
+.notes li{padding:9px 0;border-bottom:1px solid var(--rule);font:400 15.5px/1.55 var(--serif)}
+.notes li b{font:600 12px var(--sans);color:var(--red);margin-right:6px}
+.pager{display:flex;justify-content:space-between;gap:10px;margin:36px 0 50px}
+.pager a{max-width:48%}
+.loading{padding:60px 0;text-align:center;color:var(--muted)}
+/* feuille d’actions */
+.sheet{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));transform:translate(-50%,calc(100% + 140px));visibility:hidden;width:min(560px,calc(100vw - 24px));background:var(--bg);border:1px solid var(--rule);border-radius:18px;box-shadow:0 12px 40px rgba(0,0,0,.18);padding:14px 16px 16px;z-index:50;transition:transform .25s ease,visibility .25s}
+.sheet.on{transform:translate(-50%,0);visibility:visible}
+@media(max-width:700px){.sheet{bottom:calc(80px + env(safe-area-inset-bottom))}}
+.sheet .sref{font:600 13px var(--sans);color:var(--red)}
+.sheet .stx{font:400 17px/1.5 var(--serif);margin:6px 0 10px;max-height:30vh;overflow:auto}
+.sheet .snote{font:400 15px/1.55 var(--serif);color:var(--muted);border-top:1px solid var(--rule);padding-top:8px;margin-bottom:10px;max-height:28vh;overflow:auto}
+.sheet .row{display:flex;flex-wrap:wrap;gap:8px}
+#s-like[aria-pressed=true]{color:var(--red);border-color:color-mix(in srgb,var(--red) 40%,var(--rule))}
+.toast{position:fixed;left:50%;top:calc(76px + env(safe-area-inset-top));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:16px;font-size:14px;line-height:1.4;z-index:60;opacity:0;pointer-events:none;transition:opacity .2s;width:max-content;max-width:min(440px,calc(100vw - 32px));text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.toast.on{opacity:1}
+.toast.act{pointer-events:auto;padding:6px 6px 6px 18px;display:flex;align-items:center;gap:8px;text-align:left}
+.toast button{color:inherit;font-weight:600;padding:6px 10px;border-radius:999px;text-decoration:underline;text-underline-offset:3px}
+/* fil */
+#fil{position:relative}
+.feed{position:relative;height:calc(100dvh - 59px - env(safe-area-inset-top));overflow-y:auto;scroll-snap-type:y mandatory;overscroll-behavior:contain}
+@media(max-width:700px){.feed{height:calc(100dvh - 53px - 66px - env(safe-area-inset-top) - env(safe-area-inset-bottom))}}
+.card{position:relative;height:100%;scroll-snap-align:start;scroll-snap-stop:always;display:grid;grid-template-columns:minmax(0,1fr) 64px;align-items:center;gap:8px;padding:0 max(4vw,14px,env(safe-area-inset-right)) 0 max(4vw,14px,env(safe-area-inset-left));border-bottom:1px solid var(--rule);overflow:hidden;user-select:none;-webkit-user-select:none}
+.card::before{content:"";position:absolute;left:max(4vw,14px);top:0;width:14px;height:64px;background:var(--lit);clip-path:polygon(0 0,100% 0,100% 100%,50% 80%,0 100%)}
+.cin{max-width:640px;margin:0 auto;width:100%;padding:40px 0}
+.cin .k{font:600 11.5px var(--sans);letter-spacing:.09em;text-transform:uppercase;color:var(--red)}
+.cin .k em{font-style:normal;color:var(--muted);margin-left:8px;letter-spacing:.04em}
+.vt{margin:16px 0 0;font:400 clamp(24px,4.6vw,40px)/1.36 var(--serif);text-wrap:pretty}
+.vt.m{font-size:clamp(21px,3.8vw,32px)}.vt.l{font-size:clamp(19px,3.1vw,26px)}
+.drop{float:left;font:500 2.9em/.8 var(--serif);color:var(--red);margin:.06em .04em 0 -.02em}
+.feed:focus,.feed:focus-visible{outline:none}
+.cin .ref{display:block;margin-top:18px;font-size:14px}
+.cin .med{margin:14px 0 0;font:italic 400 17px/1.5 var(--serif);color:var(--muted);max-width:520px}
+.rail{display:flex;flex-direction:column;align-items:center;gap:14px;align-self:end;margin-bottom:9vh}
+.rail button,.rail a{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:var(--muted);text-decoration:none;min-width:48px}
+.rail .ico{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:var(--panel)}
+.rail svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7}
+.rail [aria-pressed=true]{color:var(--red)}.rail [aria-pressed=true] svg{fill:currentColor}
+.prog{position:absolute;right:12px;top:10px;font-size:12px;color:var(--muted);z-index:2;pointer-events:none}
+.burst{position:absolute;width:110px;height:110px;margin:-55px 0 0 -55px;pointer-events:none;color:var(--red);animation:pop .8s ease-out forwards}
+.burst svg{width:100%;height:100%;fill:currentColor}
+@keyframes pop{0%{transform:scale(.3);opacity:0}25%{transform:scale(1.05);opacity:.95}60%{transform:scale(.95);opacity:.9}100%{transform:scale(1.25) translateY(-30px);opacity:0}}
+@media(prefers-reduced-motion:reduce){.burst{animation:none;opacity:0}.sheet,.text .v{transition:none}}
+.hint{position:absolute;left:0;right:0;bottom:12px;text-align:center;font-size:12.5px;color:var(--muted);pointer-events:none}
+.card.end{grid-template-columns:minmax(0,1fr);text-align:center}
+.card.end .vt{margin-top:14px}
+.card.end .med{margin:14px auto 0}
+.card.end .btnrow{justify-content:center;margin-top:24px}
+/* favoris */
+.favs{list-style:none;margin:10px 0 28px;padding:0}
+.favs li{padding:20px 0;border-bottom:1px solid var(--rule)}
+.favs .ft{font:400 21px/1.5 var(--serif);margin:6px 0 10px;text-wrap:pretty}
+.favs .row{display:flex;flex-wrap:wrap;gap:8px}
+.empty{padding:50px 0;text-align:center;color:var(--muted);font:italic 400 19px/1.5 var(--serif)}
+.ph{margin:34px 0 0}
+.ph h1{font:500 clamp(32px,5vw,46px)/1.05 var(--serif);margin:0}
+.ph p{color:var(--muted);margin:8px 0 0}
+.res li{padding:12px 0;border-bottom:1px solid var(--rule)}
+.res a{text-decoration:none;display:block}
+.res .tx{font:400 18px/1.5 var(--serif)}
+.res mark{background:var(--sel);color:inherit;border-radius:3px;padding:0 1px}
+.about{font:400 18px/1.65 var(--serif);margin-bottom:70px}
+.about h2{font:600 12px var(--sans);letter-spacing:.09em;text-transform:uppercase;color:var(--red);margin:30px 0 8px}
+.about p{margin:0 0 12px}
+.foot{margin:40px 0 80px;padding-top:16px;border-top:1px solid var(--rule);font-size:13px;color:var(--muted)}
+.foot a{color:var(--muted)}
+.fsz{display:flex;align-items:center}
+/* installation, mise à jour, sauvegarde */
+.install{display:flex;gap:14px;align-items:flex-start;margin:22px 0 0;padding:16px 8px 16px 16px;border-radius:16px;border:1px solid var(--rule)}
+.install img{width:46px;height:46px;border-radius:11px;flex:none}
+.install b{font:500 19px/1.25 var(--serif);display:block}
+.install p{margin:5px 0 0;font-size:14.5px;color:var(--muted)}
+.install p b{display:inline;font:600 14.5px var(--sans);color:var(--ink)}
+.install .btnrow{margin-top:12px}
+.install .x{margin:-6px 0 0 auto}
+.upd{position:fixed;left:50%;transform:translateX(-50%);bottom:20px;z-index:55;display:flex;align-items:center;gap:10px;padding:8px 8px 8px 18px;border-radius:999px;background:var(--ink);color:var(--bg);box-shadow:0 10px 30px rgba(0,0,0,.22);font-size:14.5px;width:max-content;max-width:calc(100vw - 24px)}
+.upd[hidden]{display:none}
+.upd button{background:var(--bg);color:var(--ink);border-radius:999px;padding:8px 14px;font-weight:600;min-height:40px;white-space:nowrap}
+@media(max-width:700px){.upd{bottom:calc(80px + env(safe-area-inset-bottom))}}
+.favtools{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin:18px 0 0}
+.seg{display:inline-flex;padding:3px;border-radius:999px;background:var(--panel)}
+.seg button{padding:7px 14px;border-radius:999px;font-size:13.5px;font-weight:500;color:var(--muted);min-height:38px}
+.seg button[aria-pressed=true]{background:var(--bg);color:var(--ink);box-shadow:var(--shadow)}
+.status{font-size:13px;color:var(--muted)}
+.status.warn{color:var(--red);font-weight:500}
+details.backup{margin:6px 0 90px;border-top:1px solid var(--rule);padding-top:4px}
+details.backup summary{cursor:pointer;font:600 12px var(--sans);letter-spacing:.09em;text-transform:uppercase;color:var(--red);min-height:48px;display:flex;align-items:center}
+.backup p{font-size:15px;color:var(--muted);margin:6px 0 12px}
+.backup h3{font:500 19px var(--serif);margin:26px 0 4px}
+.backup textarea{display:block;width:100%;min-height:92px;margin:12px 0 0;font:13px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;padding:10px 12px;border-radius:12px;border:1px solid var(--rule);background:var(--panel);color:var(--ink);resize:vertical;word-break:break-all}
+.backup textarea[hidden]{display:none}
+.backup label.btn{cursor:pointer}
+.about .btnrow{margin:4px 0 14px}
+@media(max-width:600px){.vday blockquote{font-size:21px}.plan li{grid-template-columns:5.6em minmax(0,1fr)}.litcard{padding-right:44px}.ribbon{right:0;width:18px;height:96px}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap topin">
+ <a class="brand" href="#bible"><span class="dot" aria-hidden="true"></span><span>Lectio <b>·</b> Bible</span></a>
+ <nav class="tabs" aria-label="Sections">
+  <a href="#bible" data-tab="bible"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5z"/><path d="M20 5.5c0-.8-.7-1.5-1.5-1.5H13v16h5.5c.8 0 1.5-.7 1.5-1.5z"/><path d="M15.5 8h2"/></svg><span>Bible</span></a>
+  <a href="#fil" data-tab="fil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="3"/><path d="M10 9.5v5l4-2.5z"/></svg><span>Fil</span></a>
+  <a href="#favoris" data-tab="favoris"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-7.5-10.1A4.4 4.4 0 0 1 12 7.2a4.4 4.4 0 0 1 7.5 2.7C19.5 15.4 12 20 12 20z"/></svg><span>Mes versets</span></a>
+ </nav>
+</div></header>
+<main>
+ <section class="view" id="v-bible"><div class="wrap">
+  <div class="col">
+   <div class="litcard" id="litcard"><div class="ribbon" aria-hidden="true"></div>
+    <div class="kick" id="lit-season">Aujourd’hui</div>
+    <div class="litdate" id="lit-date"></div>
+    <h1 class="litname" id="lit-name"></h1>
+    <div class="litmeta" id="lit-meta"></div>
+    <div class="btnrow"><a class="btn red" id="lit-aelf" href="https://www.aelf.org" target="_blank" rel="noopener">Lectures de la messe du jour <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"/></svg></a><a class="btn" href="#fil">Ouvrir le fil de versets</a></div>
+   </div>
+   <div id="install"></div>
+   <div class="vday" id="vday"></div>
+   <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <input id="q" type="search" autocomplete="off" placeholder="Un livre, une référence (Jn 3,16) ou un mot…" aria-label="Rechercher dans la Bible">
+    <div class="sugg" id="sugg"></div>
+   </div>
+   <div id="resume"></div>
+   <div id="results"></div>
+  </div>
+  <div id="toc"></div>
+  <div class="col foot">Texte biblique : Sainte Bible néo-Crampon Libre, traduction catholique d’Augustin Crampon (© 2022 Fraternité de Tibériade, licence CC BY-SA 4.0). Texte liturgique officiel : <a href="https://www.aelf.org/bible" target="_blank" rel="noopener">AELF</a>. <a href="#apropos">Sources, numérotation et licences</a></div>
+ </div></section>
+
+ <section class="view" id="v-livre"><div class="wrap"><div class="col" id="livre"></div></div></section>
+ <section class="view" id="v-lire"></section>
+ <section class="view" id="v-fil"><div id="fil"><div class="prog" id="prog"></div><div class="feed" id="feed" tabindex="0" aria-label="Fil de versets, faites défiler"></div></div></section>
+ <section class="view" id="v-favoris"><div class="wrap"><div class="col">
+  <div class="ph"><h1>Mes versets</h1><p id="favcount">Les versets que vous avez aimés, dans le fil ou pendant la lecture.</p></div>
+  <div class="favtools"><div class="seg" role="group" aria-label="Ordre d’affichage"><button type="button" data-sort="recent" aria-pressed="true">Récents</button><button type="button" data-sort="bible" aria-pressed="false">Ordre biblique</button></div><span class="status" id="favstatus"></span></div>
+  <ul class="favs" id="favs"></ul>
+  <details class="backup" id="backup"><summary>Sauvegarder ou transférer mes versets</summary>
+   <p>Votre code de sauvegarde contient tous vos versets aimés et l’endroit où vous en êtes. Gardez-le (dans vos notes, un message…) ou collez-le dans Lectio sur un autre appareil : vous y retrouverez tout.</p>
+   <div class="btnrow"><button type="button" class="btn red" id="bk-copy">Copier mon code de sauvegarde</button><button type="button" class="btn" id="bk-file" hidden>Enregistrer un fichier</button></div>
+   <textarea id="bk-out" readonly hidden aria-label="Votre code de sauvegarde"></textarea>
+   <h3>Restaurer</h3>
+   <p>Collez un code de sauvegarde puis touchez « Restaurer ». Les versets du code s’ajoutent à ceux déjà présents : rien n’est effacé.</p>
+   <textarea id="bk-in" placeholder="LECTIO2-…" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Code de sauvegarde à restaurer"></textarea>
+   <div class="btnrow"><button type="button" class="btn red" id="bk-go">Restaurer</button><label class="btn" id="bk-open">Ouvrir un fichier de sauvegarde<input type="file" accept=".txt,.json,text/plain,application/json" hidden></label></div>
+  </details>
+ </div></div></section>
+ <section class="view" id="v-apropos"><div class="wrap"><div class="col about">
+  <div class="ph"><h1>À propos de Lectio</h1></div>
+  <h2>Le texte biblique</h2>
+  <p>La Bible est reproduite en entier (73 livres du canon catholique, deutérocanoniques compris) dans la <b>Sainte Bible néo-Crampon Libre</b>, modernisation de la traduction catholique du chanoine Augustin Crampon (édition révisée de 1923). © 2022 Fraternité de Tibériade, licence Creative Commons BY-SA 4.0 ; texte obtenu sur eBible.org. Les notes en bas de chapitre sont celles de cette édition.</p>
+  <p>Modifications apportées pour l’appli : mise en page ; intertitres et indications éditoriales séparés du texte (par exemple les personnages du Cantique) ; correction de quelques coquilles typographiques (espaces, apostrophes doublées dans la 1re lettre de Jean, lettre parasite en Ps 145, 1) ; dans le fil, « … » signale un verset cité sans son début ou sa fin. Ces modifications n’engagent pas la Fraternité de Tibériade. Le texte biblique de l’appli reste sous la même licence CC BY-SA 4.0.</p>
+  <h2>La traduction liturgique officielle</h2>
+  <p>La traduction utilisée à la messe en France est celle de l’AELF (Association épiscopale liturgique pour les pays francophones). Elle est protégée par le droit d’auteur et n’est donc pas recopiée ici : chaque chapitre de l’appli renvoie directement à son texte officiel sur <a href="https://www.aelf.org/bible" target="_blank" rel="noopener">aelf.org</a>, comme les lectures du jour.</p>
+  <p>L’édition Crampon rend le nom divin par « Yahweh ». Dans la liturgie, l’Église dit « le Seigneur », conformément à la lettre de la Congrégation pour le culte divin de 2008.</p>
+  <h2>La numérotation des psaumes</h2>
+  <p>La Bible hébraïque (suivie par Crampon) et la Bible grecque et latine (suivie par la liturgie) ne numérotent pas les psaumes de la même façon. L’appli indique les deux, à la manière du lectionnaire : « Ps 22 (23) » désigne le psaume 22 de la liturgie, qui est le 23 dans la Bible hébraïque (« Le Seigneur est mon berger »).</p>
+  <p>Le livre d’Esther suit l’ordre de la Vulgate : les passages grecs sont regroupés à la fin (chapitres 10, 4 à 16), alors que la traduction liturgique les insère dans le récit. Les liens vers AELF tiennent compte de cette différence.</p>
+  <h2>Analyses et méditations</h2>
+  <p>Les présentations des 73 livres, les plans, les thèmes, les passages clés et les courtes méditations du fil ont été rédigés pour cette appli à partir de la tradition de l’Église, de l’exégèse catholique et du lectionnaire romain. Ce ne sont pas des documents officiels de l’Église. Les courtes citations entre guillemets reprennent souvent la formulation la plus connue dans la liturgie ; elle peut différer légèrement du texte de Crampon affiché dans la Bible de l’appli. Pour aller plus loin : la constitution <i>Dei Verbum</i> (concile Vatican II), l’exhortation <i>Verbum Domini</i> de Benoît XVI, le Catéchisme de l’Église catholique (n° 101 à 141 sur l’Écriture sainte).</p>
+  <h2>Le calendrier liturgique</h2>
+  <p>Le temps liturgique, l’année (A, B ou C), la semaine du psautier et les principales fêtes sont calculés selon le calendrier romain général et les usages de France (Épiphanie, Ascension et Saint-Sacrement). Les mémoires des saints ne sont pas affichées : le bouton « Lectures de la messe du jour » ouvre la page officielle d’AELF.</p>
+  <div id="ap-app"></div>
+ </div></div></section>
+</main>
+<div class="sheet" id="sheet" role="dialog" aria-label="Verset"><div class="sref" id="s-ref"></div><div class="stx" id="s-tx"></div><div class="snote" id="s-note" hidden></div><div class="row" id="s-row"></div></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="upd" id="upd" role="status" hidden><span>Nouvelle version disponible</span><button type="button" id="upd-go">Mettre à jour</button></div>
+<script>
+/* Calendrier liturgique romain (usages de France) — calcul local, sans réseau */
+const LIT = (() => {
+  const DAY = 86400000;
+  const J = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
+  const MOIS = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  const d0 = (y, m, d) => new Date(Date.UTC(y, m - 1, d));
+  const add = (d, n) => new Date(d.getTime() + n * DAY);
+  const diff = (a, b) => Math.round((a - b) / DAY);
+  const dow = d => d.getUTCDay();
+  const same = (a, b) => a.getTime() === b.getTime();
+  const sunOnOrBefore = d => add(d, -dow(d));
+  const ord = n => n === 1 ? '1er' : n + 'e';
+  const ordF = n => n === 1 ? '1re' : n + 'e';
+  function easter(y) {
+    const a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4;
+    const f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3);
+    const h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4;
+    const l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451);
+    const mo = Math.floor((h + l - 7 * m + 114) / 31), da = ((h + l - 7 * m + 114) % 31) + 1;
+    return d0(y, mo, da);
+  }
+  function advent1(y) { const xm = d0(y, 12, 25); return add(xm, -(dow(xm) || 7) - 21); }
+  function epiphany(y) { for (let d = 2; d <= 8; d++) { const t = d0(y, 1, d); if (dow(t) === 0) return t; } }
+  function baptism(y) { const ep = epiphany(y); const dd = ep.getUTCDate(); return dd >= 7 ? add(ep, 1) : add(ep, 7); }
+  function holyFamily(y) { // dimanche dans l’octave de Noël, sinon 30 décembre
+    for (let d = 26; d <= 31; d++) { const t = d0(y, 12, d); if (dow(t) === 0) return t; }
+    return d0(y, 12, 30);
+  }
+  const C = { vert: ['Vert', '#2f7d4f'], violet: ['Violet', '#6d3fa0'], blanc: ['Blanc', '#c9a227'], rouge: ['Rouge', '#b3121f'], rose: ['Rose', '#cc5f86'] };
+
+  function info(date) {
+    const y = date.getUTCFullYear();
+    const E = easter(y), A1 = advent1(y), A1prev = advent1(y - 1);
+    const ash = add(E, -46), palm = add(E, -7), pent = add(E, 49), asc = add(E, 39);
+    const trin = add(pent, 7), corpus = add(pent, 14), heart = add(pent, 19), king = add(A1, -7);
+    const bap = baptism(y), epi = epiphany(y), hf = holyFamily(y);
+    const litYear = date >= A1 ? y + 1 : y;
+    const cycle = ['C', 'A', 'B'][litYear % 3];
+    const wd = J[dow(date)];
+    const isSun = dow(date) === 0;
+    let season, name, color = 'vert', week = null, psalter = null, rank = 0; // rank: 3 solennité, 2 fête, 1 dimanche
+    // ----- temps -----
+    if (date >= A1 && date <= d0(y, 12, 24)) {
+      season = 'Avent'; const n = Math.floor(diff(sunOnOrBefore(date), A1) / 7) + 1; week = n;
+      name = isSun ? `${ord(n)} dimanche de l’Avent` : `${wd} de la ${ordF(n)} semaine de l’Avent`;
+      color = (isSun && n === 3) ? 'rose' : 'violet'; psalter = ((n - 1) % 4) + 1; if (isSun) rank = 1;
+    } else if (date >= d0(y, 12, 25) || date <= bap) {
+      season = 'Temps de Noël'; color = 'blanc';
+      name = isSun ? 'Dimanche du temps de Noël' : `${wd} du temps de Noël`;
+    } else if (date < ash) {
+      season = 'Temps ordinaire';
+      const ref = sunOnOrBefore(bap); const n = 1 + Math.floor(diff(sunOnOrBefore(date), ref) / 7); week = n;
+      name = isSun ? `${ord(n)} dimanche du temps ordinaire` : `${wd} de la ${ordF(n)} semaine du temps ordinaire`;
+      psalter = ((n - 1) % 4) + 1; if (isSun) rank = 1;
+    } else if (date < palm) {
+      season = 'Carême'; color = 'violet';
+      const n = Math.floor(diff(sunOnOrBefore(date), add(ash, 4)) / 7) + 1; // 1er dimanche = mercredi des Cendres + 4
+      if (date < add(ash, 4)) { name = same(date, ash) ? 'Mercredi des Cendres' : `${wd} après les Cendres`; psalter = 4; week = 0; }
+      else { week = n; name = isSun ? `${ord(n)} dimanche de Carême` : `${wd} de la ${ordF(n)} semaine de Carême`; psalter = ((n - 1) % 4) + 1; if (isSun && n === 4) color = 'rose'; if (isSun) rank = 1; }
+    } else if (date < E) {
+      season = 'Semaine sainte'; color = 'violet'; psalter = 2;
+      const k = diff(date, palm);
+      name = ['Dimanche des Rameaux et de la Passion du Seigneur', 'Lundi saint', 'Mardi saint', 'Mercredi saint', 'Jeudi saint', 'Vendredi saint — Passion du Seigneur', 'Samedi saint'][k];
+      color = k === 0 || k === 5 ? 'rouge' : k === 4 ? 'blanc' : 'violet'; if (k === 0) rank = 1;
+      if (k >= 4) psalter = null;
+    } else if (date <= pent) {
+      season = 'Temps pascal'; color = 'blanc';
+      const n = Math.floor(diff(sunOnOrBefore(date), E) / 7) + 1; week = n;
+      if (diff(date, E) < 8) { name = diff(date, E) === 0 ? 'Dimanche de Pâques — la Résurrection du Seigneur' : diff(date, E) === 7 ? '2e dimanche de Pâques (de la Divine Miséricorde)' : `${wd} dans l’Octave de Pâques`; if (diff(date, E) === 7) psalter = 2; }
+      else { name = isSun ? `${ord(n)} dimanche de Pâques` : `${wd} de la ${ordF(n)} semaine de Pâques`; psalter = ((n - 1) % 4) + 1; }
+      if (isSun) rank = 1;
+      if (same(date, asc)) { name = 'Ascension du Seigneur'; rank = 3; }
+      if (same(date, pent)) { name = 'Dimanche de Pentecôte'; color = 'rouge'; rank = 3; psalter = null; }
+    } else {
+      season = 'Temps ordinaire';
+      const n = 34 - Math.floor(diff(king, sunOnOrBefore(date)) / 7); week = n;
+      name = isSun ? `${ord(n)} dimanche du temps ordinaire` : `${wd} de la ${ordF(n)} semaine du temps ordinaire`;
+      psalter = ((n - 1) % 4) + 1; if (isSun) rank = 1;
+    }
+    // ----- fêtes mobiles -----
+    const set = (n, c, r) => { name = n; color = c; rank = r; };
+    if (same(date, d0(y, 12, 25))) set('Nativité du Seigneur — Noël', 'blanc', 3);
+    else if (same(date, hf)) set('La Sainte Famille de Jésus, Marie et Joseph', 'blanc', 2);
+    else if (same(date, d0(y, 1, 1))) set('Sainte Marie, Mère de Dieu', 'blanc', 3);
+    else if (same(date, epi)) set('Épiphanie du Seigneur', 'blanc', 3);
+    else if (same(date, bap)) set('Baptême du Seigneur', 'blanc', 2);
+    else if (same(date, trin)) set('La Sainte Trinité', 'blanc', 3);
+    else if (same(date, corpus)) set('Le Saint-Sacrement du Corps et du Sang du Christ', 'blanc', 3);
+    else if (same(date, heart)) set('Le Sacré-Cœur de Jésus', 'blanc', 3);
+    else if (same(date, king)) set('Notre Seigneur Jésus Christ, Roi de l’univers', 'blanc', 3);
+    const triduumOrOctave = date >= palm && date <= add(E, 7);
+    const lentSunday = season === 'Carême' && isSun;
+    const adventSunday = season === 'Avent' && isSun;
+    // ----- solennités et fêtes fixes -----
+    const fixed = [];
+    const md = (m, d) => d0(y, m, d);
+    // saint Joseph
+    let jos = md(3, 19);
+    if (jos >= palm && jos <= add(E, 7)) jos = add(palm, -1); else if (dow(jos) === 0 && jos >= ash) jos = add(jos, 1);
+    fixed.push([jos, 'Saint Joseph, époux de la Vierge Marie', 'blanc', 3]);
+    let ann = md(3, 25);
+    if (ann >= palm && ann <= add(E, 7)) ann = add(E, 8); else if (dow(ann) === 0 && ann >= ash && ann < palm) ann = add(ann, 1);
+    fixed.push([ann, 'Annonciation du Seigneur', 'blanc', 3]);
+    let jb = md(6, 24); if (same(jb, heart)) jb = add(jb, -1); else if (same(jb, corpus) || same(jb, trin)) jb = add(jb, 1);
+    fixed.push([jb, 'Nativité de saint Jean-Baptiste', 'blanc', 3]);
+    let pp = md(6, 29); if (same(pp, heart)) pp = add(pp, -1); else if (same(pp, corpus) || same(pp, trin)) pp = add(pp, 1);
+    fixed.push([pp, 'Saint Pierre et saint Paul, apôtres', 'rouge', 3]);
+    fixed.push([md(8, 15), 'Assomption de la Vierge Marie', 'blanc', 3]);
+    fixed.push([md(11, 1), 'Tous les Saints', 'blanc', 3]);
+    let imm = md(12, 8); if (dow(imm) === 0) imm = add(imm, 1);
+    fixed.push([imm, 'Immaculée Conception de la Vierge Marie', 'blanc', 3]);
+    // fêtes du Seigneur (l’emportent sur un dimanche du temps ordinaire)
+    const lordFeasts = [[md(2, 2), 'Présentation du Seigneur', 'blanc'], [md(8, 6), 'Transfiguration du Seigneur', 'blanc'], [md(9, 14), 'La Croix glorieuse', 'rouge'], [md(11, 9), 'Dédicace de la basilique du Latran', 'blanc']];
+    const allSouls = md(11, 2);
+    // fêtes des saints (pas le dimanche, ni en Semaine sainte / octave de Pâques)
+    const saints = [[1, 25, 'Conversion de saint Paul', 'blanc'], [2, 22, 'Chaire de saint Pierre', 'blanc'], [4, 25, 'Saint Marc, évangéliste', 'rouge'], [5, 3, 'Saint Philippe et saint Jacques, apôtres', 'rouge'], [5, 14, 'Saint Matthias, apôtre', 'rouge'], [5, 31, 'Visitation de la Vierge Marie', 'blanc'], [7, 3, 'Saint Thomas, apôtre', 'rouge'], [7, 22, 'Sainte Marie-Madeleine', 'blanc'], [7, 25, 'Saint Jacques, apôtre', 'rouge'], [8, 10, 'Saint Laurent, diacre et martyr', 'rouge'], [8, 24, 'Saint Barthélemy, apôtre', 'rouge'], [9, 8, 'Nativité de la Vierge Marie', 'blanc'], [9, 21, 'Saint Matthieu, apôtre et évangéliste', 'rouge'], [9, 29, 'Saints Michel, Gabriel et Raphaël, archanges', 'blanc'], [10, 18, 'Saint Luc, évangéliste', 'rouge'], [10, 28, 'Saint Simon et saint Jude, apôtres', 'rouge'], [11, 30, 'Saint André, apôtre', 'rouge'], [12, 26, 'Saint Étienne, premier martyr', 'rouge'], [12, 27, 'Saint Jean, apôtre et évangéliste', 'blanc'], [12, 28, 'Les saints Innocents, martyrs', 'rouge']];
+    const highSunday = isSun && (season === 'Avent' || season === 'Carême' || season === 'Temps pascal' || season === 'Semaine sainte');
+    const blocked = triduumOrOctave || same(date, ash) || highSunday;
+    if (rank < 3) {
+      for (const [d, n, c, r] of fixed) if (same(d, date) && !blocked) { set(n, c, r); break; }
+    }
+    if (rank < 2 && !blocked) {
+      for (const [d, n, c] of lordFeasts) if (same(d, date)) set(n, c, 2);
+      if (rank < 2 && same(date, allSouls)) set('Commémoration de tous les fidèles défunts', 'violet', 2);
+    }
+    if (rank === 0 && !isSun && !blocked) {
+      for (const [m, dd, n, c] of saints) if (date.getUTCMonth() + 1 === m && date.getUTCDate() === dd) { set(n, c, 2); break; }
+    }
+    const weekday = season === 'Temps ordinaire' && !isSun && rank === 0;
+    return {
+      date: `${wd} ${date.getUTCDate() === 1 ? '1er' : date.getUTCDate()} ${MOIS[date.getUTCMonth()]} ${y}`,
+      name, season, color: C[color][0], hex: C[color][1], cycle: `Année ${cycle}`,
+      weekYear: weekday ? (litYear % 2 ? 'année impaire' : 'année paire') : null,
+      psalter: (rank >= 2 || psalter === null) ? null : ['I', 'II', 'III', 'IV'][psalter - 1],
+      rank, iso: date.toISOString().slice(0, 10)
+    };
+  }
+  function today() { const n = new Date(); return info(d0(n.getFullYear(), n.getMonth() + 1, n.getDate())); }
+  return { info, today, d0, easter, advent1 };
+})();
+if (typeof module !== 'undefined') module.exports = LIT;
+
+</script>
+<script>
+{
+const BOOKS = [{"id": "gn", "u": "GEN", "a": "Gn", "s": "Genèse", "t": "Livre de la Genèse", "g": "Pentateuque", "T": "AT", "n": 50, "v": 1533}, {"id": "ex", "u": "EXO", "a": "Ex", "s": "Exode", "t": "Livre de l’Exode", "g": "Pentateuque", "T": "AT", "n": 40, "v": 1213}, {"id": "lv", "u": "LEV", "a": "Lv", "s": "Lévitique", "t": "Livre du Lévitique", "g": "Pentateuque", "T": "AT", "n": 27, "v": 859}, {"id": "nb", "u": "NUM", "a": "Nb", "s": "Nombres", "t": "Livre des Nombres", "g": "Pentateuque", "T": "AT", "n": 36, "v": 1289}, {"id": "dt", "u": "DEU", "a": "Dt", "s": "Deutéronome", "t": "Livre du Deutéronome", "g": "Pentateuque", "T": "AT", "n": 34, "v": 956}, {"id": "jos", "u": "JOS", "a": "Jos", "s": "Josué", "t": "Livre de Josué", "g": "Livres historiques", "T": "AT", "n": 24, "v": 656}, {"id": "jg", "u": "JDG", "a": "Jg", "s": "Juges", "t": "Livre des Juges", "g": "Livres historiques", "T": "AT", "n": 21, "v": 618}, {"id": "rt", "u": "RUT", "a": "Rt", "s": "Ruth", "t": "Livre de Ruth", "g": "Livres historiques", "T": "AT", "n": 4, "v": 85}, {"id": "1s", "u": "1SA", "a": "1S", "s": "1 Samuel", "t": "Premier livre de Samuel", "g": "Livres historiques", "T": "AT", "n": 31, "v": 811}, {"id": "2s", "u": "2SA", "a": "2S", "s": "2 Samuel", "t": "Deuxième livre de Samuel", "g": "Livres historiques", "T": "AT", "n": 24, "v": 695}, {"id": "1r", "u": "1KI", "a": "1R", "s": "1 Rois", "t": "Premier livre des Rois", "g": "Livres historiques", "T": "AT", "n": 22, "v": 817}, {"id": "2r", "u": "2KI", "a": "2R", "s": "2 Rois", "t": "Deuxième livre des Rois", "g": "Livres historiques", "T": "AT", "n": 25, "v": 719}, {"id": "1ch", "u": "1CH", "a": "1Ch", "s": "1 Chroniques", "t": "Premier livre des Chroniques", "g": "Livres historiques", "T": "AT", "n": 29, "v": 941}, {"id": "2ch", "u": "2CH", "a": "2Ch", "s": "2 Chroniques", "t": "Deuxième livre des Chroniques", "g": "Livres historiques", "T": "AT", "n": 36, "v": 822}, {"id": "esd", "u": "EZR", "a": "Esd", "s": "Esdras", "t": "Livre d’Esdras", "g": "Livres historiques", "T": "AT", "n": 10, "v": 280}, {"id": "ne", "u": "NEH", "a": "Ne", "s": "Néhémie", "t": "Livre de Néhémie", "g": "Livres historiques", "T": "AT", "n": 13, "v": 406}, {"id": "tb", "u": "TOB", "a": "Tb", "s": "Tobie", "t": "Livre de Tobie", "g": "Livres historiques", "T": "AT", "n": 14, "v": 246}, {"id": "jdt", "u": "JDT", "a": "Jdt", "s": "Judith", "t": "Livre de Judith", "g": "Livres historiques", "T": "AT", "n": 16, "v": 346}, {"id": "est", "u": "EST", "a": "Est", "s": "Esther", "t": "Livre d’Esther", "g": "Livres historiques", "T": "AT", "n": 16, "v": 275}, {"id": "1m", "u": "1MA", "a": "1M", "s": "1 Maccabées", "t": "Premier livre des Martyrs d’Israël (1 Maccabées)", "g": "Livres historiques", "T": "AT", "n": 16, "v": 925}, {"id": "2m", "u": "2MA", "a": "2M", "s": "2 Maccabées", "t": "Deuxième livre des Martyrs d’Israël (2 Maccabées)", "g": "Livres historiques", "T": "AT", "n": 15, "v": 556}, {"id": "jb", "u": "JOB", "a": "Jb", "s": "Job", "t": "Livre de Job", "g": "Livres poétiques et sapientiaux", "T": "AT", "n": 42, "v": 1070}, {"id": "ps", "u": "PSA", "a": "Ps", "s": "Psaumes", "t": "Livre des Psaumes", "g": "Livres poétiques et sapientiaux", "T": "AT", "n": 150, "v": 2528}, {"id": "pr", "u": "PRO", "a": "Pr", "s": "Proverbes", "t": "Livre des Proverbes", "g": "Livres poétiques et sapientiaux", "T": "AT", "n": 31, "v": 915}, {"id": "qo", "u": "ECC", "a": "Qo", "s": "Qohèleth", "t": "Livre de Qohèleth (l’Ecclésiaste)", "g": "Livres poétiques et sapientiaux", "T": "AT", "n": 12, "v": 221}, {"id": "ct", "u": "SNG", "a": "Ct", "s": "Cantique des cantiques", "t": "Cantique des cantiques", "g": "Livres poétiques et sapientiaux", "T": "AT", "n": 8, "v": 117}, {"id": "sg", "u": "WIS", "a": "Sg", "s": "Sagesse", "t": "Livre de la Sagesse", "g": "Livres poétiques et sapientiaux", "T": "AT", "n": 19, "v": 436}, {"id": "si", "u": "SIR", "a": "Si", "s": "Ben Sira", "t": "Livre de Ben Sira le Sage (Siracide)", "g": "Livres poétiques et sapientiaux", "T": "AT", "n": 51, "v": 1363}, {"id": "is", "u": "ISA", "a": "Is", "s": "Isaïe", "t": "Livre d’Isaïe", "g": "Livres prophétiques", "T": "AT", "n": 66, "v": 1290}, {"id": "jr", "u": "JER", "a": "Jr", "s": "Jérémie", "t": "Livre de Jérémie", "g": "Livres prophétiques", "T": "AT", "n": 52, "v": 1364}, {"id": "lm", "u": "LAM", "a": "Lm", "s": "Lamentations", "t": "Livre des Lamentations", "g": "Livres prophétiques", "T": "AT", "n": 5, "v": 154}, {"id": "ba", "u": "BAR", "a": "Ba", "s": "Baruch", "t": "Livre de Baruch", "g": "Livres prophétiques", "T": "AT", "n": 6, "v": 213}, {"id": "ez", "u": "EZK", "a": "Ez", "s": "Ézékiel", "t": "Livre d’Ézékiel", "g": "Livres prophétiques", "T": "AT", "n": 48, "v": 1273}, {"id": "dn", "u": "DAN", "a": "Dn", "s": "Daniel", "t": "Livre de Daniel", "g": "Livres prophétiques", "T": "AT", "n": 14, "v": 530}, {"id": "os", "u": "HOS", "a": "Os", "s": "Osée", "t": "Livre d’Osée", "g": "Livres prophétiques", "T": "AT", "n": 14, "v": 197}, {"id": "jl", "u": "JOL", "a": "Jl", "s": "Joël", "t": "Livre de Joël", "g": "Livres prophétiques", "T": "AT", "n": 4, "v": 73}, {"id": "am", "u": "AMO", "a": "Am", "s": "Amos", "t": "Livre d’Amos", "g": "Livres prophétiques", "T": "AT", "n": 9, "v": 146}, {"id": "ab", "u": "OBA", "a": "Ab", "s": "Abdias", "t": "Livre d’Abdias", "g": "Livres prophétiques", "T": "AT", "n": 1, "v": 21}, {"id": "jon", "u": "JON", "a": "Jon", "s": "Jonas", "t": "Livre de Jonas", "g": "Livres prophétiques", "T": "AT", "n": 4, "v": 48}, {"id": "mi", "u": "MIC", "a": "Mi", "s": "Michée", "t": "Livre de Michée", "g": "Livres prophétiques", "T": "AT", "n": 7, "v": 105}, {"id": "na", "u": "NAM", "a": "Na", "s": "Nahum", "t": "Livre de Nahum", "g": "Livres prophétiques", "T": "AT", "n": 3, "v": 47}, {"id": "ha", "u": "HAB", "a": "Ha", "s": "Habacuc", "t": "Livre d’Habacuc", "g": "Livres prophétiques", "T": "AT", "n": 3, "v": 56}, {"id": "so", "u": "ZEP", "a": "So", "s": "Sophonie", "t": "Livre de Sophonie", "g": "Livres prophétiques", "T": "AT", "n": 3, "v": 53}, {"id": "ag", "u": "HAG", "a": "Ag", "s": "Aggée", "t": "Livre d’Aggée", "g": "Livres prophétiques", "T": "AT", "n": 2, "v": 38}, {"id": "za", "u": "ZEC", "a": "Za", "s": "Zacharie", "t": "Livre de Zacharie", "g": "Livres prophétiques", "T": "AT", "n": 14, "v": 211}, {"id": "ml", "u": "MAL", "a": "Ml", "s": "Malachie", "t": "Livre de Malachie", "g": "Livres prophétiques", "T": "AT", "n": 3, "v": 55}, {"id": "mt", "u": "MAT", "a": "Mt", "s": "Matthieu", "t": "Évangile de Jésus-Christ selon saint Matthieu", "g": "Évangiles", "T": "NT", "n": 28, "v": 1071}, {"id": "mc", "u": "MRK", "a": "Mc", "s": "Marc", "t": "Évangile de Jésus-Christ selon saint Marc", "g": "Évangiles", "T": "NT", "n": 16, "v": 679}, {"id": "lc", "u": "LUK", "a": "Lc", "s": "Luc", "t": "Évangile de Jésus-Christ selon saint Luc", "g": "Évangiles", "T": "NT", "n": 24, "v": 1151}, {"id": "jn", "u": "JHN", "a": "Jn", "s": "Jean", "t": "Évangile de Jésus-Christ selon saint Jean", "g": "Évangiles", "T": "NT", "n": 21, "v": 879}, {"id": "ac", "u": "ACT", "a": "Ac", "s": "Actes des Apôtres", "t": "Livre des Actes des Apôtres", "g": "Actes des Apôtres", "T": "NT", "n": 28, "v": 1006}, {"id": "rm", "u": "ROM", "a": "Rm", "s": "Romains", "t": "Lettre de saint Paul aux Romains", "g": "Lettres de saint Paul", "T": "NT", "n": 16, "v": 433}, {"id": "1co", "u": "1CO", "a": "1Co", "s": "1 Corinthiens", "t": "Première lettre de saint Paul aux Corinthiens", "g": "Lettres de saint Paul", "T": "NT", "n": 16, "v": 437}, {"id": "2co", "u": "2CO", "a": "2Co", "s": "2 Corinthiens", "t": "Deuxième lettre de saint Paul aux Corinthiens", "g": "Lettres de saint Paul", "T": "NT", "n": 13, "v": 256}, {"id": "ga", "u": "GAL", "a": "Ga", "s": "Galates", "t": "Lettre de saint Paul aux Galates", "g": "Lettres de saint Paul", "T": "NT", "n": 6, "v": 149}, {"id": "ep", "u": "EPH", "a": "Ep", "s": "Éphésiens", "t": "Lettre de saint Paul aux Éphésiens", "g": "Lettres de saint Paul", "T": "NT", "n": 6, "v": 155}, {"id": "ph", "u": "PHP", "a": "Ph", "s": "Philippiens", "t": "Lettre de saint Paul aux Philippiens", "g": "Lettres de saint Paul", "T": "NT", "n": 4, "v": 104}, {"id": "col", "u": "COL", "a": "Col", "s": "Colossiens", "t": "Lettre de saint Paul aux Colossiens", "g": "Lettres de saint Paul", "T": "NT", "n": 4, "v": 95}, {"id": "1th", "u": "1TH", "a": "1Th", "s": "1 Thessaloniciens", "t": "Première lettre de saint Paul aux Thessaloniciens", "g": "Lettres de saint Paul", "T": "NT", "n": 5, "v": 89}, {"id": "2th", "u": "2TH", "a": "2Th", "s": "2 Thessaloniciens", "t": "Deuxième lettre de saint Paul aux Thessaloniciens", "g": "Lettres de saint Paul", "T": "NT", "n": 3, "v": 47}, {"id": "1tm", "u": "1TI", "a": "1Tm", "s": "1 Timothée", "t": "Première lettre de saint Paul à Timothée", "g": "Lettres de saint Paul", "T": "NT", "n": 6, "v": 113}, {"id": "2tm", "u": "2TI", "a": "2Tm", "s": "2 Timothée", "t": "Deuxième lettre de saint Paul à Timothée", "g": "Lettres de saint Paul", "T": "NT", "n": 4, "v": 83}, {"id": "tt", "u": "TIT", "a": "Tt", "s": "Tite", "t": "Lettre de saint Paul à Tite", "g": "Lettres de saint Paul", "T": "NT", "n": 3, "v": 46}, {"id": "phm", "u": "PHM", "a": "Phm", "s": "Philémon", "t": "Lettre de saint Paul à Philémon", "g": "Lettres de saint Paul", "T": "NT", "n": 1, "v": 25}, {"id": "he", "u": "HEB", "a": "He", "s": "Hébreux", "t": "Lettre aux Hébreux", "g": "Lettre aux Hébreux", "T": "NT", "n": 13, "v": 303}, {"id": "jc", "u": "JAS", "a": "Jc", "s": "Jacques", "t": "Lettre de saint Jacques", "g": "Lettres catholiques", "T": "NT", "n": 5, "v": 108}, {"id": "1p", "u": "1PE", "a": "1P", "s": "1 Pierre", "t": "Première lettre de saint Pierre", "g": "Lettres catholiques", "T": "NT", "n": 5, "v": 105}, {"id": "2p", "u": "2PE", "a": "2P", "s": "2 Pierre", "t": "Deuxième lettre de saint Pierre", "g": "Lettres catholiques", "T": "NT", "n": 3, "v": 61}, {"id": "1jn", "u": "1JN", "a": "1Jn", "s": "1 Jean", "t": "Première lettre de saint Jean", "g": "Lettres catholiques", "T": "NT", "n": 5, "v": 105}, {"id": "2jn", "u": "2JN", "a": "2Jn", "s": "2 Jean", "t": "Deuxième lettre de saint Jean", "g": "Lettres catholiques", "T": "NT", "n": 1, "v": 13}, {"id": "3jn", "u": "3JN", "a": "3Jn", "s": "3 Jean", "t": "Troisième lettre de saint Jean", "g": "Lettres catholiques", "T": "NT", "n": 1, "v": 15}, {"id": "jude", "u": "JUD", "a": "Jude", "s": "Jude", "t": "Lettre de saint Jude", "g": "Lettres catholiques", "T": "NT", "n": 1, "v": 25}, {"id": "ap", "u": "REV", "a": "Ap", "s": "Apocalypse", "t": "Livre de l’Apocalypse", "g": "Apocalypse", "T": "NT", "n": 22, "v": 405}];
+const PWA = true;            // true dans l’appli installable (GitHub Pages)
+const BUILD = "2026.11.20-1";           // version de l’appli
+const APPURL = "";         // adresse de l’appli installable
+const DH = {"analyses": "3e91246b5c", "feed": "047fd2e036", "gn": "61aa16be77", "ex": "3d60284703", "lv": "d9a992e751", "nb": "001e448ae1", "dt": "8efcefaf38", "jos": "2bf0e226b7", "jg": "75ce8ef50b", "rt": "cb6fa4e13d", "1s": "ed3598dcb4", "2s": "a13db7cfbe", "1r": "090ae225ee", "2r": "fb6744212c", "1ch": "2b3d94a92f", "2ch": "860e23f0d4", "esd": "5950a10a73", "ne": "74e0a37526", "tb": "43fc77626b", "jdt": "8a674cc968", "est": "aa8f21f173", "1m": "b7d0fe9c6a", "2m": "61cd5d1dce", "jb": "0cee0589a3", "ps": "5c7135afc5", "pr": "009cde48f7", "qo": "7485f47e43", "ct": "9e7aee22e4", "sg": "f81388396d", "si": "cf1d2d8ae0", "is": "a1ac17620c", "jr": "fe15080c40", "lm": "cf06106648", "ba": "90f9c534b5", "ez": "fd146b0bd1", "dn": "b499ad4a8f", "os": "f0591038ab", "jl": "5193104af6", "am": "8266cc1d5f", "ab": "be0785064d", "jon": "4b6bf93e1c", "mi": "b5ccc33d48", "na": "803b73457b", "ha": "bc7868f195", "so": "7908013aa9", "ag": "7bea7d1cd9", "za": "55eab2ee45", "ml": "81ae34c797", "mt": "8c73175070", "mc": "87f50e924e", "lc": "d262fa00a0", "jn": "367c505983", "ac": "b25cd27915", "rm": "cf088390cd", "1co": "c369b213d1", "2co": "34fcc5680f", "ga": "bbf1b3ced4", "ep": "f9a42b5555", "ph": "37733e42d4", "col": "79602a3980", "1th": "cf990d786d", "2th": "87bdab8c92", "1tm": "b757a23db2", "2tm": "b236a6b032", "tt": "460e02be9e", "phm": "8465cea793", "he": "9bab10a198", "jc": "6d56018212", "1p": "60720efe74", "2p": "0acd0ff0dd", "1jn": "12d9c8331a", "2jn": "80cc455771", "3jn": "3ce7c7763c", "jude": "40a02c3d04", "ap": "281611bb53"};                 // empreintes des fichiers de données (appli installable)
+const HEART = '<svg viewBox="0 0 24 24" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-7.5-10.1A4.4 4.4 0 0 1 12 7.2a4.4 4.4 0 0 1 7.5 2.7C19.5 15.4 12 20 12 20z"/></svg>';
+const ICO = {
+ book: '<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5z"/><path d="M20 5.5c0-.8-.7-1.5-1.5-1.5H13v16h5.5c.8 0 1.5-.7 1.5-1.5z"/></svg>',
+ copy: '<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6.5A2.5 2.5 0 0 0 13.5 4h-7A2.5 2.5 0 0 0 4 6.5v7A2.5 2.5 0 0 0 6.5 16H8"/></svg>',
+ ext: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"/></svg>',
+ back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 5 8 12l7 7"/></svg>',
+ next: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m9 5 7 7-7 7"/></svg>',
+ minus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 12h12"/></svg>',
+ plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 12h12M12 6v12"/></svg>',
+ close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 7l10 10M17 7 7 17"/></svg>'
+};
+const byId = Object.fromEntries(BOOKS.map((b, i) => [b.id, Object.assign(b, { i })]));
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const plain = t => t.replace(/[\u0001-\u0004]/g, '').replace(/[\u0010-\u0013]/g, ' ').replace(/\s+/g, ' ').trim();
+const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[’']/g, "'").toLowerCase();
+const abbr = b => b.a.replace(/^(\d)(?=[A-Z])/, '$1 ');
+function psLit(h) { if (h <= 8) return '' + h; if (h === 9) return '9A'; if (h === 10) return '9B'; if (h <= 113) return '' + (h - 1); if (h === 114) return '113A'; if (h === 115) return '113B'; if (h === 116) return '114-115'; if (h <= 146) return '' + (h - 1); if (h === 147) return '146-147'; return '' + h; }
+function litToHeb(g) { g = String(g).toUpperCase(); if (g === '9A') return [9]; if (g === '9B') return [10]; if (g === '113A') return [114]; if (g === '113B') return [115]; const n = parseInt(g, 10); if (!n || n > 150) return []; if (n <= 8) return [n]; if (n === 9) return [9, 10]; if (n <= 112) return [n + 1]; if (n === 113) return [114, 115]; if (n === 114 || n === 115) return [116]; if (n <= 145) return [n + 1]; if (n === 146 || n === 147) return [147]; return [n]; }
+function refLabel(b, c, v, w) {
+ const vv = v ? (w && w !== v ? `${v}-${w}` : `${v}`) : '';
+ if (b.id === 'ps') return `Ps ${psLit(c)} (${c})${vv ? ', ' + vv : ''}`;
+ if (b.n === 1) return `${abbr(b)}${vv ? ' ' + vv : ''}`;
+ return `${abbr(b)} ${c}${vv ? ', ' + vv : ''}`;
+}
+function aelfLinks(b, c) {
+ if (b.id === 'ps') return psLit(c).split('-').map(x => ({ l: `Ps ${x}`, u: `https://www.aelf.org/bible/Ps/${x}` }));
+ if (b.id === 'est') { const m = { 11: [0, 10], 12: [0], 13: [3, 4], 14: [4], 15: [4, 5], 16: [8] }; return (m[c] || [c]).map(x => ({ l: `Est ${x}`, u: `https://www.aelf.org/bible/Est/${x}` })); }
+ if (b.id === 'ba' && c === 6) return [];
+ if (b.id === 'ab') return [{ l: 'Ab', u: 'https://www.aelf.org/bible/Ab/0' }];
+ return [{ l: `${abbr(b)} ${c}`, u: `https://www.aelf.org/bible/${b.a}/${c}` }];
+}
+/* rendu du texte : styles et retours à la ligne */
+function segs(t) {
+ const out = []; let cur = '', brk = null, it = false, nd = false;
+ const flush = () => { out.push({ brk, h: cur + (nd ? '</span>' : '') + (it ? '</i>' : '') }); cur = (it ? '<i>' : '') + (nd ? '<span class="nd">' : ''); };
+ for (const ch of t) {
+  if (ch === '\u0001') { it = true; cur += '<i>'; }
+  else if (ch === '\u0002') { if (it) cur += '</i>'; it = false; }
+  else if (ch === '\u0003') { nd = true; cur += '<span class="nd">'; }
+  else if (ch === '\u0004') { if (nd) cur += '</span>'; nd = false; }
+  else if (ch >= '\u0010' && ch <= '\u0013') { flush(); brk = { '\u0010': 'P', '\u0011': 'Q', '\u0012': 'Q2', '\u0013': 'B' }[ch]; }
+  else cur += esc(ch);
+ }
+ flush(); return out;
+}
+const inl = t => segs(t).map(s => s.h).join(' ');
+function capsy(t) { const L = t.replace(/[^A-Za-zÀ-ÿŒœ]/g, ''); if (L.length < 4) return false; const u = L.replace(/[^A-ZÀ-ÞŒ]/g, '').length; return u / L.length > .6; }
+/* ---------- vos données : versets aimés, endroit de lecture, position dans le fil ----------
+   Tout tient dans un seul objet (clé « lectio.state », champ v = version du format), recopié dans IndexedDB.
+   Règle pour les versions futures : relire cet objet tel quel et le faire évoluer, ne jamais l’effacer. */
+const LS = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } } };
+const ID_RX = /^([a-z0-9]+)-(\d+)-(\d+)(?:-(\d+))?$/;
+const blank = () => ({ v: 2, likes: {}, last: null, feed: null, fs: 20, sort: 'recent' });
+function asState(x) {
+ if (typeof x === 'string') { try { x = JSON.parse(x); } catch (e) { return null; } }
+ if (!x || typeof x !== 'object' || !x.likes || typeof x.likes !== 'object') return null;
+ return Object.assign(blank(), x, { v: 2 });
+}
+function fixLike(id, x) {
+ const m = ID_RX.exec(id); if (!m || !byId[m[1]]) return null;
+ x = x && typeof x === 'object' ? x : {};
+ const v = +m[3];
+ return Object.assign({}, x, { b: m[1], c: +m[2], v, w: m[4] ? +m[4] : v, ts: +x.ts || 0, del: !!x.del });
+}
+let ST = asState(LS.get('lectio.state'));
+if (!ST) { // première ouverture, ou données de la première version (enregistrées séparément)
+ ST = blank();
+ const old = k => { try { return JSON.parse(LS.get('lectio.' + k) || 'null'); } catch (e) { return null; } };
+ const l = old('likes'), last = old('last'), fs = old('fs');
+ if (l && typeof l === 'object') ST.likes = l;
+ if (last && last.b) ST.last = last;
+ if (+fs) ST.fs = +fs;
+}
+for (const k of Object.keys(ST.likes)) { const f = fixLike(k, ST.likes[k]); if (f) ST.likes[k] = f; }
+{ // un onglet resté ouvert sur la première version a pu enregistrer d’autres versets : on les reprend aussi
+ let l = null; try { l = JSON.parse(LS.get('lectio.likes') || 'null'); } catch (e) {}
+ if (l && typeof l === 'object') for (const [k, r] of Object.entries(l)) { const f = fixLike(k, r); if (f && (!ST.likes[k] || f.ts > (ST.likes[k].ts || 0))) ST.likes[k] = Object.assign({}, ST.likes[k] || {}, f); }
+}
+let canSave = LS.set('lectio.state', JSON.stringify(ST)), idbOK = false;
+const idb = (() => {
+ let p = null;
+ const open = () => p || (p = new Promise((res, rej) => { const r = indexedDB.open('lectio', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); r.onblocked = () => rej(new Error('blocked')); }));
+ const run = (mode, f) => open().then(db => new Promise((res, rej) => { const tx = db.transaction('kv', mode); const q = f(tx.objectStore('kv')); tx.oncomplete = () => res(q.result); tx.onerror = tx.onabort = () => rej(tx.error); }));
+ return { get: k => run('readonly', s => s.get(k)).catch(() => null), set: (k, v) => run('readwrite', s => s.put(v, k)).then(() => true, () => false) };
+})();
+/* fusion : pour chaque verset, la décision la plus récente l’emporte (aimé ou retiré) */
+function mergeState(s) {
+ let ch = false;
+ for (const [k, r] of Object.entries((s && s.likes) || {})) {
+  const f = fixLike(k, r); if (!f) continue;
+  const l = ST.likes[k];
+  if (!l || f.ts > (l.ts || 0)) { ST.likes[k] = Object.assign({}, l || {}, f); ch = true; }
+ }
+ for (const key of ['last', 'feed']) {
+  const r = s && s[key];
+  if (r && typeof r === 'object' && (r.b || r.id) && (!ST[key] || (r.ts || 0) > (ST[key].ts || 0))) { ST[key] = r; ch = true; }
+ }
+ return ch;
+}
+// la copie IndexedDB n’est réécrite qu’après avoir été relue et fusionnée : aucune écriture ne peut l’écraser avant
+const idbReady = idb.get('state').then(raw => { const s = asState(raw); if (s && mergeState(s)) { canSave = LS.set('lectio.state', JSON.stringify(ST)); refreshAll(); } });
+function save() {
+ canSave = LS.set('lectio.state', JSON.stringify(ST));
+ idbReady.then(() => idb.set('state', JSON.stringify(ST))).then(ok => { if (ok !== idbOK) { idbOK = ok; renderStatus(); } });
+}
+let saveT = null;
+const saveSoon = () => { clearTimeout(saveT); saveT = setTimeout(save, 500); };
+addEventListener('pagehide', save);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') save(); });
+// un autre onglet de Lectio a enregistré : on fusionne (sans réécrire, pour éviter les allers-retours)
+addEventListener('storage', e => { if (e.key === 'lectio.state' && e.newValue) { const s = asState(e.newValue); if (s && mergeState(s)) refreshAll(); } });
+const liked = id => !!(ST.likes[id] && !ST.likes[id].del);
+function setLike(item, on) {
+ const prev = ST.likes[item.id];
+ const at = on ? ((prev && !prev.del && prev.at) || item.at || Date.now()) : (prev && prev.at) || item.at;
+ const x = Object.assign({}, prev || {}, item, { ts: Date.now(), del: !on, at });
+ delete x.id;
+ ST.likes[item.id] = x;
+ save(); dbPush(); refreshAll();
+ if (on) askPersist();
+}
+function refreshAll() {
+ document.querySelectorAll('[data-like]').forEach(el => el.setAttribute('aria-pressed', liked(el.dataset.like)));
+ if (current.view === 'favoris') renderFavs();
+ if (current.view === 'lire') markLiked();
+ if (current.view === 'bible') renderResume();
+ renderStatus();
+}
+/* espace personnel (dans Claude) : mêmes versets sur tous vos appareils */
+let dbDoc = null, dbOK = false, pushing = Promise.resolve(), pushTimer = null;
+function dbPush() {
+ if (!dbDoc) return;
+ clearTimeout(pushTimer);
+ pushTimer = setTimeout(() => {
+  const slim = {};
+  for (const [k, x] of Object.entries(ST.likes)) if (ID_RX.test(k)) slim[k] = { b: x.b, c: x.c, v: x.v, w: x.w || x.v, ts: x.ts || 0, at: x.at || x.ts || 0, del: !!x.del };
+  pushing = pushing.then(() => dbDoc.set({ items: slim, at: Date.now() })).catch(() => {});
+ }, 600);
+}
+if (!PWA) (async () => {
+ try {
+  if (!window.claude || typeof window.claude.use !== 'function') return;
+  const [db, user] = await Promise.all([window.claude.use('db'), window.claude.use('user')]);
+  if (!db || !user) return;
+  const uid = await user.id(); if (!uid) return;
+  dbDoc = db.doc('data/users/' + uid + '/likes');
+  let first = true;
+  dbDoc.onSnapshot(snap => {
+   dbOK = true;
+   const remote = (snap.exists && snap.data() && snap.data().items) || {};
+   const ch = mergeState({ likes: remote });
+   let needPush = false;
+   for (const [k, l] of Object.entries(ST.likes)) { const r = remote[k]; if (ID_RX.test(k) && (!r || (l.ts || 0) > (r.ts || 0))) { needPush = true; break; } }
+   if (ch) { save(); refreshAll(); } else renderStatus();
+   if (first && needPush && !(snap.metadata && snap.metadata.hasPendingWrites)) dbPush();
+   first = false;
+  }, () => { dbDoc = null; dbOK = false; renderStatus(); });
+ } catch (e) { dbDoc = null; }
+})();
+/* code de sauvegarde : LECTIO2- suivi du contenu encodé (versets aimés, endroit de lecture, position dans le fil) */
+function backupCode() {
+ const l = Object.entries(ST.likes).filter(([k, x]) => x && !x.del && ID_RX.test(k)).map(([k, x]) => [k, x.ts || 0, x.at || x.ts || 0]);
+ const o = { app: 'lectio', v: 2, at: Date.now(), l, last: ST.last ? { b: ST.last.b, c: ST.last.c, v: ST.last.v || null, ts: ST.last.ts || 0 } : null, feed: ST.feed || null };
+ let s = ''; new TextEncoder().encode(JSON.stringify(o)).forEach(b => { s += String.fromCharCode(b); });
+ return 'LECTIO2-' + btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+function decodeCode(b64) { let b = b64.replace(/-/g, '+').replace(/_/g, '/'); while (b.length % 4) b += '='; return JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(b), ch => ch.charCodeAt(0)))); }
+function readBackup(text) {
+ text = String(text || '');
+ let o = null;
+ const i = text.indexOf('LECTIO2-');
+ if (i >= 0) {
+  const rest = text.slice(i + 8), strict = (rest.match(/^[A-Za-z0-9_-]+/) || [''])[0];
+  try { o = decodeCode(strict); } catch (e) { o = null; }
+  if (!o) { // code coupé par des retours à la ligne, des espaces, ou suivi d’autre texte
+   const loose = (rest.replace(/\s+/g, '').match(/^[A-Za-z0-9_-]+/) || [''])[0];
+   for (let n = loose.length; n > 0 && n > loose.length - 400 && !o; n--) { try { o = decodeCode(loose.slice(0, n)); } catch (e) { o = null; } }
+  }
+ } else { try { o = JSON.parse(text.trim()); } catch (e) { o = null; } }
+ if (!o || o.app !== 'lectio' || !Array.isArray(o.l)) return null;
+ const likes = {};
+ for (const e of o.l) { if (!Array.isArray(e)) continue; const f = fixLike(String(e[0]), { ts: +e[1] || 1, at: +e[2] || +e[1] || 1 }); if (f) likes[e[0]] = f; }
+ return { likes, last: o.last && byId[o.last.b] ? o.last : null, feed: o.feed && o.feed.id ? o.feed : null };
+}
+function restoreFrom(text) {
+ const r = readBackup(text);
+ if (!r) { toast('Code non reconnu : vérifiez qu’il a été copié en entier'); return false; }
+ let added = 0; const now = Date.now();
+ // restaurer, c’est remettre tous les versets du code dans Mes versets, même ceux retirés depuis
+ for (const [k, f] of Object.entries(r.likes)) if (!liked(k)) { ST.likes[k] = Object.assign({}, ST.likes[k] || {}, f, { ts: now, del: false }); added++; }
+ for (const key of ['last', 'feed']) if (r[key] && (!ST[key] || (r[key].ts || 0) > (ST[key].ts || 0))) ST[key] = r[key];
+ save(); dbPush(); refreshAll();
+ const n = Object.keys(r.likes).length;
+ toast(!n ? 'Ce code ne contient aucun verset' : added ? `${added} verset${added > 1 ? 's' : ''} ajouté${added > 1 ? 's' : ''} à Mes versets` : 'Tous ces versets sont déjà dans Mes versets');
+ return true;
+}
+function renderStatus() {
+ const el = $('#favstatus'); if (!el) return;
+ let t = '', warn = false;
+ if (!PWA && dbOK) t = 'Synchronisés avec votre compte';
+ else if (canSave || idbOK) t = PWA ? 'Enregistrés sur cet appareil' : 'Enregistrés dans ce navigateur';
+ else { t = 'Ce navigateur n’enregistre pas vos versets : copiez votre code de sauvegarde (en bas de la page).'; warn = true; }
+ el.textContent = t; el.classList.toggle('warn', warn);
+}
+async function askPersist() { try { if (PWA && navigator.storage && navigator.storage.persist && !(await navigator.storage.persisted())) await navigator.storage.persist(); } catch (e) {} }
+/* ---------- données ---------- */
+const cache = {};
+const dataURL = id => `data/${id}.json` + (DH[id] ? '?v=' + DH[id] : '');
+function loadBook(id) { if (!cache[id]) cache[id] = fetch(dataURL(id)).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }).catch(e => { delete cache[id]; throw e; }); return cache[id]; }
+let ANAL = null, FEED = null;
+const analP = fetch(dataURL('analyses')).then(r => r.json()).then(d => (ANAL = d)).catch(() => (ANAL = {}));
+const feedP = fetch(dataURL('feed')).then(r => r.json()).then(d => (FEED = d)).catch(() => (FEED = []));
+function verseText(bk, c, v, w) {
+ const ch = bk.c.find(x => x.n === c); if (!ch) return '';
+ return ch.b.filter(x => (x[0] === 'v' || x[0] === 'c') && x[1] >= v && x[1] <= (w || v)).map(x => x[2]).join(' ').replace(/[\u0010-\u0013]/g, ' ').replace(/ +/g, ' ').trim();
+}
+/* ---------- utilitaires ---------- */
+function toast(m, act) {
+ const t = $('#toast');
+ t.innerHTML = `<span>${esc(m)}</span>` + (act ? `<button type="button">${esc(act.label)}</button>` : '');
+ t.classList.toggle('act', !!act); t.classList.add('on');
+ if (act) t.querySelector('button').onclick = () => { clearTimeout(toast.t); t.classList.remove('on', 'act'); act.fn(); };
+ clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('on', 'act'), act ? 5000 : 1800);
+}
+async function copy(text, okMsg = 'Copié', failMsg = 'Copie impossible ici') {
+ try { await navigator.clipboard.writeText(text); toast(okMsg); }
+ catch (e) { try { const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); const ok = document.execCommand('copy'); ta.remove(); toast(ok ? okMsg : failMsg); } catch (e2) { toast(failMsg); } }
+}
+const citation = (t, r) => `${plain(t)} — ${r} (Bible Crampon)`;
+const dayIndex = () => { const n = new Date(); return Math.floor(Date.UTC(n.getFullYear(), n.getMonth(), n.getDate()) / 864e5); };
+/* ---------- liturgie du jour ---------- */
+function renderLit() {
+ const L = LIT.today();
+ document.documentElement.style.setProperty('--lit', L.hex);
+ $('#lit-season').textContent = L.season;
+ $('#lit-date').textContent = L.date.charAt(0).toUpperCase() + L.date.slice(1);
+ $('#lit-name').textContent = L.name.charAt(0).toUpperCase() + L.name.slice(1);
+ const meta = [`<span><i></i>${L.color}</span>`, `<span>${L.cycle}${L.weekYear ? ' · ' + L.weekYear : ''}</span>`];
+ if (L.psalter) meta.push(`<span>Psautier : semaine ${L.psalter}</span>`);
+ $('#lit-meta').innerHTML = meta.join('');
+ $('#lit-aelf').href = `https://www.aelf.org/${L.iso}/france/messe`;
+}
+/* ---------- bibliothèque ---------- */
+function renderToc() {
+ const groups = {};
+ for (const b of BOOKS) { (groups[b.T] = groups[b.T] || {}); (groups[b.T][b.g] = groups[b.T][b.g] || []).push(b); }
+ const T = { AT: ['Ancien Testament', '46 livres, de la Genèse à Malachie'], NT: ['Nouveau Testament', '27 livres, de Matthieu à l’Apocalypse'] };
+ $('#toc').innerHTML = Object.entries(groups).map(([t, gs]) => `<section class="testament col"><h2>${T[t][0]}</h2><p>${T[t][1]}</p>${Object.entries(gs).map(([g, bs]) => `<div class="group"><h3 class="kick">${esc(g)}</h3><ul class="toc">${bs.map(b => `<li><a href="#livre-${b.id}"><span class="ab">${esc(abbr(b))}</span><span class="nm">${esc(b.s)}</span><span class="lead"></span><span class="nc">${b.n} ${b.id === 'ps' ? 'psaumes' : b.n > 1 ? 'chapitres' : 'chapitre'}</span></a></li>`).join('')}</ul></div>`).join('')}</section>`).join('');
+}
+function renderResume() {
+ const r = ST.last;
+ if (!r || !byId[r.b]) { $('#resume').innerHTML = ''; return; }
+ const b = byId[r.b], v = r.v > 1 ? r.v : 0;
+ const where = b.id === 'ps' ? `Psaume ${r.c}${v ? ', ' + v : ''}` : b.n === 1 ? `${b.s}${v ? ' ' + v : ''}` : `${b.s} ${r.c}${v ? ', ' + v : ''}`;
+ $('#resume').innerHTML = `<a class="resume" href="${v ? `#reprendre-${b.id}-${r.c}-${v}` : `#lire-${b.id}-${r.c}`}"><span><span class="kick">Reprendre la lecture</span><br><b>${esc(where)}</b></span>${ICO.next}</a>`;
+}
+async function renderVday() {
+ await feedP; if (!FEED.length) return;
+ const x = FEED[dayIndex() % FEED.length];
+ $('#vday').innerHTML = `<div><div class="kick">Verset du jour · ${esc(x.k)}</div><blockquote>${inl(x.t)}</blockquote><div class="ref">${esc(x.r)}</div></div><button class="heart" data-like="${x.id}" aria-pressed="${liked(x.id)}" aria-label="Aimer ce verset">${HEART}</button>`;
+ $('#vday .heart').onclick = () => setLike({ id: x.id, b: x.b, c: x.c, v: x.v, w: x.w, r: x.r, t: x.t }, !liked(x.id));
+}
+/* recherche */
+const ALIAS = (() => {
+ const a = [];
+ for (const b of BOOKS) {
+  const keys = new Set([b.id, norm(b.a), norm(b.s), norm(b.s).replace(/\s+/g, ''), norm(b.t)]);
+  const extra = { ps: ['psaume', 'psaumes', 'psalm'], qo: ['ecclesiaste', 'qohelet', 'ecc'], si: ['siracide', 'ecclesiastique', 'sir', 'ben sira'], ct: ['cantique', 'cantiques', 'cant'], ap: ['apocalypse', 'apo', 'apoc'], ac: ['actes', 'act'], sg: ['sagesse'], tb: ['tobie', 'tobias', 'tob'], '1m': ['1 maccabees', '1 mac', '1mac', '1 martyrs'], '2m': ['2 maccabees', '2 mac', '2mac', '2 martyrs'], jc: ['jacques', 'jac'], he: ['hebreux', 'heb'], mt: ['matthieu', 'mat', 'matt'], mc: ['marc', 'mrc'], lc: ['luc'], jn: ['jean', 'jea'], rm: ['romains', 'rom'], ga: ['galates', 'gal'], ep: ['ephesiens', 'eph'], ph: ['philippiens', 'phil'], col: ['colossiens'], tt: ['tite'], phm: ['philemon'], jude: ['jude'], ab: ['abdias'], ha: ['habacuc', 'habaquq'], so: ['sophonie', 'soph'], ag: ['aggee'], za: ['zacharie', 'zac'], ml: ['malachie', 'mal'], na: ['nahum'], mi: ['michee'], jl: ['joel'], os: ['osee'], am: ['amos'], dn: ['daniel', 'dan'], ez: ['ezechiel', 'eze', 'ezekiel'], ba: ['baruch', 'bar'], lm: ['lamentations', 'lam'], jr: ['jeremie', 'jer'], is: ['isaie', 'esaie', 'isa'], pr: ['proverbes', 'prov'], jb: ['job'], est: ['esther'], jdt: ['judith'], esd: ['esdras'], ne: ['nehemie', 'neh'], rt: ['ruth'], jg: ['juges', 'jug'], jos: ['josue'], dt: ['deuteronome', 'deut'], nb: ['nombres', 'nom'], lv: ['levitique', 'lev'], ex: ['exode', 'exo'], gn: ['genese', 'gen'] }[b.id] || [];
+  extra.forEach(k => keys.add(k));
+  for (const k of keys) a.push([k, b]);
+ }
+ return a;
+})();
+function findBook(tok) {
+ tok = norm(tok).replace(/\.$/, '').replace(/^(\d)\s*/, '$1 ').trim();
+ const t2 = tok.replace(/\s+/g, '');
+ for (const [k, b] of ALIAS) if (k === tok || k.replace(/\s+/g, '') === t2) return b;
+ if (t2.length >= 3) for (const [k, b] of ALIAS) if (k.replace(/\s+/g, '').startsWith(t2)) return b;
+ return null;
+}
+function parseRef(q) {
+ const m = norm(q).trim().match(/^((?:[1-3]\s*)?[a-z][a-z .']*?)\s*(\d+[ab]?)?(?:\s*[,:.]\s*(\d+))?(?:\s*[-–]\s*(\d+))?$/);
+ if (!m) return null; const b = findBook(m[1]); if (!b) return null;
+ return { b, c: m[2] || null, v: m[3] ? +m[3] : null, w: m[4] ? +m[4] : null };
+}
+function suggest() {
+ const q = $('#q').value.trim(); const box = $('#sugg');
+ if (!q) { box.innerHTML = ''; return; }
+ const out = []; const r = parseRef(q);
+ if (r && r.c) {
+  const b = r.b;
+  if (b.id === 'ps') {
+   const h = parseInt(r.c, 10);
+   if (/^\d+$/.test(r.c) && h >= 1 && h <= 150) out.push(`<a href="#lire-ps-${h}${r.v ? '-' + r.v : ''}"><span>Psaume ${h} <small>— numérotation de la Bible (liturgie : Ps ${psLit(h)})</small></span><small>${r.v ? 'v. ' + r.v : ''}</small></a>`);
+   for (const hh of litToHeb(r.c)) if (hh !== h) out.push(`<a href="#lire-ps-${hh}${r.v ? '-' + r.v : ''}"><span>Ps ${esc(r.c.toUpperCase())} de la liturgie <small>= Psaume ${hh} de la Bible</small></span><small>${r.v ? 'v. ' + r.v : ''}</small></a>`);
+  } else {
+   const c = parseInt(r.c, 10);
+   if (c >= 1 && c <= b.n) out.push(`<a href="#lire-${b.id}-${c}${r.v ? '-' + r.v : ''}"><span>${esc(b.s)} ${c}${r.v ? ', ' + r.v + (r.w ? '-' + r.w : '') : ''}</span><small>Lire</small></a>`);
+   else if (b.n === 1 && c >= 1) out.push(`<a href="#lire-${b.id}-1-${c}"><span>${esc(b.s)} ${c}</span><small>Lire</small></a>`);
+  }
+ }
+ const nq = norm(q);
+ const seen = new Set();
+ for (const [k, b] of ALIAS) if (!seen.has(b.id) && (k.startsWith(nq) || norm(b.s).includes(nq)) && nq.length >= 2) { seen.add(b.id); if (out.length < 9) out.push(`<a href="#livre-${b.id}"><span>${esc(b.t)}</span><small>${b.n} ch.</small></a>`); }
+ if (q.length >= 3) out.push(`<button id="fts"><span>Chercher « ${esc(q)} » dans toute la Bible</span><small>texte intégral</small></button>`);
+ box.innerHTML = out.join('');
+ const f = $('#fts'); if (f) f.onclick = () => fullText(q);
+}
+let ftsRun = 0;
+async function fullText(q) {
+ const run = ++ftsRun; const nq = norm(q); const res = $('#results');
+ const cls = { a: '[aàâä]', e: '[eéèêë]', i: '[iîï]', o: '[oôöœ]', u: '[uùûü]', c: '[cç]', y: '[yÿ]', "'": "['’]" };
+ const rx = new RegExp(nq.split('').map(ch => cls[ch] || ch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join(''), 'i');
+ $('#sugg').innerHTML = '';
+ res.innerHTML = `<div class="ph"><h1>« ${esc(q)} »</h1><p id="ftsp">Recherche dans les 73 livres…</p></div><ul class="res" id="ftsl" style="list-style:none;padding:0"></ul>`;
+ let n = 0; const MAX = 300; const list = $('#ftsl');
+ for (const b of BOOKS) {
+  if (run !== ftsRun) return;
+  let bk; try { bk = await loadBook(b.id); } catch (e) { continue; }
+  const items = [];
+  for (const ch of bk.c) for (const x of ch.b) if ((x[0] === 'v' || x[0] === 'c') && n < MAX) {
+   const p = plain(x[2]); if (!norm(p).includes(nq)) continue;
+   const m = p.match(rx); let h = esc(p);
+   if (m) { const i = m.index, j = i + m[0].length; const s = Math.max(0, i - 90), e = Math.min(p.length, j + 110); h = (s ? '… ' : '') + esc(p.slice(s, i)) + '<mark>' + esc(p.slice(i, j)) + '</mark>' + esc(p.slice(j, e)) + (e < p.length ? ' …' : ''); }
+   items.push(`<li><a href="#lire-${b.id}-${ch.n}-${x[1]}"><span class="ref">${esc(refLabel(b, ch.n, x[1]))}</span><div class="tx">${h}</div></a></li>`); n++;
+  }
+  if (items.length) list.insertAdjacentHTML('beforeend', items.join(''));
+  $('#ftsp').textContent = `${n}${n >= MAX ? '+' : ''} passage${n > 1 ? 's' : ''} trouvé${n > 1 ? 's' : ''} · ${b.i + 1}/73 livres parcourus`;
+  if (n >= MAX) break;
+ }
+ if (run === ftsRun) $('#ftsp').textContent = n ? `${n}${n >= MAX ? '+ (300 premiers affichés)' : ''} passage${n > 1 ? 's' : ''} trouvé${n > 1 ? 's' : ''}` : 'Aucun passage trouvé.';
+}
+/* ---------- page d’un livre ---------- */
+function keyHref(b, r) {
+ if (b.id === 'ps') { const n = parseInt(r, 10); return `#lire-ps-${n}`; }
+ if (b.n === 1 && !r.includes(',')) return `#lire-${b.id}-1-${parseInt(r, 10)}`;
+ const m = r.match(/^(\d+)(?:,(\d+))?/); return m ? `#lire-${b.id}-${m[1]}${m[2] ? '-' + m[2] : ''}` : `#livre-${b.id}`;
+}
+function keyLabel(b, r) {
+ if (b.id === 'ps') { const n = parseInt(r, 10); return `Ps ${psLit(n)} (${n})`; }
+ return `${abbr(b)} ${r.replace(/,(\d)/g, ', $1')}`;
+}
+async function renderBook(id) {
+ const b = byId[id]; if (!b) return go('#bible');
+ await analP;
+ const A = ANAL[id] || {};
+ const last = ST.last;
+ const grid = Array.from({ length: b.n }, (_, i) => i + 1).map(c => `<a href="#lire-${id}-${c}"${last && last.b === id && last.c === c ? ' class="last"' : ''}>${c}${id === 'ps' ? `<small>${psLit(c)}</small>` : ''}</a>`).join('');
+ const sec = (t, h) => h ? `<div class="sec"><h2>${t}</h2>${h}</div>` : '';
+ $('#livre').innerHTML = `
+ <div class="crumb"><a href="#bible">Bible</a><span>›</span><span>${esc(b.g)}</span></div>
+ <div class="bh"><div class="kick">${b.T === 'AT' ? 'Ancien Testament' : 'Nouveau Testament'}</div><h1>${esc(b.t).replace('Jésus-Christ', 'Jésus\u2011Christ')}</h1>
+ <div class="sub">${b.n} ${id === 'ps' ? 'psaumes' : b.n > 1 ? 'chapitres' : 'chapitre'} · ${b.v.toLocaleString('fr-FR')} versets · abréviation liturgique : ${esc(abbr(b))}</div></div>
+ <div class="sec" style="margin-top:26px"><h2>${id === 'ps' ? 'Les 150 psaumes' : 'Lire le livre'}</h2>${id === 'ps' ? '<p class="note" style="font:14px var(--sans)">Grand chiffre : numérotation de la Bible ; petit chiffre : numérotation de la liturgie.</p>' : ''}<div class="chgrid">${grid}</div>
+ <div class="btnrow"><a class="btn" href="${esc(aelfLinks(b, 1)[0] ? aelfLinks(b, 1)[0].u : 'https://www.aelf.org/bible')}" target="_blank" rel="noopener">Texte liturgique officiel (AELF) ${ICO.ext}</a></div></div>
+ <div class="anal">
+ ${A.sum ? `<div class="sec"><h2>Présentation</h2><p class="lead">${esc(A.sum)}</p></div>` : ''}
+ ${sec('Auteur et date', A.aut && `<p>${esc(A.aut)}</p>`)}
+ ${sec('Contexte', A.ctx && `<p>${esc(A.ctx)}</p>`)}
+ ${sec('Plan du livre', A.plan && `<ul class="plan">${A.plan.map(([r, t]) => `<li><a href="${r === 'Prologue' ? `#lire-${id}-1` : keyHref(b, r)}">${esc(r === 'Prologue' ? r : (id === 'ps' ? 'Ps ' + r : (b.n === 1 ? 'v. ' : 'ch. ') + r.replace(/,(\d)/g, ', $1')))}</a><span>${esc(t)}</span></li>`).join('')}</ul>`)}
+ ${sec('Grands thèmes', A.th && `<dl class="th">${A.th.map(([t, d]) => `<dt>${esc(t)}</dt><dd>${esc(d)}</dd>`).join('')}</dl>`)}
+ ${sec('Lecture chrétienne', A.chr && `<p>${esc(A.chr)}</p>`)}
+ ${sec('Passages clés', A.key && `<ul class="keys">${A.key.map(([r, t]) => `<li><a href="${keyHref(b, r)}"><b>${esc(t)}</b><span>${esc(keyLabel(b, r))}</span></a></li>`).join('')}</ul>`)}
+ ${sec('Dans la liturgie', A.lit && `<p>${esc(A.lit)}</p>`)}
+ ${sec('Pour méditer', A.med && `<p class="medit">${esc(A.med)}</p>`)}
+ </div>
+ <div class="pager">${b.i > 0 ? `<a class="btn" href="#livre-${BOOKS[b.i - 1].id}">${ICO.back} ${esc(BOOKS[b.i - 1].s)}</a>` : '<span></span>'}${b.i < BOOKS.length - 1 ? `<a class="btn" href="#livre-${BOOKS[b.i + 1].id}">${esc(BOOKS[b.i + 1].s)} ${ICO.next}</a>` : ''}</div>`;
+ window.scrollTo(0, 0);
+}
+/* ---------- lecteur ---------- */
+let reading = null;
+function chapterHTML(b, bk, ch) {
+ const notes = {}; (ch.f || []).forEach(([v, t]) => (notes[v] = notes[v] || []).push(t));
+ const lastIdx = {}; ch.b.forEach((y, i) => { if (y[0] !== 'h') lastIdx[y[1]] = i; });
+ let h = '', open = null;
+ const para = k => { if (open) h += '</div>'; h += `<div class="${k}">`; open = k; };
+ const cls = { P: 'p', B: 'p stanza', Q: 'q', Q2: 'q q2', D: 'd' };
+ const POETRY = new Set(['ps', 'pr', 'jb', 'ct', 'lm']);
+ if (ch.n === 1 && bk.i) {
+  const ps = bk.i.map(x => x.replace(/^[—\s*]+|\*+\s*$/g, '').replace(/\*{2,}/g, '').trim()).filter(Boolean);
+  const body = ps.map(x => x === 'Prologue' ? '<p class="h-s1">Prologue</p>' : `<p class="intro">${esc(x)}</p>`).join('');
+  h += ps.join('').length > 400 ? `<details class="notes introbox"><summary>${b.id === 'si' ? 'Introduction et prologue du traducteur' : 'Introduction de l’édition Crampon'}</summary>${body}</details>` : body;
+ }
+ for (const x of ch.b) {
+  if (x[0] === 'h') {
+   if (open) { h += '</div>'; open = null; }
+   const k = x[1], t = x[2];
+   const kk = { ms1: 'ms', ms2: 'ms', s1: 's1', s2: 's2', s3: 's2', r: 'r', sr: 'r', qa: 'qa', sp: 'sp', xptr: 'xp' }[k] || 's2';
+   h += `<p class="h-${kk}${capsy(t) && kk !== 'qa' ? ' caps' : ''}">${kk === 'xp' ? '→ ' : ''}${esc(t)}</p>`;
+   continue;
+  }
+  const [kind, n, t, f] = x; const ss = segs(t); const bi = ch.b.indexOf(x);
+  const poemy = ss.some(s => s.brk === 'Q' || s.brk === 'Q2');
+  ss.forEach((s, i) => {
+   let flag = i === 0 ? f : s.brk;
+   if (i === 0 && POETRY.has(b.id) && kind === 'v' && !flag) flag = 'Q';
+   if (i === 0 && poemy && (flag === 'P' || flag === 'B')) { para('q stanza'); flag = null; }
+   if (flag && cls[flag]) para(cls[flag]); else if (!open) para('p');
+   const vn = i === 0 && kind === 'v' ? `<span class="vn">${n}</span>` : '';
+   const fm = i === ss.length - 1 && notes[n] && lastIdx[n] === bi ? '<span class="fm" aria-label="note">†</span>' : '';
+   h += `<span class="v" data-v="${n}">${vn}${s.h}${fm}</span> `;
+  });
+ }
+ if (open) h += '</div>';
+ const nl = (ch.n === 1 && bk.f0 ? bk.f0.map(([v, t]) => [-1, t]) : []).concat(ch.f || []);
+ if (nl.length) h += `<details class="notes"><summary>Notes de l’édition Crampon (${nl.length})</summary><ol>${nl.map(([v, t]) => `<li>${v > 0 ? `<b>v. ${v}</b>` : v === 0 ? '<b>Chapitre</b>' : '<b>Livre</b>'}${inl(t)}</li>`).join('')}</ol></details>`;
+ return { h, notes };
+}
+async function renderReader(id, c, v, at) {
+ const b = byId[id]; if (!b) return go('#bible');
+ c = Math.max(1, Math.min(b.n, c || 1));
+ const el = $('#v-lire');
+ el.innerHTML = `<div class="loading">Ouverture de ${esc(b.s)}…</div>`;
+ let bk; try { bk = await loadBook(id); } catch (e) { el.innerHTML = '<div class="loading">Le texte n’a pas pu être chargé. Vérifiez votre connexion puis réessayez.</div>'; return; }
+ const ch = bk.c.find(x => x.n === c); if (!ch) return go(`#livre-${id}`);
+ readerTrack = false; clearTimeout(readerT);
+ ST.last = { b: id, c, v: v || at || null, ts: Date.now() }; save();
+ reading = { b, bk, ch, c };
+ const { h, notes } = chapterHTML(b, bk, ch);
+ reading.notes = notes;
+ const prev = c > 1 ? `#lire-${id}-${c - 1}` : b.i > 0 ? `#lire-${BOOKS[b.i - 1].id}-${BOOKS[b.i - 1].n}` : null;
+ const next = c < b.n ? `#lire-${id}-${c + 1}` : b.i < BOOKS.length - 1 ? `#lire-${BOOKS[b.i + 1].id}-1` : null;
+ const links = aelfLinks(b, c);
+ const title = id === 'ps' ? `Psaume ${c}` : b.n === 1 ? b.s : `${b.s} ${c}`;
+ el.innerHTML = `
+ <div class="rbar"><div class="wrap rbin">
+  <a class="ib" href="#livre-${id}" aria-label="Retour au livre">${ICO.back}</a>
+  <a class="ttl" href="#livre-${id}">${esc(title)}</a>
+  <div class="fsz"><button class="ib" id="fsm" aria-label="Texte plus petit">${ICO.minus}</button><button class="ib" id="fsp" aria-label="Texte plus grand">${ICO.plus}</button></div>
+  ${prev ? `<a class="ib" href="${prev}" aria-label="Chapitre précédent">${ICO.back}</a>` : ''}${next ? `<a class="ib" href="${next}" aria-label="Chapitre suivant">${ICO.next}</a>` : ''}
+ </div></div>
+ <div class="wrap"><div class="col">
+  <div class="chhead"><div class="k">${esc(b.t)}</div><h1>${id === 'ps' ? 'Psaume ' + c : b.n === 1 ? esc(b.s) : 'Chapitre ' + c}</h1>
+   ${id === 'ps' ? `<div class="lt">Dans la liturgie : Ps ${psLit(c)} (${c})</div>` : ''}</div>
+  <div class="aelf">${links.length ? links.map(l => `<a class="btn" href="${l.u}" target="_blank" rel="noopener">Texte liturgique officiel · ${esc(l.l)} ${ICO.ext}</a>`).join('') : '<span class="note">La Lettre de Jérémie n’a pas de page dédiée sur aelf.org.</span>'}</div>
+  <div class="text" id="text">${h}</div>
+  <div class="pager">${prev ? `<a class="btn" href="${prev}">${ICO.back} Précédent</a>` : '<span></span>'}${next ? `<a class="btn" href="${next}">Suivant ${ICO.next}</a>` : ''}</div>
+ </div></div>`;
+ $("#fsm").onclick = () => setFs(-1); $("#fsp").onclick = () => setFs(1);
+ $('#text').addEventListener('click', e => { const s = e.target.closest('.v'); if (s) selectVerse(+s.dataset.v); });
+ markLiked();
+ const target = v || at, t = target && document.querySelector(`#text .v[data-v="${target}"]`);
+ if (t && v) { document.querySelectorAll(`#text .v[data-v="${v}"]`).forEach(x => x.classList.add('hl')); setTimeout(() => t.scrollIntoView({ block: 'center' }), 30); }
+ else if (t) setTimeout(() => window.scrollTo(0, Math.max(0, t.getBoundingClientRect().top + window.scrollY - barsH() - 10)), 30);
+ else window.scrollTo(0, 0);
+ readerT = setTimeout(() => { readerTrack = true; }, 700);
+}
+/* endroit de lecture : le premier verset visible sous les barres est retenu pendant que l’on fait défiler */
+let readerTrack = false, readerT = null, trackT = null;
+const barsH = () => ($('header.top') ? $('header.top').offsetHeight : 0) + ($('#v-lire .rbar') ? $('#v-lire .rbar').offsetHeight : 0);
+addEventListener('scroll', () => {
+ if (current.view !== 'lire' || !readerTrack || !reading) return;
+ clearTimeout(trackT);
+ trackT = setTimeout(() => {
+  if (current.view !== 'lire' || !reading) return;
+  const top = barsH() + 6; let n = null;
+  for (const el of document.querySelectorAll('#text .v[data-v]')) if (el.getBoundingClientRect().bottom > top) { n = +el.dataset.v; break; }
+  const L = ST.last;
+  if (n && L && L.b === reading.b.id && L.c === reading.c && L.v !== n) { ST.last = { b: L.b, c: L.c, v: n, ts: Date.now() }; saveSoon(); }
+ }, 250);
+}, { passive: true });
+function markLiked() {
+ if (!reading) return;
+ const on = new Set(), id = reading.b.id, c = reading.c;
+ for (const x of Object.values(ST.likes)) if (x && !x.del && x.b === id && x.c === c) for (let n = x.v; n <= (x.w || x.v); n++) on.add(n);
+ document.querySelectorAll('#text .v').forEach(s => s.classList.toggle('liked', on.has(+s.dataset.v)));
+}
+function setFs(d) { const n = Math.max(16, Math.min(28, (+ST.fs || 20) + d * 2)); ST.fs = n; save(); document.documentElement.style.setProperty('--fs', n + 'px'); }
+let selV = null;
+function selectVerse(n) {
+ document.querySelectorAll('#text .v.sel').forEach(x => x.classList.remove('sel'));
+ if (selV === n) { closeSheet(); return; }
+ selV = n; document.querySelectorAll(`#text .v[data-v="${n}"]`).forEach(x => x.classList.add('sel'));
+ const { b, bk, c } = reading; const t = verseText(bk, c, n); const r = refLabel(b, c, n); const id = `${b.id}-${c}-${n}`;
+ const rg = Object.values(ST.likes).find(x => x && !x.del && x.b === b.id && x.c === c && (x.w || x.v) > x.v && n >= x.v && n <= x.w);
+ openSheet({ r, t, note: reading.notes[n], id, item: { id, b: b.id, c, v: n, w: n, r, t }, range: rg ? rg.r || refLabel(b, c, rg.v, rg.w) : null });
+}
+function openSheet(o) {
+ $('#s-ref').textContent = o.r; $('#s-tx').innerHTML = inl(o.t);
+ const sn = $('#s-note'); if (o.note && o.note.length) { sn.hidden = false; sn.innerHTML = '<b class="kick">Note de l’édition Crampon</b><br>' + o.note.map(inl).join('<br>'); } else sn.hidden = true;
+ $('#s-row').innerHTML = (o.range ? `<p class="note" style="width:100%;margin:0 0 4px">Ce verset fait partie de « ${esc(o.range)} », déjà dans Mes versets.</p>` : '') + `<button class="btn" data-like="${o.id}" aria-pressed="${liked(o.id)}" id="s-like">${HEART.replace('<svg', '<svg width="17" height="17" fill="' + (liked(o.id) ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="1.8"')} <span>${liked(o.id) ? 'Aimé' : 'Aimer'}</span></button><button class="btn" id="s-copy">${ICO.copy.replace('<svg', '<svg fill="none" stroke="currentColor" stroke-width="1.8"')} Copier</button><button class="btn" id="s-close">Fermer</button>`;
+ $('#s-like').onclick = () => { setLike(o.item, !liked(o.id)); const on = liked(o.id); $('#s-like span').textContent = on ? 'Aimé' : 'Aimer'; $('#s-like svg').setAttribute('fill', on ? 'currentColor' : 'none'); toast(on ? 'Ajouté à Mes versets' : 'Retiré de Mes versets'); };
+ $('#s-copy').onclick = () => copy(citation(o.t, o.r));
+ $('#s-close').onclick = closeSheet;
+ $('#sheet').classList.add('on');
+}
+function closeSheet() { $('#sheet').classList.remove('on'); selV = null; document.querySelectorAll('#text .v.sel').forEach(x => x.classList.remove('sel')); }
+/* ---------- fil ---------- */
+let ORDER = null, feedBuilt = false, feedT = null;
+function lenClass(t) { const n = plain(t).length; return n > 230 ? ' l' : n > 140 ? ' m' : ''; }
+function dropHTML(t) {
+ const h = inl(t); const m = h.match(/^([A-ZÀ-ÖØ-Þ])/);
+ return m ? `<span class="drop" aria-hidden="true">${m[1]}</span>${h.slice(1)}` : h;
+}
+// ordre fixe, mélangé une fois pour toutes : le fil reprend toujours là où vous l’avez laissé
+function seeded(arr, seed) {
+ const a = arr.slice(); let s = seed >>> 0;
+ const rnd = () => { s = (s + 0x6D2B79F5) >>> 0; let t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+ for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+ return a;
+}
+function feedSpot() {
+ const feed = $('#feed'); if (!ORDER || current.view !== 'fil') return;
+ const i = Math.round(feed.scrollTop / Math.max(1, feed.clientHeight)), card = feed.children[i];
+ if (!card) return;
+ if (card.dataset.id === 'end') { $('#prog').textContent = ''; return; }
+ $('#prog').textContent = `${i + 1} / ${ORDER.length}`;
+ if (!ST.feed || ST.feed.id !== card.dataset.id) { ST.feed = { id: card.dataset.id, ts: Date.now() }; saveSoon(); }
+}
+async function buildFeed() {
+ await feedP; if (!FEED.length || current.view !== 'fil') return;
+ const feed = $('#feed');
+ if (!feedBuilt) {
+  feedBuilt = true;
+  ORDER = seeded(FEED, 20261120);
+  const fresh = !ST.feed;
+  feed.innerHTML = ORDER.map((x, i) => `<section class="card" data-id="${x.id}" aria-label="${esc(x.r)}">
+  <div class="cin"><div class="k">${esc(x.k)}</div>
+   <blockquote class="vt${lenClass(x.t)}" aria-label="${esc(plain(x.t))}">${dropHTML(x.t)}</blockquote>
+   <span class="ref">${esc(x.r)}</span><p class="med">${esc(x.m)}</p></div>
+  <div class="rail">
+   <button data-like="${x.id}" aria-pressed="${liked(x.id)}" aria-label="Aimer"><span class="ico">${HEART}</span>J’aime</button>
+   <a href="#lire-${x.b}-${x.c}-${x.v}" aria-label="Lire le chapitre"><span class="ico">${ICO.book}</span>Lire</a>
+   <button data-copy="${x.id}" aria-label="Copier le verset"><span class="ico">${ICO.copy}</span>Copier</button>
+  </div>${i === 0 && fresh ? '<div class="hint">Faites défiler · double-touchez pour aimer</div>' : ''}</section>`).join('') +
+  `<section class="card end" data-id="end" aria-label="Fin du fil"><div class="cin"><div class="k">Fin du fil</div>
+   <p class="vt m">Vous avez parcouru les ${ORDER.length} versets du fil.</p>
+   <p class="med">Ils reviennent toujours dans le même ordre. Vos versets aimés vous attendent dans Mes versets.</p>
+   <div class="btnrow"><button type="button" class="btn red" data-restart>Recommencer depuis le début</button><a class="btn" href="#favoris">Mes versets</a></div></div></section>`;
+  const byFeed = Object.fromEntries(FEED.map(x => [x.id, x]));
+  const like = (x, on) => setLike({ id: x.id, b: x.b, c: x.c, v: x.v, w: x.w, r: x.r, t: x.t }, on);
+  feed.addEventListener('click', e => {
+   if (e.target.closest('[data-restart]')) { feed.scrollTop = 0; feedSpot(); return; }
+   const lb = e.target.closest('[data-like]'); if (lb) { const x = byFeed[lb.dataset.like]; if (x) like(x, !liked(x.id)); return; }
+   const cb = e.target.closest('[data-copy]'); if (cb) { const x = byFeed[cb.dataset.copy]; if (x) copy(citation(x.t, x.r)); return; }
+   const card = e.target.closest('.card'); if (!card || e.target.closest('a,button')) return;
+   const x = byFeed[card.dataset.id]; if (!x) return;
+   const now = Date.now();
+   if (feed._last && now - feed._last.t < 330 && feed._last.card === card) {
+    if (!liked(x.id)) like(x, true);
+    const r = card.getBoundingClientRect(); const bu = document.createElement('div'); bu.className = 'burst'; bu.innerHTML = HEART.replace('<svg', '<svg fill="currentColor"');
+    bu.style.left = (e.clientX - r.left) + 'px'; bu.style.top = (e.clientY - r.top) + 'px'; card.appendChild(bu); setTimeout(() => bu.remove(), 850);
+    feed._last = null;
+   } else feed._last = { t: now, card };
+  });
+  feed.addEventListener('scroll', () => { clearTimeout(feedT); feedT = setTimeout(feedSpot, 120); }, { passive: true });
+  feed.addEventListener('keydown', e => { if (e.key === 'ArrowDown' || e.key === 'j') { feed.scrollBy({ top: feed.clientHeight }); e.preventDefault(); } if (e.key === 'ArrowUp' || e.key === 'k') { feed.scrollBy({ top: -feed.clientHeight }); e.preventDefault(); } });
+ }
+ // reprise exactement sur le dernier verset vu
+ const i = ST.feed ? ORDER.findIndex(x => x.id === ST.feed.id) : 0;
+ requestAnimationFrame(() => { const card = feed.children[Math.max(0, i)]; if (card) feed.scrollTop = card.offsetTop; feedSpot(); });
+}
+/* ---------- Mes versets ---------- */
+let favRun = 0;
+function likedList(order) {
+ const all = Object.entries(ST.likes).filter(([k, x]) => x && !x.del && ID_RX.test(k) && byId[x.b]).map(([k, x]) => Object.assign({}, x, { id: k }));
+ if (order === 'bible') all.sort((a, b) => (byId[a.b].i - byId[b.b].i) || (a.c - b.c) || (a.v - b.v) || ((a.w || a.v) - (b.w || b.v)));
+ else all.sort((a, b) => (b.at || b.ts || 0) - (a.at || a.ts || 0));
+ return all;
+}
+// texte et référence de chaque verset (un verset restauré ou venu d’un autre appareil est relu dans la Bible)
+async function fillTexts(items, run) {
+ await feedP;
+ const fmap = Object.fromEntries((FEED || []).map(x => [x.id, x]));
+ for (const x of items) if (!x.t && fmap[x.id]) { x.t = fmap[x.id].t; x.r = fmap[x.id].r; }
+ for (const id of [...new Set(items.filter(x => !x.t).map(x => x.b))]) {
+  if (run && run !== favRun) return false;
+  try { const bk = await loadBook(id); for (const x of items) if (x.b === id && !x.t) x.t = verseText(bk, x.c, x.v, x.w); } catch (e) {}
+ }
+ let changed = false;
+ for (const x of items) {
+  if (!x.r) x.r = refLabel(byId[x.b], x.c, x.v, x.w);
+  const s = ST.likes[x.id]; if (s && x.t && (s.t !== x.t || s.r !== x.r)) { s.t = x.t; s.r = x.r; changed = true; }
+ }
+ if (changed) saveSoon();
+ return !run || run === favRun;
+}
+async function renderFavs() {
+ const run = ++favRun;
+ const items = likedList(ST.sort), n = items.length;
+ $('#favcount').textContent = n ? `${n} verset${n > 1 ? 's' : ''} aimé${n > 1 ? 's' : ''}, ${ST.sort === 'bible' ? 'dans l’ordre de la Bible' : 'du plus récent au plus ancien'}.` : 'Les versets que vous avez aimés, dans le fil ou pendant la lecture.';
+ document.querySelectorAll('.seg [data-sort]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.sort === ST.sort)));
+ $('.favtools .seg').hidden = n < 2;
+ renderStatus();
+ if (!n) { $('#favs').innerHTML = '<li class="empty">Aucun verset pour l’instant.<br>Dans le fil, double-touchez un verset ou appuyez sur le cœur ; pendant la lecture, touchez un verset puis « Aimer ».</li>'; return; }
+ const draw = () => {
+  $('#favs').innerHTML = items.map(x => `<li><div class="ref">${esc(x.r || refLabel(byId[x.b], x.c, x.v, x.w))}</div><div class="ft">${x.t ? inl(x.t) : '<span class="note">…</span>'}</div><div class="row"><a class="btn" href="#lire-${x.b}-${x.c}-${x.v}">${ICO.book.replace('<svg', '<svg fill="none" stroke="currentColor" stroke-width="1.8" width="17" height="17"')} Lire</a><button type="button" class="btn" data-cp="${x.id}">Copier</button><button type="button" class="btn" data-un="${x.id}">Retirer</button></div></li>`).join('');
+ };
+ draw();
+ if (items.some(x => !x.t || !x.r) && await fillTexts(items, run) && run === favRun && current.view === 'favoris') draw();
+}
+$('#favs').addEventListener('click', e => {
+ const u = e.target.closest('[data-un]');
+ if (u) { const id = u.dataset.un, prev = Object.assign({}, ST.likes[id], { id }); setLike(prev, false); toast('Retiré de Mes versets', { label: 'Annuler', fn: () => { setLike(prev, true); toast('Remis dans Mes versets'); } }); return; }
+ const c = e.target.closest('[data-cp]');
+ if (c) { const x = ST.likes[c.dataset.cp]; if (x) copy(citation(x.t || '', x.r || refLabel(byId[x.b], x.c, x.v, x.w))); }
+});
+document.querySelectorAll('.seg [data-sort]').forEach(b => b.addEventListener('click', () => { ST.sort = b.dataset.sort; save(); renderFavs(); }));
+/* sauvegarde et transfert */
+$('#bk-copy').onclick = () => {
+ const code = backupCode(), out = $('#bk-out');
+ out.hidden = false; out.value = code;
+ try { out.focus({ preventScroll: true }); out.select(); } catch (e) {}
+ copy(code, 'Code copié : collez-le dans vos notes ou dans Lectio sur l’autre appareil', 'Copie automatique impossible : sélectionnez le code ci-dessous et copiez-le');
+};
+$('#bk-go').onclick = () => { if (restoreFrom($('#bk-in').value)) $('#bk-in').value = ''; };
+$('#bk-open input').addEventListener('change', async e => {
+ const f = e.target.files && e.target.files[0]; if (!f) return;
+ try { restoreFrom(await f.text()); } catch (err) { toast('Ce fichier n’a pas pu être lu'); }
+ e.target.value = '';
+});
+async function saveBackupFile() {
+ const items = likedList('bible');
+ await fillTexts(items);
+ const d = new Date();
+ const lines = [`Lectio — sauvegarde de mes versets (${d.toLocaleDateString('fr-FR')})`, '',
+  'Pour tout retrouver : Lectio › Mes versets › Sauvegarder ou transférer › « Ouvrir un fichier de sauvegarde », ou collez le code ci-dessous dans « Restaurer ».', '',
+  backupCode(), '', `Mes versets (${items.length}) :`, ''];
+ for (const x of items) lines.push(`${x.r} — ${plain(x.t || '')}`);
+ const name = `lectio-sauvegarde-${d.toISOString().slice(0, 10)}.txt`;
+ const blob = new Blob([lines.join('\n') + '\n'], { type: 'text/plain;charset=utf-8' });
+ if (isMobile) {
+  try { const f = new File([blob], name, { type: 'text/plain' }); if (navigator.canShare && navigator.canShare({ files: [f] })) { await navigator.share({ files: [f], title: 'Sauvegarde Lectio' }); return; } }
+  catch (e) { if (e && e.name === 'AbortError') return; }
+ }
+ const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
+ setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000);
+ toast('Fichier de sauvegarde enregistré');
+}
+/* ---------- appli installable : installation, mises à jour, lecture sans connexion ---------- */
+const UA = navigator.userAgent;
+const isIOS = /iPad|iPhone|iPod/.test(UA) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const isAndroid = /Android/i.test(UA);
+const isMobile = isIOS || isAndroid;
+const standalone = () => { try { return matchMedia('(display-mode: standalone)').matches || navigator.standalone === true; } catch (e) { return false; } };
+let installEvt = null, swReg = null, wantReload = false;
+const offline = { done: 0, total: 0, running: false };
+const shortURL = APPURL.replace(/^https?:\/\//, '').replace(/\/$/, '');
+function renderInstall() {
+ const el = $('#install'); if (!el) return;
+ let body = '';
+ if (LS.get('lectio.noinstall') !== '1') {
+  if (!PWA) { if (APPURL) body = `<b>Lectio existe en appli pour votre téléphone</b><p>Ouvrez <a href="${esc(APPURL)}" target="_blank" rel="noopener">${esc(shortURL)}</a> sur votre téléphone pour l’installer. Pour y retrouver vos versets, copiez votre code dans Mes versets › Sauvegarder ou transférer.</p>`; }
+  else if (!standalone()) {
+   if (installEvt) body = `<b>Installer Lectio</b><p>Sur votre écran d’accueil, comme une appli : elle s’ouvre même sans connexion et garde vos versets.</p><div class="btnrow"><button type="button" class="btn red" id="inst-go">Installer l’appli</button></div>`;
+   else if (isIOS) body = `<b>Installer Lectio sur votre iPhone</b><p>Dans Safari, touchez <b>Partager</b> puis <b>Sur l’écran d’accueil</b>. Ouvrez ensuite Lectio depuis son icône : c’est là que vos versets seront gardés.</p>`;
+   else if (isAndroid) body = `<b>Installer Lectio sur votre téléphone</b><p>Ouvrez le menu du navigateur (⋮), puis touchez <b>Installer l’application</b> ou <b>Ajouter à l’écran d’accueil</b>.</p>`;
+  }
+ }
+ if (!body) { el.innerHTML = ''; return; }
+ el.innerHTML = `<div class="install">${PWA ? '<img src="icons/icon-192.png" alt="">' : ''}<div>${body}</div><button type="button" class="ib x" id="inst-x" aria-label="Masquer">${ICO.close}</button></div>`;
+ $('#inst-x').onclick = () => { LS.set('lectio.noinstall', '1'); renderInstall(); };
+ const g = $('#inst-go');
+ if (g) g.onclick = async () => { const e = installEvt; if (!e) return; installEvt = null; try { e.prompt(); await e.userChoice; } catch (err) {} renderInstall(); };
+}
+function renderAbout() {
+ const el = $('#ap-app'); if (!el) return;
+ let h = '<h2>Vos versets et votre progression</h2>';
+ if (PWA) {
+  h += `<p>Vos versets aimés, l’endroit où vous en êtes dans la Bible et votre position dans le fil sont enregistrés sur cet appareil, dans l’appli. Ils ne sont envoyés nulle part et restent disponibles sans connexion.</p>
+  <p>Les mises à jour de Lectio ne les effacent jamais. Seules la désinstallation de l’appli ou l’effacement des données du site les suppriment : pour ne rien perdre en changeant de téléphone, copiez de temps en temps votre code de sauvegarde (Mes versets › Sauvegarder ou transférer).</p>
+  <h2>Installer l’appli</h2>
+  <p>Sur Android, avec Chrome : bouton « Installer l’appli » de la page d’accueil, ou menu ⋮ › Installer l’application. Sur iPhone, avec Safari : Partager › Sur l’écran d’accueil.</p>
+  <p>Sur iPhone, l’appli installée et Safari ne partagent pas leurs données : pour retrouver dans l’appli des versets aimés ailleurs (dans Safari ou dans Claude), utilisez le code de sauvegarde.</p>
+  <h2>Mises à jour</h2>
+  <p>Quand une nouvelle version est publiée, Lectio la propose à l’ouverture : touchez « Mettre à jour ». Vos versets et votre progression sont conservés.</p>
+  <div class="btnrow"><button type="button" class="btn" id="ap-check">Vérifier les mises à jour</button></div>
+  <p class="note" id="offline"></p>
+  <p class="note">Version ${esc(BUILD)}</p>`;
+ } else {
+  h += `<p>Vos versets aimés et l’endroit où vous en êtes sont enregistrés dans ce navigateur et, lorsque c’est possible, dans votre espace personnel lié à cette appli, pour les retrouver sur vos autres appareils. Personne d’autre n’y a accès. Le code de sauvegarde (Mes versets › Sauvegarder ou transférer) permet de tout retrouver ailleurs.</p>`;
+  if (APPURL) h += `<h2>L’appli à installer</h2><p>Lectio s’installe aussi sur votre téléphone, comme une appli, et fonctionne sans connexion : <a href="${esc(APPURL)}" target="_blank" rel="noopener">${esc(shortURL)}</a>. Pour y retrouver vos versets, copiez ici votre code de sauvegarde, puis collez-le dans l’appli (Mes versets › Sauvegarder ou transférer › Restaurer).</p>`;
+  h += `<p class="note">Version ${esc(BUILD)}</p>`;
+ }
+ el.innerHTML = h;
+ const c = $('#ap-check'); if (c) c.onclick = checkUpdate;
+ renderOffline();
+}
+function renderOffline() {
+ const el = $('#offline'); if (!el) return;
+ const { done, total, running } = offline;
+ el.textContent = !total ? (running ? 'Préparation de la lecture sans connexion…' : '') : done >= total ? 'Toute la Bible est enregistrée sur cet appareil : vous pouvez la lire sans connexion.' : `Lecture sans connexion : ${done} fichiers sur ${total} enregistrés${running ? '…' : ' ; la suite se fera à la prochaine connexion.'}`;
+}
+async function offlineStart() {
+ if (!PWA || !('caches' in window) || offline.running) return;
+ offline.running = true; renderOffline();
+ try {
+  const cache = await caches.open('lectio-data');
+  const urls = ['analyses', 'feed'].concat(BOOKS.map(b => b.id)).map(dataURL), missing = [];
+  for (const u of urls) if (!(await cache.match(u))) missing.push(u);
+  offline.total = urls.length; offline.done = urls.length - missing.length; renderOffline();
+  const worker = async () => { while (missing.length) { const u = missing.shift(); try { const r = await fetch(u); if (r.ok) { await cache.put(u, r); offline.done++; renderOffline(); } } catch (e) {} } };
+  if (missing.length && navigator.onLine !== false) await Promise.all([worker(), worker(), worker()]);
+ } catch (e) {}
+ offline.running = false; renderOffline();
+}
+async function checkUpdate() {
+ const b = $('#ap-check');
+ if (!swReg) { toast('Les mises à jour se font automatiquement à l’ouverture'); return; }
+ if (b) { b.disabled = true; b.textContent = 'Vérification…'; }
+ try { await swReg.update(); } catch (e) {}
+ setTimeout(() => {
+  if (b) { b.disabled = false; b.textContent = 'Vérifier les mises à jour'; }
+  toast(swReg.installing || swReg.waiting ? 'Nouvelle version trouvée : elle se prépare' : navigator.onLine === false ? 'Pas de connexion pour le moment' : 'Lectio est à jour');
+ }, 1500);
+}
+if (PWA) {
+ addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; renderInstall(); });
+ addEventListener('appinstalled', () => { installEvt = null; renderInstall(); askPersist(); });
+ const prevBuild = LS.get('lectio.build');
+ if (prevBuild && prevBuild !== BUILD) setTimeout(() => toast('Lectio a été mise à jour. Vos versets sont conservés.'), 800);
+ LS.set('lectio.build', BUILD);
+ if (standalone()) askPersist();
+ if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.addEventListener('controllerchange', () => { if (wantReload) { wantReload = false; location.reload(); } });
+  const offer = w => {
+   if (!w || !navigator.serviceWorker.controller) return;
+   $('#upd').hidden = false;
+   $('#upd-go').onclick = () => { save(); wantReload = true; $('#upd-go').disabled = true; $('#upd-go').textContent = 'Mise à jour…'; w.postMessage({ type: 'SKIP_WAITING' }); setTimeout(() => location.reload(), 4000); };
+  };
+  navigator.serviceWorker.register('sw.js', { scope: './', updateViaCache: 'none' }).then(reg => {
+   swReg = reg;
+   if (reg.waiting) offer(reg.waiting);
+   reg.addEventListener('updatefound', () => { const w = reg.installing; if (w) w.addEventListener('statechange', () => { if (w.state === 'installed') offer(w); }); });
+   const check = () => { if (navigator.onLine !== false) reg.update().catch(() => {}); };
+   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') check(); });
+   setInterval(check, 30 * 60 * 1000);
+  }).catch(() => {});
+  setTimeout(offlineStart, 2500);
+  addEventListener('online', () => offlineStart());
+ }
+}
+if (PWA) { $('#bk-file').hidden = false; $('#bk-file').onclick = saveBackupFile; }
+/* ---------- navigation ---------- */
+const current = { view: null };
+let homeY = 0; // la page d’accueil retrouve l’endroit où on l’avait laissée
+function show(v) {
+ if (current.view === 'bible' && v !== 'bible') homeY = window.scrollY;
+ current.view = v;
+ document.querySelectorAll('.view').forEach(s => s.classList.toggle('on', s.id === 'v-' + v));
+ const tab = { bible: 'bible', livre: 'bible', lire: 'bible', apropos: 'bible', fil: 'fil', favoris: 'favoris' }[v];
+ document.querySelectorAll('nav.tabs a').forEach(a => a.setAttribute('aria-current', a.dataset.tab === tab ? 'page' : 'false'));
+}
+function go(h) { if (location.hash === h) route(); else location.hash = h; }
+function route() {
+ closeSheet();
+ const h = location.hash.replace(/^#/, '') || 'bible';
+ let m;
+ if ((m = h.match(/^lire-([a-z0-9]+)-(\d+)(?:-(\d+))?$/))) { show('lire'); renderReader(m[1], +m[2], m[3] ? +m[3] : null, null); return; }
+ if ((m = h.match(/^reprendre-([a-z0-9]+)-(\d+)-(\d+)$/))) { show('lire'); renderReader(m[1], +m[2], null, +m[3]); return; }
+ if ((m = h.match(/^livre-([a-z0-9]+)$/))) { show('livre'); renderBook(m[1]); return; }
+ if (h === 'fil') { show('fil'); buildFeed(); setTimeout(() => $('#feed').focus({ preventScroll: true }), 50); return; }
+ if (h === 'favoris') { show('favoris'); renderFavs(); window.scrollTo(0, 0); return; }
+ if (h === 'apropos') { show('apropos'); renderOffline(); window.scrollTo(0, 0); return; }
+ const from = current.view;
+ show('bible'); renderResume(); renderVday(); renderInstall();
+ if (from && from !== 'bible') requestAnimationFrame(() => window.scrollTo(0, homeY));
+}
+document.documentElement.style.setProperty('--fs', (+ST.fs || 20) + 'px');
+$('#q').addEventListener('input', suggest);
+$('#q').addEventListener('keydown', e => { if (e.key === 'Enter') { const a = $('#sugg a'); if (a) { location.hash = a.getAttribute('href'); } else if ($('#q').value.trim().length >= 3) fullText($('#q').value.trim()); } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
+window.addEventListener('hashchange', route);
+renderLit(); renderToc(); renderAbout(); route();
+}
+</script>
+</body>
+</html>
