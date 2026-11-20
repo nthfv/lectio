@@ -1,7 +1,7 @@
 /* Lectio — service worker.
    L’appli s’ouvre sans connexion ; une nouvelle version remplace les fichiers de l’appli
    mais ne touche jamais à vos versets (ils sont dans le stockage de la page, pas ici). */
-const BUILD = "2026.11.20-3";
+const BUILD = "2026.11.20-4";
 const SHELL = 'lectio-shell-' + BUILD;
 const DATA = 'lectio-data';
 const FONTS = 'lectio-fonts';

@@ -285,6 +285,23 @@ details.backup summary{cursor:pointer;font:600 12px var(--sans);letter-spacing:.
 .reading .btnrow{margin-top:6px}
 .mnote{font-size:13.5px;line-height:1.5;color:var(--muted);margin:10px 0 0}
 .mfoot{margin:34px 0 70px;padding-top:18px;border-top:1px solid var(--rule)}
+/* compte */
+.acct{position:relative;width:44px;height:44px;display:grid;place-items:center;border-radius:50%;color:var(--muted);margin-left:4px;flex:none}
+.acct svg{width:22px;height:22px}
+.acct.on{color:var(--ink)}
+.acct.on::after{content:"";position:absolute;right:8px;top:9px;width:8px;height:8px;border-radius:50%;background:var(--lit);box-shadow:0 0 0 2px var(--bg)}
+@media(max-width:700px){.acct{margin-left:auto}}
+@media(hover:hover){.acct:hover{background:var(--panel)}}
+.accseg{margin-top:20px}
+.accform{display:grid;gap:14px;margin:18px 0 0;max-width:460px}
+.accform label{display:grid;gap:6px;font-size:14px;font-weight:500}
+.accform input{font:400 16px var(--sans);padding:12px 14px;min-height:48px;border-radius:12px;border:1px solid var(--rule);background:var(--panel);color:var(--ink)}
+.accerr{color:var(--red);font-size:14px;margin:0}
+.accerr:empty{display:none}
+.acctxt{font-size:14.5px;line-height:1.5;color:var(--muted);margin:6px 0}
+#compte .backup{margin:28px 0 0}
+#compte .backup:last-child{margin-bottom:80px}
+#favstatus a{color:var(--red);font-weight:500}
 @media(max-width:600px){.vday blockquote{font-size:21px}.plan li{grid-template-columns:5.6em minmax(0,1fr)}.litcard{padding-right:44px}.ribbon{right:0;width:18px;height:96px}}
 </style>
 </head>
@@ -297,6 +314,7 @@ details.backup summary{cursor:pointer;font:600 12px var(--sans);letter-spacing:.
   <a href="#fil" data-tab="fil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="3"/><path d="M10 9.5v5l4-2.5z"/></svg><span>Fil</span></a>
   <a href="#favoris" data-tab="favoris"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-7.5-10.1A4.4 4.4 0 0 1 12 7.2a4.4 4.4 0 0 1 7.5 2.7C19.5 15.4 12 20 12 20z"/></svg><span>Mes versets</span></a>
  </nav>
+ <a class="acct" id="acct" href="#compte" aria-label="Mon compte"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="8.5" r="3.6"/><path d="M4.8 19.5c1.3-3.3 4-5 7.2-5s5.9 1.7 7.2 5"/></svg></a>
 </div></header>
 <main>
  <section class="view" id="v-bible"><div class="wrap">
@@ -325,6 +343,7 @@ details.backup summary{cursor:pointer;font:600 12px var(--sans);letter-spacing:.
 
  <section class="view" id="v-livre"><div class="wrap"><div class="col" id="livre"></div></div></section>
  <section class="view" id="v-lire"></section>
+ <section class="view" id="v-compte"><div class="wrap"><div class="col" id="compte"></div></div></section>
  <section class="view" id="v-messe"><div class="wrap"><div class="col" id="messe"></div></div></section>
  <section class="view" id="v-fil"><div id="fil"><div class="prog" id="prog"></div><div class="feed" id="feed" tabindex="0" aria-label="Fil de versets, faites défiler"></div></div></section>
  <section class="view" id="v-favoris"><div class="wrap"><div class="col">
@@ -513,7 +532,7 @@ if (typeof module !== 'undefined') module.exports = LIT;
 {
 const BOOKS = [{"id": "gn", "u": "GEN", "a": "Gn", "s": "Genèse", "t": "Livre de la Genèse", "g": "Pentateuque", "T": "AT", "n": 50, "v": 1533}, {"id": "ex", "u": "EXO", "a": "Ex", "s": "Exode", "t": "Livre de l’Exode", "g": "Pentateuque", "T": "AT", "n": 40, "v": 1213}, {"id": "lv", "u": "LEV", "a": "Lv", "s": "Lévitique", "t": "Livre du Lévitique", "g": "Pentateuque", "T": "AT", "n": 27, "v": 859}, {"id": "nb", "u": "NUM", "a": "Nb", "s": "Nombres", "t": "Livre des Nombres", "g": "Pentateuque", "T": "AT", "n": 36, "v": 1289}, {"id": "dt", "u": "DEU", "a": "Dt", "s": "Deutéronome", "t": "Livre du Deutéronome", "g": "Pentateuque", "T": "AT", "n": 34, "v": 956}, {"id": "jos", "u": "JOS", "a": "Jos", "s": "Josué", "t": "Livre de Josué", "g": "Livres historiques", "T": "AT", "n": 24, "v": 656}, {"id": "jg", "u": "JDG", "a": "Jg", "s": "Juges", "t": "Livre des Juges", "g": "Livres historiques", "T": "AT", "n": 21, "v": 618}, {"id": "rt", "u": "RUT", "a": "Rt", "s": "Ruth", "t": "Livre de Ruth", "g": "Livres historiques", "T": "AT", "n": 4, "v": 85}, {"id": "1s", "u": "1SA", "a": "1S", "s": "1 Samuel", "t": "Premier livre de Samuel", "g": "Livres historiques", "T": "AT", "n": 31, "v": 811}, {"id": "2s", "u": "2SA", "a": "2S", "s": "2 Samuel", "t": "Deuxième livre de Samuel", "g": "Livres historiques", "T": "AT", "n": 24, "v": 695}, {"id": "1r", "u": "1KI", "a": "1R", "s": "1 Rois", "t": "Premier livre des Rois", "g": "Livres historiques", "T": "AT", "n": 22, "v": 817}, {"id": "2r", "u": "2KI", "a": "2R", "s": "2 Rois", "t": "Deuxième livre des Rois", "g": "Livres historiques", "T": "AT", "n": 25, "v": 719}, {"id": "1ch", "u": "1CH", "a": "1Ch", "s": "1 Chroniques", "t": "Premier livre des Chroniques", "g": "Livres historiques", "T": "AT", "n": 29, "v": 941}, {"id": "2ch", "u": "2CH", "a": "2Ch", "s": "2 Chroniques", "t": "Deuxième livre des Chroniques", "g": "Livres historiques", "T": "AT", "n": 36, "v": 822}, {"id": "esd", "u": "EZR", "a": "Esd", "s": "Esdras", "t": "Livre d’Esdras", "g": "Livres historiques", "T": "AT", "n": 10, "v": 280}, {"id": "ne", "u": "NEH", "a": "Ne", "s": "Néhémie", "t": "Livre de Néhémie", "g": "Livres historiques", "T": "AT", "n": 13, "v": 406}, {"id": "tb", "u": "TOB", "a": "Tb", "s": "Tobie", "t": "Livre de Tobie", "g": "Livres historiques", "T": "AT", "n": 14, "v": 246}, {"id": "jdt", "u": "JDT", "a": "Jdt", "s": "Judith", "t": "Livre de Judith", "g": "Livres historiques", "T": "AT", "n": 16, "v": 346}, {"id": "est", "u": "EST", "a": "Est", "s": "Esther", "t": "Livre d’Esther", "g": "Livres historiques", "T": "AT", "n": 16, "v": 275}, {"id": "1m", "u": "1MA", "a": "1M", "s": "1 Maccabées", "t": "Premier livre des Martyrs d’Israël (1 Maccabées)", "g": "Livres historiques", "T": "AT", "n": 16, "v": 925}, {"id": "2m", "u": "2MA", "a": "2M", "s": "2 Maccabées", "t": "Deuxième livre des Martyrs d’Israël (2 Maccabées)", "g": "Livres historiques", "T": "AT", "n": 15, "v": 556}, {"id": "jb", "u": "JOB", "a": "Jb", "s": "Job", "t": "Livre de Job", "g": "Livres poétiques et sapientiaux", "T": "AT", "n": 42, "v": 1070}, {"id": "ps", "u": "PSA", "a": "Ps", "s": "Psaumes", "t": "Livre des Psaumes", "g": "Livres poétiques et sapientiaux", "T": "AT", "n": 150, "v": 2528}, {"id": "pr", "u": "PRO", "a": "Pr", "s": "Proverbes", "t": "Livre des Proverbes", "g": "Livres poétiques et sapientiaux", "T": "AT", "n": 31, "v": 915}, {"id": "qo", "u": "ECC", "a": "Qo", "s": "Qohèleth", "t": "Livre de Qohèleth (l’Ecclésiaste)", "g": "Livres poétiques et sapientiaux", "T": "AT", "n": 12, "v": 221}, {"id": "ct", "u": "SNG", "a": "Ct", "s": "Cantique des cantiques", "t": "Cantique des cantiques", "g": "Livres poétiques et sapientiaux", "T": "AT", "n": 8, "v": 117}, {"id": "sg", "u": "WIS", "a": "Sg", "s": "Sagesse", "t": "Livre de la Sagesse", "g": "Livres poétiques et sapientiaux", "T": "AT", "n": 19, "v": 436}, {"id": "si", "u": "SIR", "a": "Si", "s": "Ben Sira", "t": "Livre de Ben Sira le Sage (Siracide)", "g": "Livres poétiques et sapientiaux", "T": "AT", "n": 51, "v": 1363}, {"id": "is", "u": "ISA", "a": "Is", "s": "Isaïe", "t": "Livre d’Isaïe", "g": "Livres prophétiques", "T": "AT", "n": 66, "v": 1290}, {"id": "jr", "u": "JER", "a": "Jr", "s": "Jérémie", "t": "Livre de Jérémie", "g": "Livres prophétiques", "T": "AT", "n": 52, "v": 1364}, {"id": "lm", "u": "LAM", "a": "Lm", "s": "Lamentations", "t": "Livre des Lamentations", "g": "Livres prophétiques", "T": "AT", "n": 5, "v": 154}, {"id": "ba", "u": "BAR", "a": "Ba", "s": "Baruch", "t": "Livre de Baruch", "g": "Livres prophétiques", "T": "AT", "n": 6, "v": 213}, {"id": "ez", "u": "EZK", "a": "Ez", "s": "Ézékiel", "t": "Livre d’Ézékiel", "g": "Livres prophétiques", "T": "AT", "n": 48, "v": 1273}, {"id": "dn", "u": "DAN", "a": "Dn", "s": "Daniel", "t": "Livre de Daniel", "g": "Livres prophétiques", "T": "AT", "n": 14, "v": 530}, {"id": "os", "u": "HOS", "a": "Os", "s": "Osée", "t": "Livre d’Osée", "g": "Livres prophétiques", "T": "AT", "n": 14, "v": 197}, {"id": "jl", "u": "JOL", "a": "Jl", "s": "Joël", "t": "Livre de Joël", "g": "Livres prophétiques", "T": "AT", "n": 4, "v": 73}, {"id": "am", "u": "AMO", "a": "Am", "s": "Amos", "t": "Livre d’Amos", "g": "Livres prophétiques", "T": "AT", "n": 9, "v": 146}, {"id": "ab", "u": "OBA", "a": "Ab", "s": "Abdias", "t": "Livre d’Abdias", "g": "Livres prophétiques", "T": "AT", "n": 1, "v": 21}, {"id": "jon", "u": "JON", "a": "Jon", "s": "Jonas", "t": "Livre de Jonas", "g": "Livres prophétiques", "T": "AT", "n": 4, "v": 48}, {"id": "mi", "u": "MIC", "a": "Mi", "s": "Michée", "t": "Livre de Michée", "g": "Livres prophétiques", "T": "AT", "n": 7, "v": 105}, {"id": "na", "u": "NAM", "a": "Na", "s": "Nahum", "t": "Livre de Nahum", "g": "Livres prophétiques", "T": "AT", "n": 3, "v": 47}, {"id": "ha", "u": "HAB", "a": "Ha", "s": "Habacuc", "t": "Livre d’Habacuc", "g": "Livres prophétiques", "T": "AT", "n": 3, "v": 56}, {"id": "so", "u": "ZEP", "a": "So", "s": "Sophonie", "t": "Livre de Sophonie", "g": "Livres prophétiques", "T": "AT", "n": 3, "v": 53}, {"id": "ag", "u": "HAG", "a": "Ag", "s": "Aggée", "t": "Livre d’Aggée", "g": "Livres prophétiques", "T": "AT", "n": 2, "v": 38}, {"id": "za", "u": "ZEC", "a": "Za", "s": "Zacharie", "t": "Livre de Zacharie", "g": "Livres prophétiques", "T": "AT", "n": 14, "v": 211}, {"id": "ml", "u": "MAL", "a": "Ml", "s": "Malachie", "t": "Livre de Malachie", "g": "Livres prophétiques", "T": "AT", "n": 3, "v": 55}, {"id": "mt", "u": "MAT", "a": "Mt", "s": "Matthieu", "t": "Évangile de Jésus-Christ selon saint Matthieu", "g": "Évangiles", "T": "NT", "n": 28, "v": 1071}, {"id": "mc", "u": "MRK", "a": "Mc", "s": "Marc", "t": "Évangile de Jésus-Christ selon saint Marc", "g": "Évangiles", "T": "NT", "n": 16, "v": 679}, {"id": "lc", "u": "LUK", "a": "Lc", "s": "Luc", "t": "Évangile de Jésus-Christ selon saint Luc", "g": "Évangiles", "T": "NT", "n": 24, "v": 1151}, {"id": "jn", "u": "JHN", "a": "Jn", "s": "Jean", "t": "Évangile de Jésus-Christ selon saint Jean", "g": "Évangiles", "T": "NT", "n": 21, "v": 879}, {"id": "ac", "u": "ACT", "a": "Ac", "s": "Actes des Apôtres", "t": "Livre des Actes des Apôtres", "g": "Actes des Apôtres", "T": "NT", "n": 28, "v": 1006}, {"id": "rm", "u": "ROM", "a": "Rm", "s": "Romains", "t": "Lettre de saint Paul aux Romains", "g": "Lettres de saint Paul", "T": "NT", "n": 16, "v": 433}, {"id": "1co", "u": "1CO", "a": "1Co", "s": "1 Corinthiens", "t": "Première lettre de saint Paul aux Corinthiens", "g": "Lettres de saint Paul", "T": "NT", "n": 16, "v": 437}, {"id": "2co", "u": "2CO", "a": "2Co", "s": "2 Corinthiens", "t": "Deuxième lettre de saint Paul aux Corinthiens", "g": "Lettres de saint Paul", "T": "NT", "n": 13, "v": 256}, {"id": "ga", "u": "GAL", "a": "Ga", "s": "Galates", "t": "Lettre de saint Paul aux Galates", "g": "Lettres de saint Paul", "T": "NT", "n": 6, "v": 149}, {"id": "ep", "u": "EPH", "a": "Ep", "s": "Éphésiens", "t": "Lettre de saint Paul aux Éphésiens", "g": "Lettres de saint Paul", "T": "NT", "n": 6, "v": 155}, {"id": "ph", "u": "PHP", "a": "Ph", "s": "Philippiens", "t": "Lettre de saint Paul aux Philippiens", "g": "Lettres de saint Paul", "T": "NT", "n": 4, "v": 104}, {"id": "col", "u": "COL", "a": "Col", "s": "Colossiens", "t": "Lettre de saint Paul aux Colossiens", "g": "Lettres de saint Paul", "T": "NT", "n": 4, "v": 95}, {"id": "1th", "u": "1TH", "a": "1Th", "s": "1 Thessaloniciens", "t": "Première lettre de saint Paul aux Thessaloniciens", "g": "Lettres de saint Paul", "T": "NT", "n": 5, "v": 89}, {"id": "2th", "u": "2TH", "a": "2Th", "s": "2 Thessaloniciens", "t": "Deuxième lettre de saint Paul aux Thessaloniciens", "g": "Lettres de saint Paul", "T": "NT", "n": 3, "v": 47}, {"id": "1tm", "u": "1TI", "a": "1Tm", "s": "1 Timothée", "t": "Première lettre de saint Paul à Timothée", "g": "Lettres de saint Paul", "T": "NT", "n": 6, "v": 113}, {"id": "2tm", "u": "2TI", "a": "2Tm", "s": "2 Timothée", "t": "Deuxième lettre de saint Paul à Timothée", "g": "Lettres de saint Paul", "T": "NT", "n": 4, "v": 83}, {"id": "tt", "u": "TIT", "a": "Tt", "s": "Tite", "t": "Lettre de saint Paul à Tite", "g": "Lettres de saint Paul", "T": "NT", "n": 3, "v": 46}, {"id": "phm", "u": "PHM", "a": "Phm", "s": "Philémon", "t": "Lettre de saint Paul à Philémon", "g": "Lettres de saint Paul", "T": "NT", "n": 1, "v": 25}, {"id": "he", "u": "HEB", "a": "He", "s": "Hébreux", "t": "Lettre aux Hébreux", "g": "Lettre aux Hébreux", "T": "NT", "n": 13, "v": 303}, {"id": "jc", "u": "JAS", "a": "Jc", "s": "Jacques", "t": "Lettre de saint Jacques", "g": "Lettres catholiques", "T": "NT", "n": 5, "v": 108}, {"id": "1p", "u": "1PE", "a": "1P", "s": "1 Pierre", "t": "Première lettre de saint Pierre", "g": "Lettres catholiques", "T": "NT", "n": 5, "v": 105}, {"id": "2p", "u": "2PE", "a": "2P", "s": "2 Pierre", "t": "Deuxième lettre de saint Pierre", "g": "Lettres catholiques", "T": "NT", "n": 3, "v": 61}, {"id": "1jn", "u": "1JN", "a": "1Jn", "s": "1 Jean", "t": "Première lettre de saint Jean", "g": "Lettres catholiques", "T": "NT", "n": 5, "v": 105}, {"id": "2jn", "u": "2JN", "a": "2Jn", "s": "2 Jean", "t": "Deuxième lettre de saint Jean", "g": "Lettres catholiques", "T": "NT", "n": 1, "v": 13}, {"id": "3jn", "u": "3JN", "a": "3Jn", "s": "3 Jean", "t": "Troisième lettre de saint Jean", "g": "Lettres catholiques", "T": "NT", "n": 1, "v": 15}, {"id": "jude", "u": "JUD", "a": "Jude", "s": "Jude", "t": "Lettre de saint Jude", "g": "Lettres catholiques", "T": "NT", "n": 1, "v": 25}, {"id": "ap", "u": "REV", "a": "Ap", "s": "Apocalypse", "t": "Livre de l’Apocalypse", "g": "Apocalypse", "T": "NT", "n": 22, "v": 405}];
 const PWA = true;            // true dans l’appli installable (GitHub Pages)
-const BUILD = "2026.11.20-3";           // version de l’appli
+const BUILD = "2026.11.20-4";           // version de l’appli
 const APPURL = "https://nthfv.github.io/lectio/";         // adresse de l’appli installable
 const DH = {"analyses": "3e91246b5c", "feed": "047fd2e036", "gn": "61aa16be77", "ex": "3d60284703", "lv": "d9a992e751", "nb": "001e448ae1", "dt": "8efcefaf38", "jos": "2bf0e226b7", "jg": "75ce8ef50b", "rt": "cb6fa4e13d", "1s": "ed3598dcb4", "2s": "a13db7cfbe", "1r": "090ae225ee", "2r": "fb6744212c", "1ch": "2b3d94a92f", "2ch": "860e23f0d4", "esd": "5950a10a73", "ne": "74e0a37526", "tb": "43fc77626b", "jdt": "8a674cc968", "est": "aa8f21f173", "1m": "b7d0fe9c6a", "2m": "61cd5d1dce", "jb": "0cee0589a3", "ps": "5c7135afc5", "pr": "009cde48f7", "qo": "7485f47e43", "ct": "9e7aee22e4", "sg": "f81388396d", "si": "cf1d2d8ae0", "is": "a1ac17620c", "jr": "fe15080c40", "lm": "cf06106648", "ba": "90f9c534b5", "ez": "fd146b0bd1", "dn": "b499ad4a8f", "os": "f0591038ab", "jl": "5193104af6", "am": "8266cc1d5f", "ab": "be0785064d", "jon": "4b6bf93e1c", "mi": "b5ccc33d48", "na": "803b73457b", "ha": "bc7868f195", "so": "7908013aa9", "ag": "7bea7d1cd9", "za": "55eab2ee45", "ml": "81ae34c797", "mt": "8c73175070", "mc": "87f50e924e", "lc": "d262fa00a0", "jn": "367c505983", "ac": "b25cd27915", "rm": "cf088390cd", "1co": "c369b213d1", "2co": "34fcc5680f", "ga": "bbf1b3ced4", "ep": "f9a42b5555", "ph": "37733e42d4", "col": "79602a3980", "1th": "cf990d786d", "2th": "87bdab8c92", "1tm": "b757a23db2", "2tm": "b236a6b032", "tt": "460e02be9e", "phm": "8465cea793", "he": "9bab10a198", "jc": "6d56018212", "1p": "60720efe74", "2p": "0acd0ff0dd", "1jn": "12d9c8331a", "2jn": "80cc455771", "3jn": "3ce7c7763c", "jude": "40a02c3d04", "ap": "281611bb53"};                 // empreintes des fichiers de données (appli installable)
 const HEART = '<svg viewBox="0 0 24 24" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-7.5-10.1A4.4 4.4 0 0 1 12 7.2a4.4 4.4 0 0 1 7.5 2.7C19.5 15.4 12 20 12 20z"/></svg>';
@@ -618,14 +637,15 @@ function mergeState(s) {
 }
 // la copie IndexedDB n’est réécrite qu’après avoir été relue et fusionnée : aucune écriture ne peut l’écraser avant
 const idbReady = idb.get('state').then(raw => { const s = asState(raw); if (s && mergeState(s)) { canSave = LS.set('lectio.state', JSON.stringify(ST)); refreshAll(); } });
-function save() {
+function save(silent, lazy) {
  canSave = LS.set('lectio.state', JSON.stringify(ST));
+ try { if (!silent && ACC) syncSoon(lazy ? 30000 : 2500); } catch (e) {}
  idbReady.then(() => idb.set('state', JSON.stringify(ST))).then(ok => { if (ok !== idbOK) { idbOK = ok; renderStatus(); } });
 }
 let saveT = null;
-const saveSoon = () => { clearTimeout(saveT); saveT = setTimeout(save, 500); };
-addEventListener('pagehide', save);
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') save(); });
+const saveSoon = () => { clearTimeout(saveT); saveT = setTimeout(() => save(false, true), 500); };
+addEventListener('pagehide', () => save(true));
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') save(true); });
 // un autre onglet de Lectio a enregistré : on fusionne (sans réécrire, pour éviter les allers-retours)
 addEventListener('storage', e => { if (e.key === 'lectio.state' && e.newValue) { const s = asState(e.newValue); if (s && mergeState(s)) refreshAll(); } });
 const liked = id => !!(ST.likes[id] && !ST.likes[id].del);
@@ -715,13 +735,211 @@ function restoreFrom(text) {
 }
 function renderStatus() {
  const el = $('#favstatus'); if (!el) return;
- let t = '', warn = false;
- if (!PWA && dbOK) t = 'Synchronisés avec votre compte';
- else if (canSave || idbOK) t = PWA ? 'Enregistrés sur cet appareil' : 'Enregistrés dans ce navigateur';
- else { t = 'Ce navigateur n’enregistre pas vos versets : copiez votre code de sauvegarde (en bas de la page).'; warn = true; }
- el.textContent = t; el.classList.toggle('warn', warn);
+ let h = '', warn = false;
+ if (ACC) h = `Enregistrés dans votre compte <b>${esc(accName())}</b>${syncErr === 'hors ligne' ? ' · hors connexion' : ''}`;
+ else if (!PWA && dbOK) h = 'Synchronisés avec votre compte';
+ else if (canSave || idbOK) h = (PWA ? 'Enregistrés sur cet appareil' : 'Enregistrés dans ce navigateur') + (ACCOUNTS ? ' · <a href="#compte">Créer un compte</a> pour ne jamais les perdre' : '');
+ else { h = 'Ce navigateur n’enregistre pas vos versets : copiez votre code de sauvegarde (en bas de la page).'; warn = true; }
+ el.innerHTML = h; el.classList.toggle('warn', warn);
 }
 async function askPersist() { try { if (PWA && navigator.storage && navigator.storage.persist && !(await navigator.storage.persisted())) await navigator.storage.persist(); } catch (e) {} }
+/* ---------- compte Lectio : versets et progression gardés en ligne (Firebase), pour les retrouver sur un autre téléphone ---------- */
+const FB_KEY = "AIzaSyCJ5OOhbr_U3lLWn6_31SLd8aymMZ5Wlfc", FB_PROJECT = 'lectio-72d94';
+const FB_AUTH = 'https://identitytoolkit.googleapis.com/v1/accounts:';
+const FB_TOKEN = 'https://securetoken.googleapis.com/v1/token';
+const FB_STORE = `https://firestore.googleapis.com/v1/projects/${FB_PROJECT}/databases/(default)/documents/comptes/`;
+const ACCOUNTS = PWA && /^AIza/.test(FB_KEY);
+const PSEUDO_AT = '@nthfv.github.io';                 // un nom d’utilisateur devient une adresse interne, jamais utilisée pour écrire
+const PSEUDO_RX = /^[a-z0-9][a-z0-9._-]{2,29}$/;
+let ACC = null;
+try { ACC = JSON.parse(LS.get('lectio.compte') || 'null'); } catch (e) { ACC = null; }
+const accSave = () => LS.set('lectio.compte', JSON.stringify(ACC));
+const accName = () => ACC ? (ACC.email.endsWith(PSEUDO_AT) ? ACC.email.slice(0, -PSEUDO_AT.length) : ACC.email) : '';
+let syncT = null, syncing = null, syncAgain = false, cloudTime = null, cloudExtra = {}, dirty = false, lastSync = 0, syncErr = '';
+function loginEmail(id) {
+ id = String(id || '').trim().toLowerCase();
+ if (id.includes('@')) { if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(id)) throw new Error('Adresse e-mail invalide.'); return id; }
+ if (!PSEUDO_RX.test(id)) throw new Error('Nom d’utilisateur : 3 à 30 caractères, lettres sans accent, chiffres, point, tiret ou tiret bas.');
+ return id + PSEUDO_AT;
+}
+function authMsg(code) {
+ code = String(code || '');
+ if (/EMAIL_EXISTS/.test(code)) return 'Ce nom d’utilisateur ou cet e-mail est déjà pris.';
+ if (/INVALID_LOGIN_CREDENTIALS|INVALID_PASSWORD|EMAIL_NOT_FOUND/.test(code)) return 'Identifiant ou mot de passe incorrect.';
+ if (/WEAK_PASSWORD|PASSWORD_DOES_NOT_MEET/.test(code)) return 'Mot de passe trop faible : 8 caractères au moins.';
+ if (/INVALID_EMAIL/.test(code)) return 'Adresse e-mail invalide.';
+ if (/TOO_MANY_ATTEMPTS/.test(code)) return 'Trop d’essais : réessayez dans quelques minutes.';
+ if (/USER_DISABLED/.test(code)) return 'Ce compte est désactivé.';
+ if (/CREDENTIAL_TOO_OLD|REQUIRES_RECENT_LOGIN/.test(code)) return 'Par sécurité, reconnectez-vous puis recommencez.';
+ return 'Pas de réponse du service des comptes : vérifiez votre connexion internet.';
+}
+async function authCall(method, body) {
+ let r, j = {};
+ try { r = await fetch(FB_AUTH + method + '?key=' + FB_KEY, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); j = await r.json().catch(() => ({})); }
+ catch (e) { throw new Error(authMsg('')); }
+ if (!r.ok) throw new Error(authMsg(j.error && j.error.message));
+ return j;
+}
+function accFrom(j, email) { return { uid: j.localId, email: (j.email || email).toLowerCase(), it: j.idToken, rt: j.refreshToken, exp: Date.now() + (+j.expiresIn || 3600) * 1000 }; }
+async function idToken() {
+ if (!ACC) throw new Error('déconnecté');
+ if (ACC.it && ACC.exp > Date.now() + 60000) return ACC.it;
+ let r, j = {};
+ try { r = await fetch(FB_TOKEN + '?key=' + FB_KEY, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'grant_type=refresh_token&refresh_token=' + encodeURIComponent(ACC.rt) }); j = await r.json().catch(() => ({})); }
+ catch (e) { throw new Error('hors ligne'); }
+ if (!r.ok) {
+  const m = String(j.error && j.error.message || '');
+  if (/TOKEN_EXPIRED|USER_DISABLED|USER_NOT_FOUND|INVALID_REFRESH_TOKEN|INVALID_GRANT_TYPE/.test(m)) { ACC = null; accSave(); renderAccount(); renderStatus(); toast('Reconnectez-vous à votre compte : vos versets restent sur ce téléphone'); }
+  throw new Error(m || 'jeton');
+ }
+ ACC.it = j.id_token; ACC.rt = j.refresh_token; ACC.exp = Date.now() + (+j.expires_in || 3600) * 1000; accSave();
+ return ACC.it;
+}
+/* ce qui est gardé dans le compte : versets aimés (avec les retraits), endroit de lecture, position dans le fil */
+function cloudState() {
+ const likes = {};
+ for (const [k, x] of Object.entries(ST.likes)) if (x && ID_RX.test(k)) likes[k] = { b: x.b, c: x.c, v: x.v, w: x.w || x.v, ts: x.ts || 0, at: x.at || x.ts || 0, del: !!x.del };
+ return Object.assign({}, cloudExtra, { v: 2, likes, last: ST.last || null, feed: ST.feed || null });
+}
+const canon = o => JSON.stringify(o, (k, v) => v && typeof v === 'object' && !Array.isArray(v) ? Object.keys(v).sort().reduce((r, kk) => (r[kk] = v[kk], r), {}) : v);
+async function cloudGet() {
+ const r = await fetch(FB_STORE + ACC.uid, { headers: { Authorization: 'Bearer ' + await idToken() }, cache: 'no-store' });
+ if (r.status === 404) return { exists: false };
+ if (!r.ok) throw new Error('lecture ' + r.status);
+ const j = await r.json();
+ return { exists: true, time: j.updateTime, state: JSON.parse((j.fields && j.fields.etat && j.fields.etat.stringValue) || '{}') };
+}
+async function cloudPut(state, time) {
+ const pre = time ? 'currentDocument.updateTime=' + encodeURIComponent(time) : 'currentDocument.exists=false';
+ const body = JSON.stringify({ fields: { v: { integerValue: '2' }, t: { integerValue: String(Date.now()) }, etat: { stringValue: JSON.stringify(state) } } });
+ const r = await fetch(FB_STORE + ACC.uid + '?' + pre, { method: 'PATCH', keepalive: body.length < 60000, headers: { Authorization: 'Bearer ' + await idToken(), 'Content-Type': 'application/json' }, body });
+ if (r.status === 400 || r.status === 409 || r.status === 412) { const j = await r.json().catch(() => ({})); if (/FAILED_PRECONDITION|ALREADY_EXISTS|ABORTED/.test(JSON.stringify(j))) return null; throw new Error('écriture ' + r.status); }
+ if (!r.ok) throw new Error('écriture ' + r.status);
+ return (await r.json()).updateTime;
+}
+/* synchronisation : on relit le compte, on fusionne (la décision la plus récente l’emporte), puis on écrit seulement si besoin */
+function sync() {
+ if (!ACC || navigator.onLine === false) return Promise.resolve();
+ if (syncing) { syncAgain = true; return syncing; }
+ syncing = (async () => {
+  for (let i = 0; i < 4; i++) {
+   const remote = await cloudGet();
+   if (remote.exists) {
+    const { v, likes, last, feed, ...extra } = remote.state || {}; cloudExtra = extra;
+    const s = asState(remote.state);
+    if (s && mergeState(s)) { save(true); refreshAll(); }
+   }
+   const mine = cloudState();
+   if (remote.exists && canon(mine) === canon(Object.assign({}, remote.state, { v: 2 }))) { cloudTime = remote.time; break; }
+   const t = await cloudPut(mine, remote.exists ? remote.time : null);
+   if (t) { cloudTime = t; break; }
+  }
+  dirty = false; lastSync = Date.now(); syncErr = '';
+ })().catch(e => { syncErr = navigator.onLine === false || /hors ligne|Failed to fetch|NetworkError|Load failed/i.test(e.message) ? 'hors ligne' : 'erreur'; })
+  .finally(() => { syncing = null; renderStatus(); renderAccountStatus(); if (syncAgain) { syncAgain = false; syncSoon(); } });
+ return syncing;
+}
+let syncDue = 0;
+function syncSoon(delay = 2500) { if (!ACC) return; dirty = true; const due = Date.now() + delay; if (syncT && syncDue <= due) return; clearTimeout(syncT); syncDue = due; syncT = setTimeout(() => { syncT = null; sync(); }, delay); }
+if (ACCOUNTS) {
+ addEventListener('online', () => sync());
+ document.addEventListener('visibilitychange', () => { if (!ACC) return; if (document.visibilityState === 'visible') sync(); else if (dirty) { clearTimeout(syncT); sync(); } });
+ idbReady.then(() => { if (ACC) sync(); });
+}
+async function accEnter(mode, id, pw, pw2) {
+ const email = loginEmail(id);
+ if (mode === 'creer') {
+  if (pw.length < 8) throw new Error('Mot de passe trop court : 8 caractères au moins.');
+  if (pw !== pw2) throw new Error('Les deux mots de passe ne sont pas identiques.');
+ }
+ const j = await authCall(mode === 'creer' ? 'signUp' : 'signInWithPassword', { email, password: pw, returnSecureToken: true });
+ ACC = accFrom(j, email); accSave(); cloudTime = null; cloudExtra = {};
+ await sync();
+ if (syncErr) toast('Compte ouvert ; la synchronisation reprendra dès que possible');
+ else toast(mode === 'creer' ? 'Compte créé : vos versets y sont enregistrés' : 'Connecté : vos versets sont réunis');
+}
+function accOut() { ACC = null; accSave(); cloudTime = null; cloudExtra = {}; dirty = false; renderAccount(); renderStatus(); toast('Déconnecté : vos versets restent sur ce téléphone'); }
+async function accFresh(pw) { const j = await authCall('signInWithPassword', { email: ACC.email, password: pw, returnSecureToken: true }); Object.assign(ACC, accFrom(j, ACC.email)); accSave(); }
+async function accDelete(pw) {
+ await accFresh(pw);
+ const r = await fetch(FB_STORE + ACC.uid, { method: 'DELETE', headers: { Authorization: 'Bearer ' + ACC.it } });
+ if (!r.ok && r.status !== 404) throw new Error('Suppression impossible pour le moment.');
+ await authCall('delete', { idToken: ACC.it });
+ ACC = null; accSave(); cloudTime = null; cloudExtra = {};
+}
+async function accPassword(oldPw, pw, pw2) {
+ if (pw.length < 8) throw new Error('Mot de passe trop court : 8 caractères au moins.');
+ if (pw !== pw2) throw new Error('Les deux mots de passe ne sont pas identiques.');
+ await accFresh(oldPw);
+ const j = await authCall('update', { idToken: ACC.it, password: pw, returnSecureToken: true });
+ Object.assign(ACC, accFrom(Object.assign({ localId: ACC.uid, email: ACC.email }, j), ACC.email)); accSave();
+}
+const hhmm = t => new Date(t).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+function renderAccountStatus() {
+ const el = $('#acc-st'); if (!el || !ACC) return;
+ el.textContent = syncing ? 'Synchronisation…' : syncErr === 'hors ligne' ? 'Hors connexion : la synchronisation reprendra dès le retour d’internet.' : syncErr ? 'Synchronisation momentanément impossible : nouvel essai à la prochaine ouverture.' : lastSync ? `Synchronisé à ${hhmm(lastSync)}.` : '';
+ el.classList.toggle('warn', !!syncErr && syncErr !== 'hors ligne');
+}
+let accMode = 'entrer';
+function renderAccount() {
+ const el = $('#compte'); if (!el) return;
+ $('#acct').classList.toggle('on', !!ACC);
+ if (!ACCOUNTS) {
+  el.innerHTML = `<div class="ph"><h1>Mon compte</h1><p>Les comptes Lectio sont dans l’appli installée${APPURL ? ` : <a href="${esc(APPURL)}" target="_blank" rel="noopener">${esc(shortURL)}</a>` : ''}. Ici, vos versets sont gardés dans votre espace personnel lié à cette page, et le code de sauvegarde (Mes versets) permet de les transférer.</p></div>`;
+  return;
+ }
+ if (ACC) {
+  el.innerHTML = `<div class="ph"><h1>Mon compte</h1><p>Connecté : <b>${esc(accName())}</b></p></div>
+   <p class="acctxt">Vos versets aimés, l’endroit où vous en êtes dans la Bible et votre position dans le fil sont enregistrés dans votre compte. Sur un autre téléphone, installez Lectio et connectez-vous : tout revient.</p>
+   <p class="status" id="acc-st"></p>
+   <div class="btnrow"><button type="button" class="btn red" id="acc-sync">Synchroniser maintenant</button><button type="button" class="btn" id="acc-out">Se déconnecter</button></div>
+   <details class="backup"><summary>Changer de mot de passe</summary><form class="accform" id="acc-pwform" novalidate>
+    <label>Mot de passe actuel<input type="password" id="acc-old" autocomplete="current-password" required></label>
+    <label>Nouveau mot de passe (8 caractères au moins)<input type="password" id="acc-new" autocomplete="new-password" required></label>
+    <label>Confirmez le nouveau mot de passe<input type="password" id="acc-new2" autocomplete="new-password" required></label>
+    <p class="accerr" role="alert"></p><div class="btnrow"><button class="btn red" type="submit">Changer le mot de passe</button></div></form></details>
+   <details class="backup"><summary>Supprimer mon compte</summary><form class="accform" id="acc-delform" novalidate>
+    <p class="acctxt">Le compte et la copie en ligne de vos versets seront effacés définitivement. Vos versets restent sur ce téléphone.</p>
+    <label>Mot de passe<input type="password" id="acc-delpw" autocomplete="current-password" required></label>
+    <p class="accerr" role="alert"></p><div class="btnrow"><button class="btn" type="submit" id="acc-del">Supprimer définitivement mon compte</button></div></form></details>`;
+  renderAccountStatus();
+  $('#acc-sync').onclick = async () => { await sync(); toast(syncErr ? 'Synchronisation impossible pour le moment' : 'Synchronisé'); };
+  $('#acc-out').onclick = accOut;
+  $('#acc-pwform').onsubmit = e => accSubmit(e, () => accPassword($('#acc-old').value, $('#acc-new').value, $('#acc-new2').value), () => { toast('Mot de passe changé'); renderAccount(); });
+  let armed = false;
+  $('#acc-delform').onsubmit = e => {
+   if (!armed) { e.preventDefault(); armed = true; $('#acc-del').textContent = 'Confirmer : tout effacer'; $('#acc-del').classList.add('red'); return; }
+   accSubmit(e, () => accDelete($('#acc-delpw').value), () => { toast('Compte supprimé'); renderAccount(); renderStatus(); });
+  };
+  return;
+ }
+ const create = accMode === 'creer';
+ el.innerHTML = `<div class="ph"><h1>Mon compte</h1><p>Avec un compte, vos versets aimés et votre progression sont gardés en ligne : si vous changez de téléphone, connectez-vous et tout revient. Sans compte, tout reste seulement sur ce téléphone.</p></div>
+  <div class="seg accseg" role="group" aria-label="Compte"><button type="button" data-acc="entrer" aria-pressed="${!create}">Se connecter</button><button type="button" data-acc="creer" aria-pressed="${create}">Créer un compte</button></div>
+  <form class="accform" id="acc-form" novalidate>
+   <label>E-mail ou nom d’utilisateur<input type="text" id="acc-id" name="username" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" required></label>
+   <label>Mot de passe${create ? ' (8 caractères au moins)' : ''}<input type="password" id="acc-pw" name="password" autocomplete="${create ? 'new-password' : 'current-password'}" required></label>
+   ${create ? '<label>Confirmez le mot de passe<input type="password" id="acc-pw2" autocomplete="new-password" required></label><p class="acctxt">Avec un e-mail, vous pourrez réinitialiser votre mot de passe en cas d’oubli. Avec un nom d’utilisateur, ce ne sera pas possible : gardez bien votre mot de passe.</p>' : ''}
+   <p class="accerr" role="alert"></p>
+   <div class="btnrow"><button class="btn red" type="submit">${create ? 'Créer mon compte' : 'Se connecter'}</button>${create ? '' : '<button type="button" class="btn" id="acc-forgot">Mot de passe oublié ?</button>'}</div>
+  </form>`;
+ el.querySelectorAll('[data-acc]').forEach(b => b.onclick = () => { accMode = b.dataset.acc; renderAccount(); });
+ $('#acc-form').onsubmit = e => accSubmit(e, () => accEnter(accMode, $('#acc-id').value, $('#acc-pw').value, create ? $('#acc-pw2').value : ''), () => { renderAccount(); renderStatus(); });
+ const fg = $('#acc-forgot');
+ if (fg) fg.onclick = async () => {
+  const err = $('#acc-form .accerr'), id = $('#acc-id').value.trim().toLowerCase();
+  if (!id.includes('@')) { err.textContent = id ? 'Avec un nom d’utilisateur, le mot de passe ne peut pas être réinitialisé.' : 'Écrivez d’abord votre adresse e-mail.'; return; }
+  try { await authCall('sendOobCode', { requestType: 'PASSWORD_RESET', email: loginEmail(id) }); err.textContent = ''; toast('Si ce compte existe, un e-mail vient de vous être envoyé'); }
+  catch (x) { err.textContent = x.message; }
+ };
+}
+async function accSubmit(e, act, done) {
+ e.preventDefault();
+ const form = e.target, err = form.querySelector('.accerr'), btn = form.querySelector('button[type=submit]');
+ err.textContent = ''; btn.disabled = true;
+ try { await act(); done(); }
+ catch (x) { err.textContent = x.message; btn.disabled = false; }
+}
 /* ---------- données ---------- */
 const cache = {};
 const dataURL = id => `data/${id}.json` + (DH[id] ? '?v=' + DH[id] : '');
@@ -1311,7 +1529,8 @@ function renderAbout() {
  const el = $('#ap-app'); if (!el) return;
  let h = '<h2>Vos versets et votre progression</h2>';
  if (PWA) {
-  h += `<p>Vos versets aimés, l’endroit où vous en êtes dans la Bible et votre position dans le fil sont enregistrés sur cet appareil, dans l’appli. Ils ne sont envoyés nulle part et restent disponibles sans connexion.</p>
+  h += `<p>Vos versets aimés, l’endroit où vous en êtes dans la Bible et votre position dans le fil sont enregistrés sur cet appareil, dans l’appli, et restent disponibles sans connexion. Sans compte, ils ne sont envoyés nulle part.</p>
+  <p>Avec un compte Lectio (<a href="#compte">Mon compte</a>), une copie en est gardée en ligne, protégée par votre mot de passe, dans l’espace Google Firebase de l’appli (propriétaire : nthfv) : vous la retrouvez sur n’importe quel téléphone en vous connectant. Elle ne sert à rien d’autre, et vous pouvez supprimer votre compte et cette copie à tout moment.</p>
   <p>Les mises à jour de Lectio ne les effacent jamais. Seules la désinstallation de l’appli ou l’effacement des données du site les suppriment : pour ne rien perdre en changeant de téléphone, copiez de temps en temps votre code de sauvegarde (Mes versets › Sauvegarder ou transférer).</p>
   <h2>Installer l’appli</h2>
   <p>Sur Android, avec Chrome : bouton « Installer l’appli » de la page d’accueil, ou menu ⋮ › Installer l’application. Sur iPhone, avec Safari : Partager › Sur l’écran d’accueil.</p>
@@ -1392,7 +1611,7 @@ function show(v) {
  if (current.view === 'bible' && v !== 'bible') homeY = window.scrollY;
  current.view = v;
  document.querySelectorAll('.view').forEach(s => s.classList.toggle('on', s.id === 'v-' + v));
- const tab = { bible: 'bible', livre: 'bible', lire: 'bible', apropos: 'bible', messe: 'messe', fil: 'fil', favoris: 'favoris' }[v];
+ const tab = { bible: 'bible', livre: 'bible', lire: 'bible', apropos: 'bible', messe: 'messe', fil: 'fil', favoris: 'favoris', compte: null }[v];
  document.querySelectorAll('nav.tabs a').forEach(a => a.setAttribute('aria-current', a.dataset.tab === tab ? 'page' : 'false'));
 }
 function go(h) { if (location.hash === h) route(); else location.hash = h; }
@@ -1406,6 +1625,7 @@ function route() {
  if ((m = h.match(/^messe(?:-(\d{4}-\d{2}-\d{2}))?$/))) { show('messe'); renderMesse(m[1] || null); window.scrollTo(0, 0); return; }
  if (h === 'fil') { show('fil'); buildFeed(); setTimeout(() => $('#feed').focus({ preventScroll: true }), 50); return; }
  if (h === 'favoris') { show('favoris'); renderFavs(); window.scrollTo(0, 0); return; }
+ if (h === 'compte') { show('compte'); renderAccount(); window.scrollTo(0, 0); return; }
  if (h === 'apropos') { show('apropos'); renderOffline(); window.scrollTo(0, 0); return; }
  const from = current.view;
  show('bible'); renderResume(); renderVday(); renderInstall();
@@ -1416,7 +1636,7 @@ $('#q').addEventListener('input', suggest);
 $('#q').addEventListener('keydown', e => { if (e.key === 'Enter') { const a = $('#sugg a'); if (a) { location.hash = a.getAttribute('href'); } else if ($('#q').value.trim().length >= 3) fullText($('#q').value.trim()); } });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
 window.addEventListener('hashchange', route);
-renderLit(); lectP.then(renderLit); renderToc(); renderAbout(); route();
+renderLit(); lectP.then(renderLit); renderToc(); renderAbout(); $('#acct').classList.toggle('on', !!ACC); route();
 }
 </script>
 </body>

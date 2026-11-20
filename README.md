@@ -11,7 +11,8 @@ Lectio est une appli de lecture de la Bible catholique, à installer sur son té
 - pour chaque chapitre, un lien vers la **traduction liturgique officielle** (AELF) ;
 - un **fil de versets** à faire défiler et à aimer, et la page **Mes versets** ;
 - la **messe du jour** : lectures (dans la Bible Crampon, avec le lien vers le texte officiel AELF), fêtes et mémoires des saints du calendrier pour la France ;
-- le temps liturgique du jour (couleur, année A, B ou C, semaine du psautier).
+- le temps liturgique du jour (couleur, année A, B ou C, semaine du psautier) ;
+- des **comptes** (nom d’utilisateur ou e-mail + mot de passe) pour retrouver ses versets et sa progression sur un autre téléphone.
 
 ## Installer l’appli
 
@@ -22,7 +23,7 @@ L’appli fonctionne ensuite sans connexion.
 
 ## Vos versets et les mises à jour
 
-Les versets aimés, l’endroit où l’on en est dans la Bible et dans le fil sont enregistrés **sur le téléphone uniquement** (rien n’est envoyé). Quand une nouvelle version est publiée ici, l’appli propose « Mettre à jour » : les versets et la progression sont conservés. Le code de sauvegarde (Mes versets › Sauvegarder ou transférer) permet de tout retrouver sur un autre appareil.
+Les versets aimés, l’endroit où l’on en est dans la Bible et dans le fil sont enregistrés **sur le téléphone**. Sans compte, rien n’est envoyé. Avec un compte (Mon compte, en haut à droite), une copie est gardée en ligne et synchronisée : on la retrouve en se connectant sur un autre téléphone. Quand une nouvelle version est publiée ici, l’appli propose « Mettre à jour » : les versets et la progression sont conservés. Le code de sauvegarde (Mes versets › Sauvegarder ou transférer) permet de tout retrouver sur un autre appareil.
 
 ## Pour publier une nouvelle version
 
@@ -36,6 +37,13 @@ Règles à respecter pour ne jamais perdre les données des utilisateurs :
 - ne jamais renommer ni vider la clé de stockage `lectio.state` (objet versionné, champ `v`) : une nouvelle version doit relire l’ancien format et le faire évoluer ;
 - ne pas changer l’adresse du site (nom du dépôt) : le stockage est lié à l’adresse ;
 - toujours lancer `outils/nouvelle-version.py` avant de publier : sans nouvelle empreinte, un fichier de `data/` modifié ne serait pas retéléchargé par les téléphones.
+
+## Comptes (Firebase)
+
+- Projet Firebase **lectio-72d94** (compte Google nthfv4141), base Firestore à Paris (europe-west9), connexion par e-mail ou nom d’utilisateur + mot de passe.
+- Un nom d’utilisateur devient une adresse interne `nom@nthfv.github.io` (jamais utilisée pour écrire) ; seuls les comptes par e-mail peuvent réinitialiser leur mot de passe.
+- Chaque compte a un seul document `comptes/{uid}` : `etat` (versets aimés et retirés, endroit de lecture, position dans le fil). Règles de sécurité : chacun ne lit et n’écrit que le sien. La fusion garde, pour chaque verset, la décision la plus récente.
+- La clé web Firebase présente dans `index.html` est publique par nature ; la protection vient des règles de sécurité.
 
 ## Lectures de la messe (mises à jour automatiques)
 
