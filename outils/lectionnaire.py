@@ -9,7 +9,7 @@ Usage :
   python3 outils/lectionnaire.py              télécharge les dates publiées et met le fichier à jour
   python3 outils/lectionnaire.py --verifier   relit le fichier, sans réseau, et revérifie chaque passage
 Lancé chaque semaine par .github/workflows/lectionnaire.yml : l'appli reçoit les nouvelles dates seule."""
-import concurrent.futures, datetime, json, os, re, sys, time, urllib.error, urllib.request
+import concurrent.futures, datetime, json, os, re, sys, time, unicodedata, urllib.error, urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, 'data', 'lectionnaire.json')
@@ -23,7 +23,12 @@ def load_books():
     html = open(os.path.join(ROOT, 'index.html'), encoding='utf-8').read()
     m = re.search(r'const BOOKS = (\[.*?\]);\n', html)
     books = json.loads(m.group(1))
-    return {b['a'].replace(' ', '').lower(): b for b in books}
+    out = {b['a'].replace(' ', '').lower(): b for b in books}
+    for b in books:      # noms complets aussi (« Isaïe »)
+        out.setdefault(fold(b['s']).replace(' ', ''), b)
+    return out
+def fold(s):
+    return ''.join(c for c in unicodedata.normalize('NFD', s) if unicodedata.category(c) != 'Mn').lower()
 BOOKS = load_books()
 _maxv = {}
 def chapters(bid):
@@ -49,7 +54,7 @@ class RefError(Exception):
     pass
 
 def book_of(tok):
-    b = BOOKS.get(tok.replace(' ', '').replace('.', '').lower())
+    b = BOOKS.get(fold(tok).replace(' ', '').replace('.', ''))
     if not b: raise RefError('livre inconnu : ' + tok)
     return b
 
@@ -61,7 +66,7 @@ def items(spec, bid, chap):
         return [('est-esther',)] if re.search(r'17\s*[k-z]|[a-z]{2}', spec) else [('est-mardochee',)]
     out = []
     for it in re.split(r'\s*[.,]\s*', spec.strip()):
-        if not it: continue
+        if not it or re.fullmatch(r'[a-z]+', it): continue   # « 4a.c » : 4c, partie du même verset
         m = ITEM.match(it)
         if not m: raise RefError(f'versets illisibles : {it!r}')
         a, la, b, lb = m.groups()
@@ -70,7 +75,15 @@ def items(spec, bid, chap):
 
 def parse_one(ref, typ):
     s = ref.replace(' ', ' ').replace(' ', ' ').strip().rstrip('.')
-    s = re.sub(r'^cf\.?\s*', '', s, flags=re.I)
+    s = re.sub(r'^\[[^\]]*\]\s*', '', s)                          # « [CANTIQUE] Lc 1, … »
+    s = re.sub(r'^(?:cf\.?|cantique)\s*', '', s, flags=re.I)
+    s = re.sub(r'\s*\((?!\s*\d+\s*[ABab]?\s*\))[^)]*\)', '', s)    # « (lecture brève) », « (Vg : 5-10) » ; garde « (23) »
+    s = re.sub(r'\s+et\s+', ', ', s)                               # « 3 et 5 »
+    s = re.sub(r',\s*-', '-', s)                                   # « 11,-12ab »
+    s = re.sub(r'(\d)\s+([a-z]+)\b', r'\1\2', s)                   # « 8 cde »
+    s = re.sub(r'(\d[a-z]*)\s*-\s*(\d)', r'\1-\2', s)              # « 46b- 47 »
+    s = re.sub(r'(\d[a-z]*)[–—](\d)', r'\1-\2', s)                 # « 1–2a » : tiret long collé = même chapitre
+    s = re.sub(r'(\d[a-z]*)\s*[–—]\s*(\d+[a-z]*)(?!\d)(?!\s*,\s*\d)', r'\1-\2', s)   # « 13 – 53, 12 » reste un saut de chapitre
     s = re.sub(r'\s+', ' ', s)
     segs, book = [], None
     for part in [p.strip() for p in s.split(';') if p.strip()]:
@@ -85,7 +98,8 @@ def parse_one(ref, typ):
             raise RefError('référence illisible : ' + part)
         bid = book['id']
         if bid == 'ps':
-            pm = re.match(r'^(\d+)\s*([AB])?\s*(?:\((\d+)\))?\s*(?:,\s*(.*))?$', rest)
+            # « 22 (23) », « 18b (19) », « 146 (147A) », « 114 (116 A) », « 44, (45) », « 9a »
+            pm = re.match(r'^(\d+)\s*([ABab])?\s*,?\s*(?:\((\d+)\s*[ABab]?\))?\s*(?:,\s*(.*))?$', rest)
             if not pm: raise RefError('psaume illisible : ' + rest)
             chap = int(pm.group(3)) if pm.group(3) else lit_to_heb(int(pm.group(1)), pm.group(2) or '')
             spec = pm.group(4) or ''
@@ -121,8 +135,9 @@ def parse_one(ref, typ):
         chs = chapters(bid)
         if c not in chs: raise RefError(f'chapitre absent : {bid} {c}')
         b = chs[c] if b == 999 else b
-        if a < 1 or a > chs[c] or b > chs[c] or b < a: raise RefError(f'versets absents : {bid} {c}, {a}-{b} (max {chs[c]})')
-        sg = [bid, c, a, b] + sg[4:]
+        if a < 1 or a > chs[c] or b < a: raise RefError(f'versets absents : {bid} {c}, {a}-{b} (max {chs[c]})')
+        # numérotation un peu différente dans Crampon (Siracide…) : passage borné et signalé
+        sg = [bid, c, a, min(b, chs[c])] + (sg[4:] or (['approx'] if b > chs[c] else []))
         if out and out[-1][0] == bid and out[-1][1] == c and len(out[-1]) == 4 and len(sg) == 4 and a <= out[-1][3] + 1 and a >= out[-1][2]:
             out[-1][3] = max(out[-1][3], b)
         elif not (out and out[-1] == sg):
@@ -134,6 +149,9 @@ def parse(ref, typ):
     try:
         return [parse_one(alt, typ) for alt in re.split(r'\s+ou\s+', ref.strip())]
     except (RefError, ValueError, IndexError) as e:
+        if '. ' in ref:      # étiquette avant la référence : « Stabat Mater. Jn 19, 25-27 »
+            again = parse(ref.split('. ', 1)[1], typ)
+            if not isinstance(again, dict): return again
         return {'erreur': str(e)}
 
 # ---------- téléchargement ----------
@@ -202,7 +220,7 @@ def main():
     if os.path.exists(OUT):
         old = json.load(open(OUT, encoding='utf-8'))
     if '--verifier' in sys.argv:
-        d = old.get('d', {})
+        d = json.loads(json.dumps(old.get('d', {})))
         for e in d.values():
             for m in e.get('m', []):
                 for l in m[1]: l[2] = parse(l[1], l[0])

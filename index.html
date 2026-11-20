@@ -266,6 +266,25 @@ details.backup summary{cursor:pointer;font:600 12px var(--sans);letter-spacing:.
 .backup textarea[hidden]{display:none}
 .backup label.btn{cursor:pointer}
 .about .btnrow{margin:4px 0 14px}
+/* messe du jour */
+.memo{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px;margin-top:10px;font:italic 400 20px/1.35 var(--serif)}
+.memo small{font:500 12.5px var(--sans);font-style:normal;color:var(--muted);letter-spacing:.02em}
+.gospel{margin-top:10px;font-size:14.5px;color:var(--muted)}
+.gospel a{text-decoration:none}.gospel b{color:var(--ink);font-weight:600}
+.mhead{margin:26px 0 0}
+.mhead .litname{margin-top:2px}
+.mnav{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:8px;margin:18px 0 0;max-width:440px}
+.mnav .btn{justify-content:center;padding:10px 8px;white-space:nowrap}
+.mtabs{display:flex;flex-wrap:wrap;margin:22px 0 0;border-radius:18px}
+.reading{margin:30px 0 0;padding-top:20px;border-top:1px solid var(--rule)}
+.reading .rh{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 14px}
+.reading .rl{font:600 12px var(--sans);letter-spacing:.09em;text-transform:uppercase;color:var(--red)}
+.reading .rr{font:600 13.5px var(--sans);color:var(--muted)}
+.reading .text{margin-top:12px}
+.reading .text .gap{color:var(--muted);text-align:center;letter-spacing:.2em;margin:.1em 0 .5em}
+.reading .btnrow{margin-top:6px}
+.mnote{font-size:13.5px;line-height:1.5;color:var(--muted);margin:10px 0 0}
+.mfoot{margin:34px 0 70px;padding-top:18px;border-top:1px solid var(--rule)}
 @media(max-width:600px){.vday blockquote{font-size:21px}.plan li{grid-template-columns:5.6em minmax(0,1fr)}.litcard{padding-right:44px}.ribbon{right:0;width:18px;height:96px}}
 </style>
 </head>
@@ -274,6 +293,7 @@ details.backup summary{cursor:pointer;font:600 12px var(--sans);letter-spacing:.
  <a class="brand" href="#bible"><span class="dot" aria-hidden="true"></span><span>Lectio <b>·</b> Bible</span></a>
  <nav class="tabs" aria-label="Sections">
   <a href="#bible" data-tab="bible"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5z"/><path d="M20 5.5c0-.8-.7-1.5-1.5-1.5H13v16h5.5c.8 0 1.5-.7 1.5-1.5z"/><path d="M15.5 8h2"/></svg><span>Bible</span></a>
+  <a href="#messe" data-tab="messe"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 3.5h11c0 4.4-2.5 7.5-5.5 7.5s-5.5-3.1-5.5-7.5z"/><path d="M12 11v6.5"/><path d="M8 20.5h8"/><path d="M9.5 17.5h5"/></svg><span>Messe</span></a>
   <a href="#fil" data-tab="fil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="3"/><path d="M10 9.5v5l4-2.5z"/></svg><span>Fil</span></a>
   <a href="#favoris" data-tab="favoris"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-7.5-10.1A4.4 4.4 0 0 1 12 7.2a4.4 4.4 0 0 1 7.5 2.7C19.5 15.4 12 20 12 20z"/></svg><span>Mes versets</span></a>
  </nav>
@@ -285,8 +305,10 @@ details.backup summary{cursor:pointer;font:600 12px var(--sans);letter-spacing:.
     <div class="kick" id="lit-season">Aujourd’hui</div>
     <div class="litdate" id="lit-date"></div>
     <h1 class="litname" id="lit-name"></h1>
+    <div class="memo" id="lit-memo" hidden></div>
     <div class="litmeta" id="lit-meta"></div>
-    <div class="btnrow"><a class="btn red" id="lit-aelf" href="https://www.aelf.org" target="_blank" rel="noopener">Lectures de la messe du jour <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"/></svg></a><a class="btn" href="#fil">Ouvrir le fil de versets</a></div>
+    <div class="gospel" id="lit-gospel"></div>
+    <div class="btnrow"><a class="btn red" href="#messe">Lectures de la messe</a><a class="btn" href="#fil">Ouvrir le fil de versets</a></div>
    </div>
    <div id="install"></div>
    <div class="vday" id="vday"></div>
@@ -303,6 +325,7 @@ details.backup summary{cursor:pointer;font:600 12px var(--sans);letter-spacing:.
 
  <section class="view" id="v-livre"><div class="wrap"><div class="col" id="livre"></div></div></section>
  <section class="view" id="v-lire"></section>
+ <section class="view" id="v-messe"><div class="wrap"><div class="col" id="messe"></div></div></section>
  <section class="view" id="v-fil"><div id="fil"><div class="prog" id="prog"></div><div class="feed" id="feed" tabindex="0" aria-label="Fil de versets, faites défiler"></div></div></section>
  <section class="view" id="v-favoris"><div class="wrap"><div class="col">
   <div class="ph"><h1>Mes versets</h1><p id="favcount">Les versets que vous avez aimés, dans le fil ou pendant la lecture.</p></div>
@@ -327,13 +350,15 @@ details.backup summary{cursor:pointer;font:600 12px var(--sans);letter-spacing:.
   <h2>La traduction liturgique officielle</h2>
   <p>La traduction utilisée à la messe en France est celle de l’AELF (Association épiscopale liturgique pour les pays francophones). Elle est protégée par le droit d’auteur et n’est donc pas recopiée ici : chaque chapitre de l’appli renvoie directement à son texte officiel sur <a href="https://www.aelf.org/bible" target="_blank" rel="noopener">aelf.org</a>, comme les lectures du jour.</p>
   <p>L’édition Crampon rend le nom divin par « Yahweh ». Dans la liturgie, l’Église dit « le Seigneur », conformément à la lettre de la Congrégation pour le culte divin de 2008.</p>
+  <h2>La messe du jour</h2>
+  <p>Les lectures de la messe et les célébrations du jour (calendrier liturgique pour la France) viennent du calendrier publié par l’AELF. L’appli n’en garde que les références et les noms, et affiche chaque passage dans la Bible Crampon : à la messe, on proclame la traduction liturgique officielle, à lire sur <a href="https://www.aelf.org" target="_blank" rel="noopener">aelf.org</a>. Les nouvelles dates sont ajoutées automatiquement chaque semaine, dès leur publication.</p>
   <h2>La numérotation des psaumes</h2>
   <p>La Bible hébraïque (suivie par Crampon) et la Bible grecque et latine (suivie par la liturgie) ne numérotent pas les psaumes de la même façon. L’appli indique les deux, à la manière du lectionnaire : « Ps 22 (23) » désigne le psaume 22 de la liturgie, qui est le 23 dans la Bible hébraïque (« Le Seigneur est mon berger »).</p>
   <p>Le livre d’Esther suit l’ordre de la Vulgate : les passages grecs sont regroupés à la fin (chapitres 10, 4 à 16), alors que la traduction liturgique les insère dans le récit. Les liens vers AELF tiennent compte de cette différence.</p>
   <h2>Analyses et méditations</h2>
   <p>Les présentations des 73 livres, les plans, les thèmes, les passages clés et les courtes méditations du fil ont été rédigés pour cette appli à partir de la tradition de l’Église, de l’exégèse catholique et du lectionnaire romain. Ce ne sont pas des documents officiels de l’Église. Les courtes citations entre guillemets reprennent souvent la formulation la plus connue dans la liturgie ; elle peut différer légèrement du texte de Crampon affiché dans la Bible de l’appli. Pour aller plus loin : la constitution <i>Dei Verbum</i> (concile Vatican II), l’exhortation <i>Verbum Domini</i> de Benoît XVI, le Catéchisme de l’Église catholique (n° 101 à 141 sur l’Écriture sainte).</p>
   <h2>Le calendrier liturgique</h2>
-  <p>Le temps liturgique, l’année (A, B ou C), la semaine du psautier et les principales fêtes sont calculés selon le calendrier romain général et les usages de France (Épiphanie, Ascension et Saint-Sacrement). Les mémoires des saints ne sont pas affichées : le bouton « Lectures de la messe du jour » ouvre la page officielle d’AELF.</p>
+  <p>Le nom du jour, les fêtes et les mémoires des saints viennent du calendrier de l’AELF pour la France. Au-delà des dates qu’il couvre, le temps liturgique, l’année (A, B ou C), la semaine du psautier et les principales fêtes sont calculés selon le calendrier romain général et les usages de France (Épiphanie, Ascension et Saint-Sacrement le dimanche).</p>
   <div id="ap-app"></div>
  </div></div></section>
 </main>
@@ -488,7 +513,7 @@ if (typeof module !== 'undefined') module.exports = LIT;
 {
 const BOOKS = [{"id": "gn", "u": "GEN", "a": "Gn", "s": "Genèse", "t": "Livre de la Genèse", "g": "Pentateuque", "T": "AT", "n": 50, "v": 1533}, {"id": "ex", "u": "EXO", "a": "Ex", "s": "Exode", "t": "Livre de l’Exode", "g": "Pentateuque", "T": "AT", "n": 40, "v": 1213}, {"id": "lv", "u": "LEV", "a": "Lv", "s": "Lévitique", "t": "Livre du Lévitique", "g": "Pentateuque", "T": "AT", "n": 27, "v": 859}, {"id": "nb", "u": "NUM", "a": "Nb", "s": "Nombres", "t": "Livre des Nombres", "g": "Pentateuque", "T": "AT", "n": 36, "v": 1289}, {"id": "dt", "u": "DEU", "a": "Dt", "s": "Deutéronome", "t": "Livre du Deutéronome", "g": "Pentateuque", "T": "AT", "n": 34, "v": 956}, {"id": "jos", "u": "JOS", "a": "Jos", "s": "Josué", "t": "Livre de Josué", "g": "Livres historiques", "T": "AT", "n": 24, "v": 656}, {"id": "jg", "u": "JDG", "a": "Jg", "s": "Juges", "t": "Livre des Juges", "g": "Livres historiques", "T": "AT", "n": 21, "v": 618}, {"id": "rt", "u": "RUT", "a": "Rt", "s": "Ruth", "t": "Livre de Ruth", "g": "Livres historiques", "T": "AT", "n": 4, "v": 85}, {"id": "1s", "u": "1SA", "a": "1S", "s": "1 Samuel", "t": "Premier livre de Samuel", "g": "Livres historiques", "T": "AT", "n": 31, "v": 811}, {"id": "2s", "u": "2SA", "a": "2S", "s": "2 Samuel", "t": "Deuxième livre de Samuel", "g": "Livres historiques", "T": "AT", "n": 24, "v": 695}, {"id": "1r", "u": "1KI", "a": "1R", "s": "1 Rois", "t": "Premier livre des Rois", "g": "Livres historiques", "T": "AT", "n": 22, "v": 817}, {"id": "2r", "u": "2KI", "a": "2R", "s": "2 Rois", "t": "Deuxième livre des Rois", "g": "Livres historiques", "T": "AT", "n": 25, "v": 719}, {"id": "1ch", "u": "1CH", "a": "1Ch", "s": "1 Chroniques", "t": "Premier livre des Chroniques", "g": "Livres historiques", "T": "AT", "n": 29, "v": 941}, {"id": "2ch", "u": "2CH", "a": "2Ch", "s": "2 Chroniques", "t": "Deuxième livre des Chroniques", "g": "Livres historiques", "T": "AT", "n": 36, "v": 822}, {"id": "esd", "u": "EZR", "a": "Esd", "s": "Esdras", "t": "Livre d’Esdras", "g": "Livres historiques", "T": "AT", "n": 10, "v": 280}, {"id": "ne", "u": "NEH", "a": "Ne", "s": "Néhémie", "t": "Livre de Néhémie", "g": "Livres historiques", "T": "AT", "n": 13, "v": 406}, {"id": "tb", "u": "TOB", "a": "Tb", "s": "Tobie", "t": "Livre de Tobie", "g": "Livres historiques", "T": "AT", "n": 14, "v": 246}, {"id": "jdt", "u": "JDT", "a": "Jdt", "s": "Judith", "t": "Livre de Judith", "g": "Livres historiques", "T": "AT", "n": 16, "v": 346}, {"id": "est", "u": "EST", "a": "Est", "s": "Esther", "t": "Livre d’Esther", "g": "Livres historiques", "T": "AT", "n": 16, "v": 275}, {"id": "1m", "u": "1MA", "a": "1M", "s": "1 Maccabées", "t": "Premier livre des Martyrs d’Israël (1 Maccabées)", "g": "Livres historiques", "T": "AT", "n": 16, "v": 925}, {"id": "2m", "u": "2MA", "a": "2M", "s": "2 Maccabées", "t": "Deuxième livre des Martyrs d’Israël (2 Maccabées)", "g": "Livres historiques", "T": "AT", "n": 15, "v": 556}, {"id": "jb", "u": "JOB", "a": "Jb", "s": "Job", "t": "Livre de Job", "g": "Livres poétiques et sapientiaux", "T": "AT", "n": 42, "v": 1070}, {"id": "ps", "u": "PSA", "a": "Ps", "s": "Psaumes", "t": "Livre des Psaumes", "g": "Livres poétiques et sapientiaux", "T": "AT", "n": 150, "v": 2528}, {"id": "pr", "u": "PRO", "a": "Pr", "s": "Proverbes", "t": "Livre des Proverbes", "g": "Livres poétiques et sapientiaux", "T": "AT", "n": 31, "v": 915}, {"id": "qo", "u": "ECC", "a": "Qo", "s": "Qohèleth", "t": "Livre de Qohèleth (l’Ecclésiaste)", "g": "Livres poétiques et sapientiaux", "T": "AT", "n": 12, "v": 221}, {"id": "ct", "u": "SNG", "a": "Ct", "s": "Cantique des cantiques", "t": "Cantique des cantiques", "g": "Livres poétiques et sapientiaux", "T": "AT", "n": 8, "v": 117}, {"id": "sg", "u": "WIS", "a": "Sg", "s": "Sagesse", "t": "Livre de la Sagesse", "g": "Livres poétiques et sapientiaux", "T": "AT", "n": 19, "v": 436}, {"id": "si", "u": "SIR", "a": "Si", "s": "Ben Sira", "t": "Livre de Ben Sira le Sage (Siracide)", "g": "Livres poétiques et sapientiaux", "T": "AT", "n": 51, "v": 1363}, {"id": "is", "u": "ISA", "a": "Is", "s": "Isaïe", "t": "Livre d’Isaïe", "g": "Livres prophétiques", "T": "AT", "n": 66, "v": 1290}, {"id": "jr", "u": "JER", "a": "Jr", "s": "Jérémie", "t": "Livre de Jérémie", "g": "Livres prophétiques", "T": "AT", "n": 52, "v": 1364}, {"id": "lm", "u": "LAM", "a": "Lm", "s": "Lamentations", "t": "Livre des Lamentations", "g": "Livres prophétiques", "T": "AT", "n": 5, "v": 154}, {"id": "ba", "u": "BAR", "a": "Ba", "s": "Baruch", "t": "Livre de Baruch", "g": "Livres prophétiques", "T": "AT", "n": 6, "v": 213}, {"id": "ez", "u": "EZK", "a": "Ez", "s": "Ézékiel", "t": "Livre d’Ézékiel", "g": "Livres prophétiques", "T": "AT", "n": 48, "v": 1273}, {"id": "dn", "u": "DAN", "a": "Dn", "s": "Daniel", "t": "Livre de Daniel", "g": "Livres prophétiques", "T": "AT", "n": 14, "v": 530}, {"id": "os", "u": "HOS", "a": "Os", "s": "Osée", "t": "Livre d’Osée", "g": "Livres prophétiques", "T": "AT", "n": 14, "v": 197}, {"id": "jl", "u": "JOL", "a": "Jl", "s": "Joël", "t": "Livre de Joël", "g": "Livres prophétiques", "T": "AT", "n": 4, "v": 73}, {"id": "am", "u": "AMO", "a": "Am", "s": "Amos", "t": "Livre d’Amos", "g": "Livres prophétiques", "T": "AT", "n": 9, "v": 146}, {"id": "ab", "u": "OBA", "a": "Ab", "s": "Abdias", "t": "Livre d’Abdias", "g": "Livres prophétiques", "T": "AT", "n": 1, "v": 21}, {"id": "jon", "u": "JON", "a": "Jon", "s": "Jonas", "t": "Livre de Jonas", "g": "Livres prophétiques", "T": "AT", "n": 4, "v": 48}, {"id": "mi", "u": "MIC", "a": "Mi", "s": "Michée", "t": "Livre de Michée", "g": "Livres prophétiques", "T": "AT", "n": 7, "v": 105}, {"id": "na", "u": "NAM", "a": "Na", "s": "Nahum", "t": "Livre de Nahum", "g": "Livres prophétiques", "T": "AT", "n": 3, "v": 47}, {"id": "ha", "u": "HAB", "a": "Ha", "s": "Habacuc", "t": "Livre d’Habacuc", "g": "Livres prophétiques", "T": "AT", "n": 3, "v": 56}, {"id": "so", "u": "ZEP", "a": "So", "s": "Sophonie", "t": "Livre de Sophonie", "g": "Livres prophétiques", "T": "AT", "n": 3, "v": 53}, {"id": "ag", "u": "HAG", "a": "Ag", "s": "Aggée", "t": "Livre d’Aggée", "g": "Livres prophétiques", "T": "AT", "n": 2, "v": 38}, {"id": "za", "u": "ZEC", "a": "Za", "s": "Zacharie", "t": "Livre de Zacharie", "g": "Livres prophétiques", "T": "AT", "n": 14, "v": 211}, {"id": "ml", "u": "MAL", "a": "Ml", "s": "Malachie", "t": "Livre de Malachie", "g": "Livres prophétiques", "T": "AT", "n": 3, "v": 55}, {"id": "mt", "u": "MAT", "a": "Mt", "s": "Matthieu", "t": "Évangile de Jésus-Christ selon saint Matthieu", "g": "Évangiles", "T": "NT", "n": 28, "v": 1071}, {"id": "mc", "u": "MRK", "a": "Mc", "s": "Marc", "t": "Évangile de Jésus-Christ selon saint Marc", "g": "Évangiles", "T": "NT", "n": 16, "v": 679}, {"id": "lc", "u": "LUK", "a": "Lc", "s": "Luc", "t": "Évangile de Jésus-Christ selon saint Luc", "g": "Évangiles", "T": "NT", "n": 24, "v": 1151}, {"id": "jn", "u": "JHN", "a": "Jn", "s": "Jean", "t": "Évangile de Jésus-Christ selon saint Jean", "g": "Évangiles", "T": "NT", "n": 21, "v": 879}, {"id": "ac", "u": "ACT", "a": "Ac", "s": "Actes des Apôtres", "t": "Livre des Actes des Apôtres", "g": "Actes des Apôtres", "T": "NT", "n": 28, "v": 1006}, {"id": "rm", "u": "ROM", "a": "Rm", "s": "Romains", "t": "Lettre de saint Paul aux Romains", "g": "Lettres de saint Paul", "T": "NT", "n": 16, "v": 433}, {"id": "1co", "u": "1CO", "a": "1Co", "s": "1 Corinthiens", "t": "Première lettre de saint Paul aux Corinthiens", "g": "Lettres de saint Paul", "T": "NT", "n": 16, "v": 437}, {"id": "2co", "u": "2CO", "a": "2Co", "s": "2 Corinthiens", "t": "Deuxième lettre de saint Paul aux Corinthiens", "g": "Lettres de saint Paul", "T": "NT", "n": 13, "v": 256}, {"id": "ga", "u": "GAL", "a": "Ga", "s": "Galates", "t": "Lettre de saint Paul aux Galates", "g": "Lettres de saint Paul", "T": "NT", "n": 6, "v": 149}, {"id": "ep", "u": "EPH", "a": "Ep", "s": "Éphésiens", "t": "Lettre de saint Paul aux Éphésiens", "g": "Lettres de saint Paul", "T": "NT", "n": 6, "v": 155}, {"id": "ph", "u": "PHP", "a": "Ph", "s": "Philippiens", "t": "Lettre de saint Paul aux Philippiens", "g": "Lettres de saint Paul", "T": "NT", "n": 4, "v": 104}, {"id": "col", "u": "COL", "a": "Col", "s": "Colossiens", "t": "Lettre de saint Paul aux Colossiens", "g": "Lettres de saint Paul", "T": "NT", "n": 4, "v": 95}, {"id": "1th", "u": "1TH", "a": "1Th", "s": "1 Thessaloniciens", "t": "Première lettre de saint Paul aux Thessaloniciens", "g": "Lettres de saint Paul", "T": "NT", "n": 5, "v": 89}, {"id": "2th", "u": "2TH", "a": "2Th", "s": "2 Thessaloniciens", "t": "Deuxième lettre de saint Paul aux Thessaloniciens", "g": "Lettres de saint Paul", "T": "NT", "n": 3, "v": 47}, {"id": "1tm", "u": "1TI", "a": "1Tm", "s": "1 Timothée", "t": "Première lettre de saint Paul à Timothée", "g": "Lettres de saint Paul", "T": "NT", "n": 6, "v": 113}, {"id": "2tm", "u": "2TI", "a": "2Tm", "s": "2 Timothée", "t": "Deuxième lettre de saint Paul à Timothée", "g": "Lettres de saint Paul", "T": "NT", "n": 4, "v": 83}, {"id": "tt", "u": "TIT", "a": "Tt", "s": "Tite", "t": "Lettre de saint Paul à Tite", "g": "Lettres de saint Paul", "T": "NT", "n": 3, "v": 46}, {"id": "phm", "u": "PHM", "a": "Phm", "s": "Philémon", "t": "Lettre de saint Paul à Philémon", "g": "Lettres de saint Paul", "T": "NT", "n": 1, "v": 25}, {"id": "he", "u": "HEB", "a": "He", "s": "Hébreux", "t": "Lettre aux Hébreux", "g": "Lettre aux Hébreux", "T": "NT", "n": 13, "v": 303}, {"id": "jc", "u": "JAS", "a": "Jc", "s": "Jacques", "t": "Lettre de saint Jacques", "g": "Lettres catholiques", "T": "NT", "n": 5, "v": 108}, {"id": "1p", "u": "1PE", "a": "1P", "s": "1 Pierre", "t": "Première lettre de saint Pierre", "g": "Lettres catholiques", "T": "NT", "n": 5, "v": 105}, {"id": "2p", "u": "2PE", "a": "2P", "s": "2 Pierre", "t": "Deuxième lettre de saint Pierre", "g": "Lettres catholiques", "T": "NT", "n": 3, "v": 61}, {"id": "1jn", "u": "1JN", "a": "1Jn", "s": "1 Jean", "t": "Première lettre de saint Jean", "g": "Lettres catholiques", "T": "NT", "n": 5, "v": 105}, {"id": "2jn", "u": "2JN", "a": "2Jn", "s": "2 Jean", "t": "Deuxième lettre de saint Jean", "g": "Lettres catholiques", "T": "NT", "n": 1, "v": 13}, {"id": "3jn", "u": "3JN", "a": "3Jn", "s": "3 Jean", "t": "Troisième lettre de saint Jean", "g": "Lettres catholiques", "T": "NT", "n": 1, "v": 15}, {"id": "jude", "u": "JUD", "a": "Jude", "s": "Jude", "t": "Lettre de saint Jude", "g": "Lettres catholiques", "T": "NT", "n": 1, "v": 25}, {"id": "ap", "u": "REV", "a": "Ap", "s": "Apocalypse", "t": "Livre de l’Apocalypse", "g": "Apocalypse", "T": "NT", "n": 22, "v": 405}];
 const PWA = true;            // true dans l’appli installable (GitHub Pages)
-const BUILD = "2026.11.20-2";           // version de l’appli
+const BUILD = "2026.11.20-3";           // version de l’appli
 const APPURL = "https://nthfv.github.io/lectio/";         // adresse de l’appli installable
 const DH = {"analyses": "3e91246b5c", "feed": "047fd2e036", "gn": "61aa16be77", "ex": "3d60284703", "lv": "d9a992e751", "nb": "001e448ae1", "dt": "8efcefaf38", "jos": "2bf0e226b7", "jg": "75ce8ef50b", "rt": "cb6fa4e13d", "1s": "ed3598dcb4", "2s": "a13db7cfbe", "1r": "090ae225ee", "2r": "fb6744212c", "1ch": "2b3d94a92f", "2ch": "860e23f0d4", "esd": "5950a10a73", "ne": "74e0a37526", "tb": "43fc77626b", "jdt": "8a674cc968", "est": "aa8f21f173", "1m": "b7d0fe9c6a", "2m": "61cd5d1dce", "jb": "0cee0589a3", "ps": "5c7135afc5", "pr": "009cde48f7", "qo": "7485f47e43", "ct": "9e7aee22e4", "sg": "f81388396d", "si": "cf1d2d8ae0", "is": "a1ac17620c", "jr": "fe15080c40", "lm": "cf06106648", "ba": "90f9c534b5", "ez": "fd146b0bd1", "dn": "b499ad4a8f", "os": "f0591038ab", "jl": "5193104af6", "am": "8266cc1d5f", "ab": "be0785064d", "jon": "4b6bf93e1c", "mi": "b5ccc33d48", "na": "803b73457b", "ha": "bc7868f195", "so": "7908013aa9", "ag": "7bea7d1cd9", "za": "55eab2ee45", "ml": "81ae34c797", "mt": "8c73175070", "mc": "87f50e924e", "lc": "d262fa00a0", "jn": "367c505983", "ac": "b25cd27915", "rm": "cf088390cd", "1co": "c369b213d1", "2co": "34fcc5680f", "ga": "bbf1b3ced4", "ep": "f9a42b5555", "ph": "37733e42d4", "col": "79602a3980", "1th": "cf990d786d", "2th": "87bdab8c92", "1tm": "b757a23db2", "2tm": "b236a6b032", "tt": "460e02be9e", "phm": "8465cea793", "he": "9bab10a198", "jc": "6d56018212", "1p": "60720efe74", "2p": "0acd0ff0dd", "1jn": "12d9c8331a", "2jn": "80cc455771", "3jn": "3ce7c7763c", "jude": "40a02c3d04", "ap": "281611bb53"};                 // empreintes des fichiers de données (appli installable)
 const HEART = '<svg viewBox="0 0 24 24" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-7.5-10.1A4.4 4.4 0 0 1 12 7.2a4.4 4.4 0 0 1 7.5 2.7C19.5 15.4 12 20 12 20z"/></svg>';
@@ -704,6 +729,8 @@ function loadBook(id) { if (!cache[id]) cache[id] = fetch(dataURL(id)).then(r =>
 let ANAL = null, FEED = null;
 const analP = fetch(dataURL('analyses')).then(r => r.json()).then(d => (ANAL = d)).catch(() => (ANAL = {}));
 const feedP = fetch(dataURL('feed')).then(r => r.json()).then(d => (FEED = d)).catch(() => (FEED = []));
+let LECT = null; // lectures et célébrations : mis à jour chaque semaine, sans nouvelle version de l’appli
+const lectP = fetch('data/lectionnaire.json').then(r => r.ok ? r.json() : null).then(d => (LECT = d && d.d ? d : null)).catch(() => (LECT = null));
 function verseText(bk, c, v, w) {
  const ch = bk.c.find(x => x.n === c); if (!ch) return '';
  return ch.b.filter(x => (x[0] === 'v' || x[0] === 'c') && x[1] >= v && x[1] <= (w || v)).map(x => x[2]).join(' ').replace(/[\u0010-\u0013]/g, ' ').replace(/ +/g, ' ').trim();
@@ -722,18 +749,149 @@ async function copy(text, okMsg = 'Copié', failMsg = 'Copie impossible ici') {
 }
 const citation = (t, r) => `${plain(t)} — ${r} (Bible Crampon)`;
 const dayIndex = () => { const n = new Date(); return Math.floor(Date.UTC(n.getFullYear(), n.getMonth(), n.getDate()) / 864e5); };
-/* ---------- liturgie du jour ---------- */
-function renderLit() {
- const L = LIT.today();
- document.documentElement.style.setProperty('--lit', L.hex);
- $('#lit-season').textContent = L.season;
- $('#lit-date').textContent = L.date.charAt(0).toUpperCase() + L.date.slice(1);
- $('#lit-name').textContent = L.name.charAt(0).toUpperCase() + L.name.slice(1);
- const meta = [`<span><i></i>${L.color}</span>`, `<span>${L.cycle}${L.weekYear ? ' · ' + L.weekYear : ''}</span>`];
- if (L.psalter) meta.push(`<span>Psautier : semaine ${L.psalter}</span>`);
- $('#lit-meta').innerHTML = meta.join('');
- $('#lit-aelf').href = `https://www.aelf.org/${L.iso}/france/messe`;
+/* ---------- liturgie du jour (calendrier de l’AELF pour la France, références seulement) ---------- */
+const COLORS = { vert: ['Vert', '#2f7d4f'], violet: ['Violet', '#6d3fa0'], blanc: ['Blanc', '#c9a227'], rouge: ['Rouge', '#b3121f'], rose: ['Rose', '#cc5f86'], noir: ['Noir', '#3b3a38'] };
+const isoLocal = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const fromIso = s => { const [y, m, d] = s.split('-').map(Number); return LIT.d0(y, m, d); };
+const shiftIso = (s, k) => new Date(fromIso(s).getTime() + k * 864e5).toISOString().slice(0, 10);
+const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+const TITLES = new Set(['apôtre', 'apôtres', 'évangéliste', 'martyr', 'martyre', 'martyrs', 'pape', 'papes', 'évêque', 'évêques', 'prêtre', 'prêtres', 'docteur', 'docteurs', 'abbé', 'abbesse', 'religieux', 'religieuse', 'vierge', 'vierges', 'diacre', 'moine', 'ermite', 'fondateur', 'fondatrice', 'reine', 'roi', 'veuve']);
+function nice(s) {
+ s = (s || '').replace(/\s*\[[^\]]*\]/g, '').replace(/\s*\([^)]*[Pp]sautier[^)]*\)/g, '').replace(/'/g, '’')
+  .replace(/(\d+)(?:ème|eme)\b/g, '$1e').replace(/\bTemps Ordinaire\b/g, 'temps ordinaire')
+  .replace(/(^|[\s,(])Stes? (?=[A-ZÉÈ])/g, (m, a) => a + (m.trim() === 'Ste' ? 'sainte ' : 'saintes ')).replace(/(^|[\s,(])Sts (?=[A-ZÉÈ])/g, '$1saints ').replace(/(^|[\s,(])S\. ?(?=[A-ZÉÈ])/g, '$1saint ')
+  .replace(/\s+/g, ' ').trim();
+ const k = s.indexOf(', '); // « saint André, Apôtre » → « saint André, apôtre »
+ if (k > 0) s = s.slice(0, k) + s.slice(k).replace(/[A-ZÉÈ][a-zà-ÿ]+/g, w => TITLES.has(w.toLowerCase()) ? w.toLowerCase() : w);
+ return s;
 }
+function degree(g) { g = g || ''; return /^solennit/i.test(g) ? 'Solennité' : /^fête/i.test(g) ? 'Fête' : /^mémoire fac/i.test(g) ? 'Mémoire facultative' : /^mémoire/i.test(g) ? 'Mémoire' : ''; }
+function dayData(iso) {
+ const L = LIT.info(fromIso(iso)), e = LECT && LECT.d ? LECT.d[iso] || null : null;
+ const D = { iso, L, e, title: cap(L.name), memo: null, deg: '', color: L.color, hex: L.hex };
+ if (e) {
+  const c = COLORS[e.c]; if (c) { D.color = c[0]; D.hex = c[1]; }
+  const n = nice(e.n), l = (e.l || []).map(nice);
+  if (!n || /^de la férie/i.test(n)) {
+   if (l[0]) D.title = cap(l[0]);
+   if (l[1] && !/^de la férie/i.test(l[1])) D.memo = { name: cap(l[1]), deg: degree(l[2]) || 'Mémoire' };
+  } else { D.title = cap(n); D.deg = degree(e.g || l[1]); }
+ }
+ return D;
+}
+const massesOf = e => (e && e.m || []).filter(m => m[1] && m[1].length);
+const mainMass = ms => Math.max(0, ms.findIndex(m => /^messe du jour/i.test(m[0])));
+function gospelOf(e) { const ms = massesOf(e); if (!ms.length) return ''; const r = ms[mainMass(ms)][1].find(x => x[0] === 'evangile'); return r ? refShow(r[0], r[1]) : ''; }
+function refShow(type, ref) {
+ ref = ref.replace(/^\[[^\]]*\]\s*/, '').replace(/^(?:cantique)\s+/i, '').replace(/\s*\((?!\s*\d+\s*[ABab]?\s*\))[^)]*\)/g, '').replace(/\s+/g, ' ').trim();
+ return /^psaume/.test(type) && /^\d/.test(ref) ? 'Ps ' + ref : ref;
+}
+function renderLit() {
+ const D = dayData(isoLocal(new Date()));
+ document.documentElement.style.setProperty('--lit', D.hex);
+ $('#lit-season').textContent = D.L.season;
+ $('#lit-date').textContent = cap(D.L.date);
+ $('#lit-name').textContent = D.title;
+ const memo = $('#lit-memo');
+ memo.hidden = !D.memo;
+ if (D.memo) memo.innerHTML = `<span>${esc(D.memo.name)}</span><small>${esc(D.memo.deg)}</small>`;
+ const meta = [`<span><i></i>${esc(D.color)}</span>`];
+ if (D.deg) meta.push(`<span>${esc(D.deg)}</span>`);
+ meta.push(`<span>${D.L.cycle}${D.L.weekYear ? ' · ' + D.L.weekYear : ''}</span>`);
+ if (D.L.psalter) meta.push(`<span>Psautier : semaine ${D.L.psalter}</span>`);
+ $('#lit-meta').innerHTML = meta.join('');
+ const ev = gospelOf(D.e);
+ $('#lit-gospel').innerHTML = ev ? `<a href="#messe">Évangile du jour : <b>${esc(ev)}</b></a>` : '';
+}
+/* un passage de la Bible Crampon, tel qu’il est lu : versets choisis, sans les intertitres */
+function versesHTML(b, ch, a, z) {
+ let h = '', open = null, first = true;
+ const para = k => { if (open) h += '</div>'; h += `<div class="${k}">`; open = k; };
+ const cls = { P: 'p', B: 'p stanza', Q: 'q', Q2: 'q q2', D: 'd' };
+ const poetry = ['ps', 'pr', 'jb', 'ct', 'lm'].includes(b.id);
+ for (const x of ch.b) {
+  if (x[0] === 'h') continue;
+  const [kind, n, t, f] = x; if (n < a || n > z) continue;
+  const ss = segs(t), poemy = ss.some(s => s.brk === 'Q' || s.brk === 'Q2');
+  ss.forEach((s, i) => {
+   let flag = i === 0 ? f : s.brk;
+   if (i === 0 && poetry && kind === 'v' && !flag) flag = 'Q';
+   if (i === 0 && poemy && (flag === 'P' || flag === 'B')) { para('q stanza'); flag = null; }
+   if (first) { first = false; if (!cls[flag]) flag = poemy || poetry ? 'Q' : 'P'; }
+   if (flag && cls[flag]) para(cls[flag]); else if (!open) para('p');
+   h += `<span class="v" data-v="${n}">${i === 0 && kind === 'v' ? `<span class="vn">${n}</span>` : ''}${s.h}</span> `;
+  });
+ }
+ if (open) h += '</div>';
+ return h;
+}
+async function passageHTML(segsList) {
+ let h = '', prev = null;
+ for (const sg of segsList) {
+  const [bid, c, a, z] = sg, b = byId[bid]; if (!b) continue;
+  let bk; try { bk = await loadBook(bid); } catch (e) { return ''; }
+  const ch = bk.c.find(x => x.n === c); if (!ch) continue;
+  if (prev && prev !== bid + '-' + c) h += `<p class="h-s2">${esc(bid === 'ps' ? 'Psaume ' + c : 'Chapitre ' + c)}</p>`;
+  else if (prev) h += '<p class="gap" aria-hidden="true">…</p>';
+  prev = bid + '-' + c;
+  h += versesHTML(b, ch, a, z);
+ }
+ return h;
+}
+const LABEL = { lecture_1: 'Première lecture', lecture_2: 'Deuxième lecture', lecture_3: 'Troisième lecture', lecture_4: 'Quatrième lecture', lecture_5: 'Cinquième lecture', lecture_6: 'Sixième lecture', lecture_7: 'Septième lecture', psaume: 'Psaume', cantique: 'Cantique', epitre: 'Épître', evangile: 'Évangile', sequence: 'Séquence' };
+const massName = s => cap(nice(s).replace(/^Messe (?:de la |de l’|du |des )/i, '').replace(/ Pascale\b/, ' pascale'));
+const within = (x, y) => x.every(s => y.some(t => t[0] === s[0] && t[1] === s[1] && t[2] <= s[2] && s[3] <= t[3]));
+let HL = null, messeRun = 0;
+const messeTab = {};
+async function renderMesse(iso) {
+ const run = ++messeRun, today = isoLocal(new Date());
+ iso = iso || today;
+ const el = $('#messe');
+ el.innerHTML = '<div class="loading">Ouverture des lectures…</div>';
+ await lectP;
+ if (run !== messeRun) return;
+ const D = dayData(iso), e = D.e;
+ const day = cap(new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(fromIso(iso)));
+ const aelf = `https://www.aelf.org/${iso}/france/messe`;
+ let h = `<div class="mhead"><div class="kick">${esc(D.L.season)}</div><div class="litdate">${esc(day)}${iso === today ? ' · aujourd’hui' : ''}</div>
+  <h1 class="litname">${esc(D.title)}</h1>${D.memo ? `<div class="memo"><span>${esc(D.memo.name)}</span><small>${esc(D.memo.deg)}</small></div>` : ''}
+  <div class="litmeta"><span><i style="background:${D.hex}"></i>${esc(D.color)}</span>${D.deg ? `<span>${esc(D.deg)}</span>` : ''}<span>${D.L.cycle}${D.L.weekYear ? ' · ' + D.L.weekYear : ''}</span></div>
+  <div class="mnav"><a class="btn" href="#messe-${shiftIso(iso, -1)}" aria-label="Jour précédent">${ICO.back} Veille</a>${iso !== today ? '<a class="btn" href="#messe">Aujourd’hui</a>' : ''}<a class="btn" href="#messe-${shiftIso(iso, 1)}" aria-label="Jour suivant">Lendemain ${ICO.next}</a></div></div>`;
+ const ms = massesOf(e), notes = (e && e.m || []).filter(m => !m[1] || !m[1].length).map(m => m[0]);
+ if (!ms.length) {
+  el.innerHTML = h + notes.map(n => `<p class="mnote">${esc(nice(n))}.</p>`).join('') + `<p class="mnote">${e ? '' : 'Les lectures de ce jour ne sont pas encore dans l’appli : elles y arrivent dès que l’AELF les publie.'}</p><div class="btnrow" style="margin-top:14px"><a class="btn" href="${aelf}" target="_blank" rel="noopener">Lectures sur aelf.org ${ICO.ext}</a></div><div class="mfoot"></div>`;
+  return;
+ }
+ const k = Math.min(ms.length - 1, messeTab[iso] ?? mainMass(ms));
+ if (ms.length > 1) h += `<div class="seg mtabs" role="group" aria-label="Messes du jour">${ms.map((m, i) => `<button type="button" data-mass="${i}" aria-pressed="${i === k}">${esc(massName(m[0]))}</button>`).join('')}</div>`;
+ h += notes.map(n => `<p class="mnote">${esc(nice(n))}.</p>`).join('');
+ h += '<p class="mnote">Textes de la Bible Crampon. À la messe, on proclame la traduction liturgique officielle (AELF).</p><div id="mreads"><div class="loading">…</div></div>';
+ h += `<div class="mfoot"><a class="btn" href="${aelf}" target="_blank" rel="noopener">Texte liturgique officiel de ce jour (AELF) ${ICO.ext}</a></div>`;
+ el.innerHTML = h;
+ el.querySelectorAll('[data-mass]').forEach(b => b.onclick = () => { messeTab[iso] = +b.dataset.mass; renderMesse(iso); });
+ const list = ms[k][1];
+ const parts = await Promise.all(list.map(async ([type, ref, parsed], i) => {
+  const prev = list[i - 1], alt = prev && prev[0] === type;
+  const ok = Array.isArray(parsed) && parsed.length && parsed[0].length;
+  const first = ok ? parsed[0] : null;
+  let label = LABEL[type] || 'Lecture';
+  if (alt) label = Array.isArray(prev[2]) && prev[2][0] && first && within(first, prev[2][0]) ? 'ou, forme brève' : 'ou';
+  const shown = refShow(type, ref).split(/\s+ou\s+/);
+  let notesH = '';
+  if (ok && first.some(s => s[4] === 'approx')) notesH += '<p class="mnote">Dans la Bible Crampon, la numérotation de ce passage diffère un peu de celle de la liturgie.</p>';
+  if (ok && first.some(s => s[4] === 'esther' || s[4] === 'mardochee')) notesH += `<p class="mnote">Dans la Bible Crampon, cette prière (ajout grec du livre d’Esther) se trouve au chapitre ${first[0][1]}.</p>`;
+  if (ok && parsed.length > 1) notesH += `<p class="mnote">Au choix : ${shown.map(esc).join(' ou ')}.</p>`;
+  const text = ok ? await passageHTML(first) : '';
+  const go = ok ? `<div class="btnrow"><a class="btn" href="#lire-${first[0][0]}-${first[0][1]}-${first[0][2]}" data-hl='${esc(JSON.stringify(first))}'>${ICO.book.replace('<svg', '<svg fill="none" stroke="currentColor" stroke-width="1.8" width="17" height="17"')} Lire dans la Bible</a></div>` : '';
+  return `<section class="reading"><div class="rh"><span class="rl">${esc(label)}</span><span class="rr">${esc(shown[0])}</span></div>${notesH}${text ? `<div class="text">${text}</div>` : `<p class="mnote">Ce passage s’ouvre sur aelf.org.</p>`}${go}</section>`;
+ }));
+ if (run !== messeRun) return;
+ $('#mreads').innerHTML = parts.join('');
+}
+$('#messe').addEventListener('click', e => {
+ const a = e.target.closest('[data-hl]'); if (!a) return;
+ try { const segsList = JSON.parse(a.dataset.hl); const [b, c] = segsList[0]; HL = { b, c, v: segsList.filter(s => s[0] === b && s[1] === c).flatMap(s => Array.from({ length: s[3] - s[2] + 1 }, (_, i) => s[2] + i)) }; } catch (err) { HL = null; }
+});
 /* ---------- bibliothèque ---------- */
 function renderToc() {
  const groups = {};
@@ -933,6 +1091,8 @@ async function renderReader(id, c, v, at) {
  $("#fsm").onclick = () => setFs(-1); $("#fsp").onclick = () => setFs(1);
  $('#text').addEventListener('click', e => { const s = e.target.closest('.v'); if (s) selectVerse(+s.dataset.v); });
  markLiked();
+ if (HL && HL.b === id && HL.c === c) { const set = new Set(HL.v); document.querySelectorAll('#text .v').forEach(s => { if (set.has(+s.dataset.v)) s.classList.add('hl'); }); }
+ HL = null;
  const target = v || at, t = target && document.querySelector(`#text .v[data-v="${target}"]`);
  if (t && v) { document.querySelectorAll(`#text .v[data-v="${v}"]`).forEach(x => x.classList.add('hl')); setTimeout(() => t.scrollIntoView({ block: 'center' }), 30); }
  else if (t) setTimeout(() => window.scrollTo(0, Math.max(0, t.getBoundingClientRect().top + window.scrollY - barsH() - 10)), 30);
@@ -1180,7 +1340,7 @@ async function offlineStart() {
  offline.running = true; renderOffline();
  try {
   const cache = await caches.open('lectio-data');
-  const urls = ['analyses', 'feed'].concat(BOOKS.map(b => b.id)).map(dataURL), missing = [];
+  const urls = ['analyses', 'feed'].concat(BOOKS.map(b => b.id)).map(dataURL).concat(['data/lectionnaire.json']), missing = [];
   for (const u of urls) if (!(await cache.match(u))) missing.push(u);
   offline.total = urls.length; offline.done = urls.length - missing.length; renderOffline();
   const worker = async () => { while (missing.length) { const u = missing.shift(); try { const r = await fetch(u); if (r.ok) { await cache.put(u, r); offline.done++; renderOffline(); } } catch (e) {} } };
@@ -1232,7 +1392,7 @@ function show(v) {
  if (current.view === 'bible' && v !== 'bible') homeY = window.scrollY;
  current.view = v;
  document.querySelectorAll('.view').forEach(s => s.classList.toggle('on', s.id === 'v-' + v));
- const tab = { bible: 'bible', livre: 'bible', lire: 'bible', apropos: 'bible', fil: 'fil', favoris: 'favoris' }[v];
+ const tab = { bible: 'bible', livre: 'bible', lire: 'bible', apropos: 'bible', messe: 'messe', fil: 'fil', favoris: 'favoris' }[v];
  document.querySelectorAll('nav.tabs a').forEach(a => a.setAttribute('aria-current', a.dataset.tab === tab ? 'page' : 'false'));
 }
 function go(h) { if (location.hash === h) route(); else location.hash = h; }
@@ -1243,6 +1403,7 @@ function route() {
  if ((m = h.match(/^lire-([a-z0-9]+)-(\d+)(?:-(\d+))?$/))) { show('lire'); renderReader(m[1], +m[2], m[3] ? +m[3] : null, null); return; }
  if ((m = h.match(/^reprendre-([a-z0-9]+)-(\d+)-(\d+)$/))) { show('lire'); renderReader(m[1], +m[2], null, +m[3]); return; }
  if ((m = h.match(/^livre-([a-z0-9]+)$/))) { show('livre'); renderBook(m[1]); return; }
+ if ((m = h.match(/^messe(?:-(\d{4}-\d{2}-\d{2}))?$/))) { show('messe'); renderMesse(m[1] || null); window.scrollTo(0, 0); return; }
  if (h === 'fil') { show('fil'); buildFeed(); setTimeout(() => $('#feed').focus({ preventScroll: true }), 50); return; }
  if (h === 'favoris') { show('favoris'); renderFavs(); window.scrollTo(0, 0); return; }
  if (h === 'apropos') { show('apropos'); renderOffline(); window.scrollTo(0, 0); return; }
@@ -1255,7 +1416,7 @@ $('#q').addEventListener('input', suggest);
 $('#q').addEventListener('keydown', e => { if (e.key === 'Enter') { const a = $('#sugg a'); if (a) { location.hash = a.getAttribute('href'); } else if ($('#q').value.trim().length >= 3) fullText($('#q').value.trim()); } });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
 window.addEventListener('hashchange', route);
-renderLit(); renderToc(); renderAbout(); route();
+renderLit(); lectP.then(renderLit); renderToc(); renderAbout(); route();
 }
 </script>
 </body>

@@ -10,6 +10,7 @@ Lectio est une appli de lecture de la Bible catholique, à installer sur son té
 - pour chaque livre, une **présentation complète** : auteur et date, contexte, plan, grands thèmes, lecture chrétienne, passages clés, place dans la liturgie ;
 - pour chaque chapitre, un lien vers la **traduction liturgique officielle** (AELF) ;
 - un **fil de versets** à faire défiler et à aimer, et la page **Mes versets** ;
+- la **messe du jour** : lectures (dans la Bible Crampon, avec le lien vers le texte officiel AELF), fêtes et mémoires des saints du calendrier pour la France ;
 - le temps liturgique du jour (couleur, année A, B ou C, semaine du psautier).
 
 ## Installer l’appli
@@ -25,15 +26,20 @@ Les versets aimés, l’endroit où l’on en est dans la Bible et dans le fil s
 
 ## Pour publier une nouvelle version
 
-1. Modifier les fichiers (l’appli tient dans `index.html` ; les textes sont dans `data/`).
-2. Lancer `python3 outils/nouvelle-version.py` : nouveau numéro de version dans `index.html` et `sw.js`, et nouvelles empreintes des fichiers de `data/`.
-3. Publier sur la branche `main` : GitHub Pages met le site à jour en une minute environ, puis l’appli installée propose « Mettre à jour ».
+1. Récupérer d’abord la dernière version du dépôt (`git pull`) : chaque semaine, GitHub y ajoute seul les nouvelles lectures de la messe.
+2. Modifier les fichiers (l’appli tient dans `index.html` ; les textes sont dans `data/`).
+3. Lancer `python3 outils/nouvelle-version.py` : nouveau numéro de version dans `index.html` et `sw.js`, et nouvelles empreintes des fichiers de `data/`.
+4. Publier sur la branche `main` : GitHub Pages met le site à jour en une minute environ, puis l’appli installée propose « Mettre à jour ».
 
 Règles à respecter pour ne jamais perdre les données des utilisateurs :
 
 - ne jamais renommer ni vider la clé de stockage `lectio.state` (objet versionné, champ `v`) : une nouvelle version doit relire l’ancien format et le faire évoluer ;
 - ne pas changer l’adresse du site (nom du dépôt) : le stockage est lié à l’adresse ;
 - toujours lancer `outils/nouvelle-version.py` avant de publier : sans nouvelle empreinte, un fichier de `data/` modifié ne serait pas retéléchargé par les téléphones.
+
+## Lectures de la messe (mises à jour automatiques)
+
+Chaque lundi, `.github/workflows/lectionnaire.yml` lance `outils/lectionnaire.py`, qui ajoute à `data/lectionnaire.json` les jours que l’AELF vient de publier (calendrier pour la France) : références des lectures et noms des célébrations uniquement, chacune reliée au texte Crampon et vérifiée. L’appli reçoit ces nouvelles dates sans mise à jour à installer. Pour revérifier le fichier sans réseau : `python3 outils/lectionnaire.py --verifier`.
 
 ## Sources et licences
 
