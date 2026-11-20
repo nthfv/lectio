@@ -1,9 +1,15 @@
 # Vérifie, à la demande, que chaque lecture de la messe affichée par l'appli correspond bien
 # au passage lu à la messe (comparaison mot à mot avec le texte AELF, sans rien recopier).
 # Lancer : onglet Actions › « Vérification des lectures » › Run workflow.
+# Option « chapitres » (ex. « Tb/13 Si/17 ») : compare plutôt la numérotation de ces chapitres.
 name: Vérification des lectures
 on:
   workflow_dispatch:
+    inputs:
+      chapitres:
+        description: 'Chapitres à comparer (ex. Tb/13 Si/17) ; vide = toutes les lectures du lectionnaire'
+        required: false
+        default: ''
 permissions:
   contents: read
 jobs:
@@ -16,4 +22,10 @@ jobs:
         with:
           python-version: '3.12'
       - name: Comparer les lectures (Crampon) au lectionnaire officiel (AELF)
+        if: ${{ inputs.chapitres == '' }}
         run: python3 outils/verifier-lectures.py
+      - name: Comparer la numérotation de quelques chapitres
+        if: ${{ inputs.chapitres != '' }}
+        env:
+          CHAPITRES: ${{ inputs.chapitres }}
+        run: python3 outils/correspondances.py $CHAPITRES

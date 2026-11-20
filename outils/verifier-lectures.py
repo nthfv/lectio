@@ -104,11 +104,14 @@ def main():
             ours = lect[day].get('m') or []
             for mi, m in enumerate(j.get('messes') or []):
                 mine = ours[mi][1] if mi < len(ours) else []
+                k = -1
                 for l in m.get('lectures') or []:
                     ref = re.sub(r'\s+', ' ', (l.get('ref') or '').replace(' ', ' ')).strip()
                     if not ref: continue
                     typ = l.get('type') or ''
-                    hit = next((x for x in mine if x[0] == typ and x[1] == ref), None)
+                    k += 1        # même ordre que dans data/lectionnaire.json (référence éventuellement corrigée)
+                    hit = mine[k] if k < len(mine) and mine[k][0] == typ else None
+                    ref = hit[1] if hit else ref
                     if not hit or not isinstance(hit[2], list):
                         print(f'{day}\t{typ}\t{ref}\tNON RELIÉE'); bad += 1; continue
                     text = aelf_text(l)
