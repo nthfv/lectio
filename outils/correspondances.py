@@ -7,7 +7,7 @@ versets et des scores sont affichés.
 
 Usage : python3 outils/correspondances.py Tb/13 Si/17 Est/4:est/14 …
         (livre/chapitre AELF, et en option :livre/chapitre Crampon à comparer s'il diffère)"""
-import html, json, os, re, sys, unicodedata, urllib.request
+import concurrent.futures, html, json, os, re, sys, time, unicodedata, urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 UA = 'Lectio/1.0 (+https://github.com/nthfv/lectio)'
@@ -42,7 +42,7 @@ def aelf(book, c):
             r'<span[^>]*>\s*(\d+[a-z]{0,2})\s*</span>']
     for p in pats:
         parts = re.split(p, h)
-        if len(parts) > 7:
+        if len(parts) > 3:
             verses = {}
             for k in range(1, len(parts) - 1, 2):
                 t = html.unescape(re.sub(r'<[^>]+>', ' ', parts[k + 1]))
@@ -71,8 +71,53 @@ def messe(arg):
             print(f'== {day} {typ} ({m.get("nom")}) {l.get("ref")} : {len(sents)} phrases -> Crampon {bid} {cc}')
             print('  ' + '  '.join(out))
 
+def liens():
+    """Chaque lien « Texte liturgique officiel » de l'appli mène-t-il à une page AELF avec des versets ?"""
+    h = open(os.path.join(ROOT, 'index.html'), encoding='utf-8').read()
+    books = json.loads(re.search(r'const BOOKS = (\[.*?\]);\n', h).group(1))
+    def ps_lit(n):
+        if n <= 8: return [str(n)]
+        if n in (9, 10): return ['9A' if n == 9 else '9B']
+        if n <= 113: return [str(n - 1)]
+        if n in (114, 115): return ['113A' if n == 114 else '113B']
+        if n == 116: return ['114', '115']
+        if n <= 146: return [str(n - 1)]
+        if n == 147: return ['146', '147']
+        return [str(n)]
+    est = {11: [0, 10], 12: [0], 13: [3, 4], 14: [4], 15: [4, 5], 16: [8]}
+    urls = []
+    for b in books:
+        if b['id'] == 'ps':
+            for n in range(1, 151): urls += [(f'Ps {n}', f'Ps/{x}') for x in ps_lit(n)]
+        elif b['id'] == 'est':
+            for c in range(1, 17): urls += [(f'Est {c}', f'Est/{x}') for x in est.get(c, [c])]
+        elif b['id'] == 'ab':
+            urls.append(('Ab', 'Ab/0'))
+        else:
+            for c in range(1, b['n'] + 1):
+                if b['id'] == 'ba' and c == 6: continue
+                urls.append((f"{b['a']} {c}", f"{b['a']}/{c}"))
+    todo = list(dict((u, label) for label, u in urls).items())
+    def one(item):
+        u, label = item
+        for attempt in range(3):
+            try:
+                A, _ = aelf(*u.split('/'))
+                return None if A else (label, u, 'aucun verset')
+            except Exception as e:
+                err = str(e)[:80]
+                time.sleep(2)
+        return (label, u, err)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as ex:
+        bad = [r for r in ex.map(one, todo) if r]
+    seen = todo
+    print(f'{len(seen)} liens AELF contrôlés, {len(bad)} en échec')
+    for b in bad: print('  ', *b)
+
 def main():
     for arg in sys.argv[1:]:
+        if arg == 'liens':
+            liens(); continue
         if arg.count(':') == 2:
             messe(arg); continue
         a, _, b = arg.partition(':')
