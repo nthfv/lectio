@@ -31,7 +31,7 @@ build = f'{today}-{n}' if len(sys.argv) < 2 else sys.argv[1]
 # 2. empreintes des fichiers de données
 m = re.search(r'const BOOKS = (\[.*?\]);\n', index)
 if not m: fail('liste des livres (BOOKS) introuvable dans index.html')
-ids = ['analyses', 'feed'] + [b['id'] for b in json.loads(m.group(1))]
+ids = ['analyses', 'feed', 'calendrier'] + [b['id'] for b in json.loads(m.group(1))]
 for i in ids:
     if not os.path.exists(os.path.join(DATA, i + '.json')): fail(f'fichier manquant : data/{i}.json')
     json.load(open(os.path.join(DATA, i + '.json'), encoding='utf-8'))  # le fichier doit rester du JSON valide

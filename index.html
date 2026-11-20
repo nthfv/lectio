@@ -303,6 +303,56 @@ details.backup summary{cursor:pointer;font:600 12px var(--sans);letter-spacing:.
 #compte .backup:last-child{margin-bottom:80px}
 #favstatus a{color:var(--red);font-weight:500}
 @media(max-width:600px){.vday blockquote{font-size:21px}.plan li{grid-template-columns:5.6em minmax(0,1fr)}.litcard{padding-right:44px}.ribbon{right:0;width:18px;height:96px}}
+/* calendrier chrétien */
+nav.tabs a span{white-space:nowrap}
+@media(min-width:701px) and (max-width:920px){nav.tabs{gap:0}nav.tabs a{padding:8px 9px;font-size:14px}nav.tabs svg{display:none}.topin{gap:10px}.brand{font-size:22px}}
+.lead{font-size:16px;line-height:1.5;color:var(--muted);margin:10px 0 0;max-width:38em}
+.calnow{margin:22px 0 10px;padding:18px 18px 6px;border-radius:16px;background:var(--panel);border-left:5px solid var(--c)}
+.calnow h2{font:500 30px/1.1 var(--serif);margin:6px 0 2px}
+.calnow .cdesc{padding:8px 0 4px}
+.calact{margin:4px 0 6px;border-top:1px solid var(--rule)}
+.calact details.cev summary{grid-template-columns:minmax(0,1fr)}
+.calact .cdesc{padding-left:0}
+.cnext{font-size:14.5px;margin:10px 0 12px}
+.cnext a{color:var(--red);font-weight:500}
+.calbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin:20px 0 4px}
+.calf{flex-wrap:wrap}
+.calf button{padding:7px 12px}
+.calpast{font-size:13.5px;min-height:38px;padding:7px 14px}
+.cyear{font:500 25px/1.2 var(--serif);margin:34px 0 0}
+.cyear small{display:block;font:400 13.5px/1.4 var(--sans);color:var(--muted);margin-top:4px}
+.cmonth{font:600 12px/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:26px 0 0;padding-bottom:9px;border-bottom:1px solid var(--rule)}
+.cseason{margin:12px 0 6px;border-left:4px solid var(--c);background:var(--panel);border-radius:0 12px 12px 0}
+.cseason summary{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;padding:12px 14px;cursor:pointer;list-style:none}
+.cseason .cdesc{padding:0 14px 12px}
+details.cev{border-bottom:1px solid var(--rule)}
+details.cev summary{display:grid;grid-template-columns:2.6em 10px minmax(0,1fr);gap:12px;align-items:center;padding:12px 0;cursor:pointer;list-style:none}
+.cev summary::-webkit-details-marker,.cseason summary::-webkit-details-marker{display:none}
+.cd{text-align:center;line-height:1}
+.cd b{display:block;font:500 22px/1 var(--serif)}
+.cd span{font-size:11.5px;color:var(--muted)}
+.cdot{width:10px;height:10px;border-radius:50%;box-shadow:0 0 0 1px color-mix(in srgb,var(--ink) 16%,transparent)}
+.cbody{display:flex;flex-direction:column;gap:2px;min-width:0}
+.ct{font:500 18px/1.25 var(--serif)}
+.k-saint .ct{font-weight:400}
+.k-jour .ct{font-style:italic}
+.cg{font-size:13px;color:var(--muted)}
+.cbs{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px}
+.cb{font:600 10.5px/1 var(--sans);letter-spacing:.04em;text-transform:uppercase;padding:4px 8px;border-radius:999px;background:var(--panel)}
+.cb.obl{background:var(--redbtn);color:#fff}
+.cb.now{background:var(--ink);color:var(--bg)}
+.cdesc{padding:0 0 16px calc(2.6em + 34px);font-size:15.5px;line-height:1.55}
+.cdesc p{margin:0 0 8px}
+.cdesc h4{font:600 11px/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--red);margin:12px 0 6px}
+.cdesc ul{margin:0 0 6px;padding-left:1.15em}
+.cdesc li{margin:3px 0}
+.catt{font:italic 400 17.5px/1.45 var(--serif)}
+.cnote{font-size:13.5px;line-height:1.45;color:var(--muted)}
+.cnote.wide{margin:18px 0}
+.clink a{color:var(--red);font-weight:500;text-decoration:none}
+.litmore{display:inline-block;margin-top:12px;font-size:14.5px;font-weight:500;color:var(--red);text-decoration:none}
+@media(hover:hover){details.cev summary:hover .ct,.cseason summary:hover .kick{text-decoration:underline;text-underline-offset:3px}}
+@media(max-width:600px){.cdesc{padding-left:0}.calnow h2{font-size:26px}}
 </style>
 </head>
 <body>
@@ -311,6 +361,7 @@ details.backup summary{cursor:pointer;font:600 12px var(--sans);letter-spacing:.
  <nav class="tabs" aria-label="Sections">
   <a href="#bible" data-tab="bible"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5z"/><path d="M20 5.5c0-.8-.7-1.5-1.5-1.5H13v16h5.5c.8 0 1.5-.7 1.5-1.5z"/><path d="M15.5 8h2"/></svg><span>Bible</span></a>
   <a href="#messe" data-tab="messe"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 3.5h11c0 4.4-2.5 7.5-5.5 7.5s-5.5-3.1-5.5-7.5z"/><path d="M12 11v6.5"/><path d="M8 20.5h8"/><path d="M9.5 17.5h5"/></svg><span>Messe</span></a>
+  <a href="#calendrier" data-tab="calendrier"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17"/><path d="M8 3v4M16 3v4"/><path d="M12 13.2v4.6M9.7 15.5h4.6"/></svg><span>Calendrier</span></a>
   <a href="#fil" data-tab="fil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="3"/><path d="M10 9.5v5l4-2.5z"/></svg><span>Fil</span></a>
   <a href="#favoris" data-tab="favoris"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-7.5-10.1A4.4 4.4 0 0 1 12 7.2a4.4 4.4 0 0 1 7.5 2.7C19.5 15.4 12 20 12 20z"/></svg><span>Mes versets</span></a>
  </nav>
@@ -326,6 +377,7 @@ details.backup summary{cursor:pointer;font:600 12px var(--sans);letter-spacing:.
     <div class="memo" id="lit-memo" hidden></div>
     <div class="litmeta" id="lit-meta"></div>
     <div class="gospel" id="lit-gospel"></div>
+    <a class="litmore" href="#calendrier">Vivre ce temps liturgique, fêtes et journées de l’année ›</a>
     <div class="btnrow"><a class="btn red" href="#messe">Lectures de la messe</a><a class="btn" href="#fil">Ouvrir le fil de versets</a></div>
    </div>
    <div id="install"></div>
@@ -345,6 +397,7 @@ details.backup summary{cursor:pointer;font:600 12px var(--sans);letter-spacing:.
  <section class="view" id="v-lire"></section>
  <section class="view" id="v-compte"><div class="wrap"><div class="col" id="compte"></div></div></section>
  <section class="view" id="v-messe"><div class="wrap"><div class="col" id="messe"></div></div></section>
+ <section class="view" id="v-calendrier"><div class="wrap"><div class="col" id="cal"></div></div></section>
  <section class="view" id="v-fil"><div id="fil"><div class="prog" id="prog"></div><div class="feed" id="feed" tabindex="0" aria-label="Fil de versets, faites défiler"></div></div></section>
  <section class="view" id="v-favoris"><div class="wrap"><div class="col">
   <div class="ph"><h1>Mes versets</h1><p id="favcount">Les versets que vous avez aimés, dans le fil ou pendant la lecture.</p></div>
@@ -372,6 +425,8 @@ details.backup summary{cursor:pointer;font:600 12px var(--sans);letter-spacing:.
   <h2>La messe du jour</h2>
   <p>Les lectures de la messe et les célébrations du jour (calendrier liturgique pour la France) viennent du calendrier publié par l’AELF. L’appli n’en garde que les références et les noms, et affiche chaque passage dans la Bible Crampon : à la messe, on proclame la traduction liturgique officielle, à lire sur <a href="https://www.aelf.org" target="_blank" rel="noopener">aelf.org</a>. Les nouvelles dates sont ajoutées automatiquement chaque semaine, dès leur publication.</p>
   <p>Là où la Bible Crampon numérote autrement les versets (certains passages du Siracide, de Tobie et de Judith, ajouts grecs d’Esther), l’appli affiche le passage correspondant et le signale. Chaque lecture est contrôlée par comparaison avec le texte officiel, sans le recopier.</p>
+  <h2>Le calendrier chrétien</h2>
+  <p>L’onglet Calendrier présente l’année liturgique : les temps (Avent, Noël, Carême, Semaine sainte, temps pascal, temps ordinaire), les solennités et les fêtes, les mémoires des saints, les dimanches et les grandes journées de l’Église. Les célébrations viennent du calendrier officiel de l’AELF pour la France ; au-delà des dates déjà publiées, l’appli calcule les dimanches, solennités et fêtes. Pour chaque événement, une fiche explique ce que l’on célèbre, ce que l’on peut faire et l’attitude à vivre, d’après les normes de l’Église (Code de droit canonique, Conférence des évêques de France). Ces fiches sont relues et mises à jour chaque année, avant le début de l’Avent.</p>
   <h2>La numérotation des psaumes</h2>
   <p>La Bible hébraïque (suivie par Crampon) et la Bible grecque et latine (suivie par la liturgie) ne numérotent pas les psaumes de la même façon. L’appli indique les deux, à la manière du lectionnaire : « Ps 22 (23) » désigne le psaume 22 de la liturgie, qui est le 23 dans la Bible hébraïque (« Le Seigneur est mon berger »).</p>
   <p>Le livre d’Esther suit l’ordre de la Vulgate : les passages grecs sont regroupés à la fin (chapitres 10, 4 à 16), alors que la traduction liturgique les insère dans le récit. Les liens vers AELF tiennent compte de cette différence.</p>
@@ -533,9 +588,9 @@ if (typeof module !== 'undefined') module.exports = LIT;
 {
 const BOOKS = [{"id": "gn", "u": "GEN", "a": "Gn", "s": "Genèse", "t": "Livre de la Genèse", "g": "Pentateuque", "T": "AT", "n": 50, "v": 1533}, {"id": "ex", "u": "EXO", "a": "Ex", "s": "Exode", "t": "Livre de l’Exode", "g": "Pentateuque", "T": "AT", "n": 40, "v": 1213}, {"id": "lv", "u": "LEV", "a": "Lv", "s": "Lévitique", "t": "Livre du Lévitique", "g": "Pentateuque", "T": "AT", "n": 27, "v": 859}, {"id": "nb", "u": "NUM", "a": "Nb", "s": "Nombres", "t": "Livre des Nombres", "g": "Pentateuque", "T": "AT", "n": 36, "v": 1289}, {"id": "dt", "u": "DEU", "a": "Dt", "s": "Deutéronome", "t": "Livre du Deutéronome", "g": "Pentateuque", "T": "AT", "n": 34, "v": 956}, {"id": "jos", "u": "JOS", "a": "Jos", "s": "Josué", "t": "Livre de Josué", "g": "Livres historiques", "T": "AT", "n": 24, "v": 656}, {"id": "jg", "u": "JDG", "a": "Jg", "s": "Juges", "t": "Livre des Juges", "g": "Livres historiques", "T": "AT", "n": 21, "v": 618}, {"id": "rt", "u": "RUT", "a": "Rt", "s": "Ruth", "t": "Livre de Ruth", "g": "Livres historiques", "T": "AT", "n": 4, "v": 85}, {"id": "1s", "u": "1SA", "a": "1S", "s": "1 Samuel", "t": "Premier livre de Samuel", "g": "Livres historiques", "T": "AT", "n": 31, "v": 811}, {"id": "2s", "u": "2SA", "a": "2S", "s": "2 Samuel", "t": "Deuxième livre de Samuel", "g": "Livres historiques", "T": "AT", "n": 24, "v": 695}, {"id": "1r", "u": "1KI", "a": "1R", "s": "1 Rois", "t": "Premier livre des Rois", "g": "Livres historiques", "T": "AT", "n": 22, "v": 817}, {"id": "2r", "u": "2KI", "a": "2R", "s": "2 Rois", "t": "Deuxième livre des Rois", "g": "Livres historiques", "T": "AT", "n": 25, "v": 719}, {"id": "1ch", "u": "1CH", "a": "1Ch", "s": "1 Chroniques", "t": "Premier livre des Chroniques", "g": "Livres historiques", "T": "AT", "n": 29, "v": 941}, {"id": "2ch", "u": "2CH", "a": "2Ch", "s": "2 Chroniques", "t": "Deuxième livre des Chroniques", "g": "Livres historiques", "T": "AT", "n": 36, "v": 822}, {"id": "esd", "u": "EZR", "a": "Esd", "s": "Esdras", "t": "Livre d’Esdras", "g": "Livres historiques", "T": "AT", "n": 10, "v": 280}, {"id": "ne", "u": "NEH", "a": "Ne", "s": "Néhémie", "t": "Livre de Néhémie", "g": "Livres historiques", "T": "AT", "n": 13, "v": 406}, {"id": "tb", "u": "TOB", "a": "Tb", "s": "Tobie", "t": "Livre de Tobie", "g": "Livres historiques", "T": "AT", "n": 14, "v": 246}, {"id": "jdt", "u": "JDT", "a": "Jdt", "s": "Judith", "t": "Livre de Judith", "g": "Livres historiques", "T": "AT", "n": 16, "v": 346}, {"id": "est", "u": "EST", "a": "Est", "s": "Esther", "t": "Livre d’Esther", "g": "Livres historiques", "T": "AT", "n": 16, "v": 275}, {"id": "1m", "u": "1MA", "a": "1M", "s": "1 Maccabées", "t": "Premier livre des Martyrs d’Israël (1 Maccabées)", "g": "Livres historiques", "T": "AT", "n": 16, "v": 925}, {"id": "2m", "u": "2MA", "a": "2M", "s": "2 Maccabées", "t": "Deuxième livre des Martyrs d’Israël (2 Maccabées)", "g": "Livres historiques", "T": "AT", "n": 15, "v": 556}, {"id": "jb", "u": "JOB", "a": "Jb", "s": "Job", "t": "Livre de Job", "g": "Livres poétiques et sapientiaux", "T": "AT", "n": 42, "v": 1070}, {"id": "ps", "u": "PSA", "a": "Ps", "s": "Psaumes", "t": "Livre des Psaumes", "g": "Livres poétiques et sapientiaux", "T": "AT", "n": 150, "v": 2528}, {"id": "pr", "u": "PRO", "a": "Pr", "s": "Proverbes", "t": "Livre des Proverbes", "g": "Livres poétiques et sapientiaux", "T": "AT", "n": 31, "v": 915}, {"id": "qo", "u": "ECC", "a": "Qo", "s": "Qohèleth", "t": "Livre de Qohèleth (l’Ecclésiaste)", "g": "Livres poétiques et sapientiaux", "T": "AT", "n": 12, "v": 221}, {"id": "ct", "u": "SNG", "a": "Ct", "s": "Cantique des cantiques", "t": "Cantique des cantiques", "g": "Livres poétiques et sapientiaux", "T": "AT", "n": 8, "v": 117}, {"id": "sg", "u": "WIS", "a": "Sg", "s": "Sagesse", "t": "Livre de la Sagesse", "g": "Livres poétiques et sapientiaux", "T": "AT", "n": 19, "v": 436}, {"id": "si", "u": "SIR", "a": "Si", "s": "Ben Sira", "t": "Livre de Ben Sira le Sage (Siracide)", "g": "Livres poétiques et sapientiaux", "T": "AT", "n": 51, "v": 1363}, {"id": "is", "u": "ISA", "a": "Is", "s": "Isaïe", "t": "Livre d’Isaïe", "g": "Livres prophétiques", "T": "AT", "n": 66, "v": 1290}, {"id": "jr", "u": "JER", "a": "Jr", "s": "Jérémie", "t": "Livre de Jérémie", "g": "Livres prophétiques", "T": "AT", "n": 52, "v": 1364}, {"id": "lm", "u": "LAM", "a": "Lm", "s": "Lamentations", "t": "Livre des Lamentations", "g": "Livres prophétiques", "T": "AT", "n": 5, "v": 154}, {"id": "ba", "u": "BAR", "a": "Ba", "s": "Baruch", "t": "Livre de Baruch", "g": "Livres prophétiques", "T": "AT", "n": 6, "v": 213}, {"id": "ez", "u": "EZK", "a": "Ez", "s": "Ézékiel", "t": "Livre d’Ézékiel", "g": "Livres prophétiques", "T": "AT", "n": 48, "v": 1273}, {"id": "dn", "u": "DAN", "a": "Dn", "s": "Daniel", "t": "Livre de Daniel", "g": "Livres prophétiques", "T": "AT", "n": 14, "v": 530}, {"id": "os", "u": "HOS", "a": "Os", "s": "Osée", "t": "Livre d’Osée", "g": "Livres prophétiques", "T": "AT", "n": 14, "v": 197}, {"id": "jl", "u": "JOL", "a": "Jl", "s": "Joël", "t": "Livre de Joël", "g": "Livres prophétiques", "T": "AT", "n": 4, "v": 73}, {"id": "am", "u": "AMO", "a": "Am", "s": "Amos", "t": "Livre d’Amos", "g": "Livres prophétiques", "T": "AT", "n": 9, "v": 146}, {"id": "ab", "u": "OBA", "a": "Ab", "s": "Abdias", "t": "Livre d’Abdias", "g": "Livres prophétiques", "T": "AT", "n": 1, "v": 21}, {"id": "jon", "u": "JON", "a": "Jon", "s": "Jonas", "t": "Livre de Jonas", "g": "Livres prophétiques", "T": "AT", "n": 4, "v": 48}, {"id": "mi", "u": "MIC", "a": "Mi", "s": "Michée", "t": "Livre de Michée", "g": "Livres prophétiques", "T": "AT", "n": 7, "v": 105}, {"id": "na", "u": "NAM", "a": "Na", "s": "Nahum", "t": "Livre de Nahum", "g": "Livres prophétiques", "T": "AT", "n": 3, "v": 47}, {"id": "ha", "u": "HAB", "a": "Ha", "s": "Habacuc", "t": "Livre d’Habacuc", "g": "Livres prophétiques", "T": "AT", "n": 3, "v": 56}, {"id": "so", "u": "ZEP", "a": "So", "s": "Sophonie", "t": "Livre de Sophonie", "g": "Livres prophétiques", "T": "AT", "n": 3, "v": 53}, {"id": "ag", "u": "HAG", "a": "Ag", "s": "Aggée", "t": "Livre d’Aggée", "g": "Livres prophétiques", "T": "AT", "n": 2, "v": 38}, {"id": "za", "u": "ZEC", "a": "Za", "s": "Zacharie", "t": "Livre de Zacharie", "g": "Livres prophétiques", "T": "AT", "n": 14, "v": 211}, {"id": "ml", "u": "MAL", "a": "Ml", "s": "Malachie", "t": "Livre de Malachie", "g": "Livres prophétiques", "T": "AT", "n": 3, "v": 55}, {"id": "mt", "u": "MAT", "a": "Mt", "s": "Matthieu", "t": "Évangile de Jésus-Christ selon saint Matthieu", "g": "Évangiles", "T": "NT", "n": 28, "v": 1071}, {"id": "mc", "u": "MRK", "a": "Mc", "s": "Marc", "t": "Évangile de Jésus-Christ selon saint Marc", "g": "Évangiles", "T": "NT", "n": 16, "v": 679}, {"id": "lc", "u": "LUK", "a": "Lc", "s": "Luc", "t": "Évangile de Jésus-Christ selon saint Luc", "g": "Évangiles", "T": "NT", "n": 24, "v": 1151}, {"id": "jn", "u": "JHN", "a": "Jn", "s": "Jean", "t": "Évangile de Jésus-Christ selon saint Jean", "g": "Évangiles", "T": "NT", "n": 21, "v": 879}, {"id": "ac", "u": "ACT", "a": "Ac", "s": "Actes des Apôtres", "t": "Livre des Actes des Apôtres", "g": "Actes des Apôtres", "T": "NT", "n": 28, "v": 1006}, {"id": "rm", "u": "ROM", "a": "Rm", "s": "Romains", "t": "Lettre de saint Paul aux Romains", "g": "Lettres de saint Paul", "T": "NT", "n": 16, "v": 433}, {"id": "1co", "u": "1CO", "a": "1Co", "s": "1 Corinthiens", "t": "Première lettre de saint Paul aux Corinthiens", "g": "Lettres de saint Paul", "T": "NT", "n": 16, "v": 437}, {"id": "2co", "u": "2CO", "a": "2Co", "s": "2 Corinthiens", "t": "Deuxième lettre de saint Paul aux Corinthiens", "g": "Lettres de saint Paul", "T": "NT", "n": 13, "v": 256}, {"id": "ga", "u": "GAL", "a": "Ga", "s": "Galates", "t": "Lettre de saint Paul aux Galates", "g": "Lettres de saint Paul", "T": "NT", "n": 6, "v": 149}, {"id": "ep", "u": "EPH", "a": "Ep", "s": "Éphésiens", "t": "Lettre de saint Paul aux Éphésiens", "g": "Lettres de saint Paul", "T": "NT", "n": 6, "v": 155}, {"id": "ph", "u": "PHP", "a": "Ph", "s": "Philippiens", "t": "Lettre de saint Paul aux Philippiens", "g": "Lettres de saint Paul", "T": "NT", "n": 4, "v": 104}, {"id": "col", "u": "COL", "a": "Col", "s": "Colossiens", "t": "Lettre de saint Paul aux Colossiens", "g": "Lettres de saint Paul", "T": "NT", "n": 4, "v": 95}, {"id": "1th", "u": "1TH", "a": "1Th", "s": "1 Thessaloniciens", "t": "Première lettre de saint Paul aux Thessaloniciens", "g": "Lettres de saint Paul", "T": "NT", "n": 5, "v": 89}, {"id": "2th", "u": "2TH", "a": "2Th", "s": "2 Thessaloniciens", "t": "Deuxième lettre de saint Paul aux Thessaloniciens", "g": "Lettres de saint Paul", "T": "NT", "n": 3, "v": 47}, {"id": "1tm", "u": "1TI", "a": "1Tm", "s": "1 Timothée", "t": "Première lettre de saint Paul à Timothée", "g": "Lettres de saint Paul", "T": "NT", "n": 6, "v": 113}, {"id": "2tm", "u": "2TI", "a": "2Tm", "s": "2 Timothée", "t": "Deuxième lettre de saint Paul à Timothée", "g": "Lettres de saint Paul", "T": "NT", "n": 4, "v": 83}, {"id": "tt", "u": "TIT", "a": "Tt", "s": "Tite", "t": "Lettre de saint Paul à Tite", "g": "Lettres de saint Paul", "T": "NT", "n": 3, "v": 46}, {"id": "phm", "u": "PHM", "a": "Phm", "s": "Philémon", "t": "Lettre de saint Paul à Philémon", "g": "Lettres de saint Paul", "T": "NT", "n": 1, "v": 25}, {"id": "he", "u": "HEB", "a": "He", "s": "Hébreux", "t": "Lettre aux Hébreux", "g": "Lettre aux Hébreux", "T": "NT", "n": 13, "v": 303}, {"id": "jc", "u": "JAS", "a": "Jc", "s": "Jacques", "t": "Lettre de saint Jacques", "g": "Lettres catholiques", "T": "NT", "n": 5, "v": 108}, {"id": "1p", "u": "1PE", "a": "1P", "s": "1 Pierre", "t": "Première lettre de saint Pierre", "g": "Lettres catholiques", "T": "NT", "n": 5, "v": 105}, {"id": "2p", "u": "2PE", "a": "2P", "s": "2 Pierre", "t": "Deuxième lettre de saint Pierre", "g": "Lettres catholiques", "T": "NT", "n": 3, "v": 61}, {"id": "1jn", "u": "1JN", "a": "1Jn", "s": "1 Jean", "t": "Première lettre de saint Jean", "g": "Lettres catholiques", "T": "NT", "n": 5, "v": 105}, {"id": "2jn", "u": "2JN", "a": "2Jn", "s": "2 Jean", "t": "Deuxième lettre de saint Jean", "g": "Lettres catholiques", "T": "NT", "n": 1, "v": 13}, {"id": "3jn", "u": "3JN", "a": "3Jn", "s": "3 Jean", "t": "Troisième lettre de saint Jean", "g": "Lettres catholiques", "T": "NT", "n": 1, "v": 15}, {"id": "jude", "u": "JUD", "a": "Jude", "s": "Jude", "t": "Lettre de saint Jude", "g": "Lettres catholiques", "T": "NT", "n": 1, "v": 25}, {"id": "ap", "u": "REV", "a": "Ap", "s": "Apocalypse", "t": "Livre de l’Apocalypse", "g": "Apocalypse", "T": "NT", "n": 22, "v": 405}];
 const PWA = true;            // true dans l’appli installable (GitHub Pages)
-const BUILD = "2026.11.20-5";           // version de l’appli
+const BUILD = "2026.11.20-6";           // version de l’appli
 const APPURL = "https://nthfv.github.io/lectio/";         // adresse de l’appli installable
-const DH = {"analyses": "4604483df0", "feed": "9330849f96", "gn": "61aa16be77", "ex": "3d60284703", "lv": "d9a992e751", "nb": "001e448ae1", "dt": "8efcefaf38", "jos": "2bf0e226b7", "jg": "75ce8ef50b", "rt": "cb6fa4e13d", "1s": "ed3598dcb4", "2s": "56cf63eb40", "1r": "090ae225ee", "2r": "fb6744212c", "1ch": "cbec2599f6", "2ch": "860e23f0d4", "esd": "5950a10a73", "ne": "74e0a37526", "tb": "43fc77626b", "jdt": "8a674cc968", "est": "aa8f21f173", "1m": "b7d0fe9c6a", "2m": "61cd5d1dce", "jb": "0cee0589a3", "ps": "5c7135afc5", "pr": "009cde48f7", "qo": "7485f47e43", "ct": "9e7aee22e4", "sg": "f81388396d", "si": "cf1d2d8ae0", "is": "a1ac17620c", "jr": "fe15080c40", "lm": "cf06106648", "ba": "90f9c534b5", "ez": "fd146b0bd1", "dn": "62ff46d2b2", "os": "f0591038ab", "jl": "5193104af6", "am": "8266cc1d5f", "ab": "be0785064d", "jon": "4b6bf93e1c", "mi": "b5ccc33d48", "na": "803b73457b", "ha": "bc7868f195", "so": "7908013aa9", "ag": "7bea7d1cd9", "za": "55eab2ee45", "ml": "81ae34c797", "mt": "8c73175070", "mc": "87f50e924e", "lc": "d262fa00a0", "jn": "367c505983", "ac": "b25cd27915", "rm": "cf088390cd", "1co": "c369b213d1", "2co": "34fcc5680f", "ga": "bbf1b3ced4", "ep": "f9a42b5555", "ph": "37733e42d4", "col": "79602a3980", "1th": "cf990d786d", "2th": "87bdab8c92", "1tm": "b757a23db2", "2tm": "b236a6b032", "tt": "460e02be9e", "phm": "8465cea793", "he": "9bab10a198", "jc": "6d56018212", "1p": "60720efe74", "2p": "0acd0ff0dd", "1jn": "12d9c8331a", "2jn": "80cc455771", "3jn": "3ce7c7763c", "jude": "40a02c3d04", "ap": "281611bb53"};                 // empreintes des fichiers de données (appli installable)
+const DH = {"analyses": "4604483df0", "feed": "9330849f96", "calendrier": "e1ba886de5", "gn": "61aa16be77", "ex": "3d60284703", "lv": "d9a992e751", "nb": "001e448ae1", "dt": "8efcefaf38", "jos": "2bf0e226b7", "jg": "75ce8ef50b", "rt": "cb6fa4e13d", "1s": "ed3598dcb4", "2s": "56cf63eb40", "1r": "090ae225ee", "2r": "fb6744212c", "1ch": "cbec2599f6", "2ch": "860e23f0d4", "esd": "5950a10a73", "ne": "74e0a37526", "tb": "43fc77626b", "jdt": "8a674cc968", "est": "aa8f21f173", "1m": "b7d0fe9c6a", "2m": "61cd5d1dce", "jb": "0cee0589a3", "ps": "5c7135afc5", "pr": "009cde48f7", "qo": "7485f47e43", "ct": "9e7aee22e4", "sg": "f81388396d", "si": "cf1d2d8ae0", "is": "a1ac17620c", "jr": "fe15080c40", "lm": "cf06106648", "ba": "90f9c534b5", "ez": "fd146b0bd1", "dn": "62ff46d2b2", "os": "f0591038ab", "jl": "5193104af6", "am": "8266cc1d5f", "ab": "be0785064d", "jon": "4b6bf93e1c", "mi": "b5ccc33d48", "na": "803b73457b", "ha": "bc7868f195", "so": "7908013aa9", "ag": "7bea7d1cd9", "za": "55eab2ee45", "ml": "81ae34c797", "mt": "8c73175070", "mc": "87f50e924e", "lc": "d262fa00a0", "jn": "367c505983", "ac": "b25cd27915", "rm": "cf088390cd", "1co": "c369b213d1", "2co": "34fcc5680f", "ga": "bbf1b3ced4", "ep": "f9a42b5555", "ph": "37733e42d4", "col": "79602a3980", "1th": "cf990d786d", "2th": "87bdab8c92", "1tm": "b757a23db2", "2tm": "b236a6b032", "tt": "460e02be9e", "phm": "8465cea793", "he": "9bab10a198", "jc": "6d56018212", "1p": "60720efe74", "2p": "0acd0ff0dd", "1jn": "12d9c8331a", "2jn": "80cc455771", "3jn": "3ce7c7763c", "jude": "40a02c3d04", "ap": "281611bb53"};                 // empreintes des fichiers de données (appli installable)
 const HEART = '<svg viewBox="0 0 24 24" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-7.5-10.1A4.4 4.4 0 0 1 12 7.2a4.4 4.4 0 0 1 7.5 2.7C19.5 15.4 12 20 12 20z"/></svg>';
 const ICO = {
  book: '<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5z"/><path d="M20 5.5c0-.8-.7-1.5-1.5-1.5H13v16h5.5c.8 0 1.5-.7 1.5-1.5z"/></svg>',
@@ -985,16 +1040,36 @@ function nice(s) {
  return s;
 }
 function degree(g) { g = g || ''; return /^solennit/i.test(g) ? 'Solennité' : /^fête/i.test(g) ? 'Fête' : /^mémoire fac/i.test(g) ? 'Mémoire facultative' : /^mémoire/i.test(g) ? 'Mémoire' : ''; }
+const GRADE_RX = /^(solennit[ée]|f[êe]te|m[ée]moire)( du seigneur| de la (bienheureuse )?vierge marie| facultative| obligatoire)?\.?$/i;
+function aelfDay(e) { // lit une entrée du calendrier AELF : célébration principale et mémoires (parfois plusieurs, au choix)
+ const n = (e.n || '').trim(), l = (e.l || []).map(x => String(x || '').trim()).filter(Boolean);
+ const fer = !n || /^de la f[ée]rie/i.test(n);
+ const line1 = l[1] && GRADE_RX.test(l[1]) ? degree(l[1]) : '';
+ let deg = fer ? '' : (degree(e.g) || line1);
+ if (deg && line1) deg = line1; // la ligne de l’AELF pour la France prime (fêtes des patrons de l’Europe…)
+ const lone = fer && l.length >= 2 && GRADE_RX.test(l[1]) && !/semaine|octave|après|décembre|janvier/i.test(l[0]); // [« St Barnabé, Apôtre », « Mémoire »]
+ const title = (lone ? '' : fer ? l[0] || '' : n).replace(/\s*\((?:[^)]*\b(?:europe|dimanche|ann[ée]e [abc])\b[^)]*)\)/gi, '');
+ const memos = lone ? [{ name: l[0], deg: degree(l[1]) }] : [];
+ if (!deg) for (let i = lone ? 2 : 1; i < l.length; i++) {
+  const x = l[i];
+  if (GRADE_RX.test(x)) { if (memos.length && !memos[memos.length - 1].deg) memos[memos.length - 1].deg = degree(x); continue; }
+  if (/^de la f[ée]rie/i.test(x) || /^[\[(]/.test(x) || x === n) continue;
+  const m = x.match(/^(.*?)\s*[.,]?\s*(m[ée]moire facultative|m[ée]moire obligatoire|m[ée]moire)\b(.*)$/i);
+  memos.push(m ? { name: (m[1] + (m[3].trim() ? ' ' + m[3].trim() : '')).replace(/[\s.,]+$/, ''), deg: degree(m[2]) } : { name: x, deg: '' });
+ }
+ memos.forEach(x => { x.deg = x.deg || 'Mémoire'; x.name = nice(x.name); });
+ return { title: nice(title), deg, memos };
+}
 function dayData(iso) {
  const L = LIT.info(fromIso(iso)), e = LECT && LECT.d ? LECT.d[iso] || null : null;
- const D = { iso, L, e, title: cap(L.name), memo: null, deg: '', color: L.color, hex: L.hex };
+ const D = { iso, L, e, title: cap(L.name), memo: null, memos: [], deg: '', color: L.color, hex: L.hex };
  if (e) {
   const c = COLORS[e.c]; if (c) { D.color = c[0]; D.hex = c[1]; }
-  const n = nice(e.n), l = (e.l || []).map(nice);
-  if (!n || /^de la férie/i.test(n)) {
-   if (l[0]) D.title = cap(l[0]);
-   if (l[1] && !/^de la férie/i.test(l[1])) D.memo = { name: cap(l[1]), deg: degree(l[2]) || 'Mémoire' };
-  } else { D.title = cap(n); D.deg = degree(e.g || l[1]); }
+  const A = aelfDay(e);
+  if (A.title) D.title = cap(A.title);
+  D.deg = A.deg;
+  D.memos = A.memos.map((x, i) => ({ name: cap(x.name), deg: x.deg, hex: (COLORS[(e.c2 || [])[i]] || [])[1] || D.hex }));
+  if (A.memos.length) D.memo = { name: cap(A.memos.map(x => x.name).join(' ou ')), deg: A.memos.length > 1 ? 'Mémoires facultatives, au choix' : A.memos[0].deg };
  }
  return D;
 }
@@ -1560,7 +1635,7 @@ async function offlineStart() {
  offline.running = true; renderOffline();
  try {
   const cache = await caches.open('lectio-data');
-  const urls = ['analyses', 'feed'].concat(BOOKS.map(b => b.id)).map(dataURL).concat(['data/lectionnaire.json']), missing = [];
+  const urls = ['analyses', 'feed', 'calendrier'].concat(BOOKS.map(b => b.id)).map(dataURL).concat(['data/lectionnaire.json']), missing = [];
   for (const u of urls) if (!(await cache.match(u))) missing.push(u);
   offline.total = urls.length; offline.done = urls.length - missing.length; renderOffline();
   const worker = async () => { while (missing.length) { const u = missing.shift(); try { const r = await fetch(u); if (r.ok) { await cache.put(u, r); offline.done++; renderOffline(); } } catch (e) {} } };
@@ -1605,6 +1680,143 @@ if (PWA) {
  }
 }
 if (PWA) { $('#bk-file').hidden = false; $('#bk-file').onclick = saveBackupFile; }
+/* ---------- calendrier chrétien : célébrations (AELF, France) + explications (data/calendrier.json) ---------- */
+let CALD = null, calFilter = 'tout', calPast = false, calRun = 0;
+const calDP = () => CALD ? Promise.resolve(CALD) : fetch(dataURL('calendrier')).then(r => r.json()).then(d => (CALD = d)).catch(() => (CALD = { temps: {}, fetes: [], types: [], jours: [] }));
+const normK = s => (s || '').toLowerCase().replace(/œ/g, 'oe').replace(/æ/g, 'ae').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
+const isoOf = d => d.toISOString().slice(0, 10);
+const dayFmt = (iso, o) => new Intl.DateTimeFormat('fr-FR', Object.assign({ timeZone: 'UTC' }, o)).format(fromIso(iso));
+function calFete(title, iso) {
+ const n = ' ' + normK(title) + ' ', md = iso.slice(5);
+ return (CALD.fetes || []).find(f => (!f.d || f.d === md) && f.k.some(k => n.includes(normK(k)))) || null;
+}
+function calType(title) {
+ const n = normK(title);
+ const t = (CALD.types || []).find(x => !x.k.length || x.k.some(k => n.includes(normK(k))));
+ if (!t) return null;
+ const fill = s => s.replace('{n}', title);
+ return { quoi: fill(t.quoi), faire: t.faire, att: t.att };
+}
+function calDay(iso) {
+ const D = dayData(iso), L = D.L, nt = normK(D.title), out = [];
+ const holy = /^(mercredi des cendres|jeudi saint|vendredi saint|samedi saint)/.test(nt);
+ const octave = /octave de paques/.test(nt);
+ const sunday = fromIso(iso).getUTCDay() === 0;
+ const g = D.deg || (D.e ? '' : L.rank === 3 ? 'Solennité' : L.rank === 2 ? 'Fête' : '');
+ if (!octave && (g || sunday || holy)) {
+  const f = calFete(D.title, iso);
+  const saint = /^(saint|sainte|saints|saintes|les saints) /.test(nt) || / (apotre|martyr|martyrs|archanges)( |$)/.test(nt);
+  const kind = holy || g === 'Solennité' || (g === 'Fête' && !saint) || (!g && f) ? 'fete' : g ? 'saint' : 'dimanche';
+  const lab = holy ? (/cendres/.test(nt) ? 'Entrée en Carême' : 'Triduum pascal') : g || 'Dimanche';
+  out.push({ iso, t: D.title, g: lab, kind, hex: D.hex, f: f || (kind === 'saint' ? calType(D.title) : kind === 'dimanche' ? CALD.dimanche : null), obl: !!(f && f.obl), jeune: !!(f && f.jeune) });
+ }
+ for (const m of D.memos) out.push({ iso, t: m.name, g: m.deg, kind: 'saint', hex: m.hex, f: calFete(m.name, iso) || calType(m.name), fac: /facultative/i.test(m.deg) });
+ return { D, ev: out };
+}
+function calRules(from, to) {
+ const out = [], y0 = +from.slice(0, 4) - 1, y1 = +to.slice(0, 4);
+ const pad = n => String(n).padStart(2, '0');
+ const add = (iso, k) => shiftIso(iso, k);
+ for (let y = y0; y <= y1; y++) {
+  const E = isoOf(LIT.easter(y));
+  for (const j of CALD.jours || []) {
+   const r = j.r; let s = null, e = null;
+   if (r.type === 'date') s = `${y}-${r.d}`;
+   else if (r.type === 'periode') { s = `${y}-${r.du}`; e = `${y}-${r.au}`; }
+   else if (r.type === 'mois') { s = `${y}-${pad(r.m)}-01`; e = add(`${r.m === 12 ? y + 1 : y}-${pad(r.m % 12 + 1)}-01`, -1); }
+   else if (r.type === 'paques') s = add(E, r.j);
+   else if (r.type === 'paquesPeriode') { s = add(E, r.du); e = add(E, r.au); }
+   else if (r.type === 'nDimanche') {
+    if (r.n > 0) { let d = `${y}-${pad(r.m)}-01`; while (fromIso(d).getUTCDay()) d = add(d, 1); s = add(d, 7 * (r.n - 1)); }
+    else { let d = add(`${r.m === 12 ? y + 1 : y}-${pad(r.m % 12 + 1)}-01`, -1); while (fromIso(d).getUTCDay()) d = add(d, -1); s = add(d, 7 * (r.n + 1)); }
+   } else if (r.type === 'dimTO') {
+    const want = new RegExp('^' + r.n + 'e dimanche du temps ordinaire');
+    let x = `${y}-01-01`; while (fromIso(x).getUTCDay()) x = add(x, 1);
+    for (; x <= `${y}-12-31`; x = add(x, 7)) if (want.test(LIT.info(fromIso(x)).name)) { s = x; break; }
+   }
+   if (!s) continue;
+   out.push({ iso: s, until: e && e !== s ? e : null, t: j.t, g: e ? 'Période' : 'Journée', kind: 'jour', f: j });
+  }
+ }
+ return out;
+}
+function calDesc(f, extra) {
+ if (!f) return '';
+ return `<div class="cdesc">${f.quoi ? `<p>${esc(f.quoi)}</p>` : ''}${f.faire && f.faire.length ? `<h4>À faire</h4><ul>${f.faire.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}${f.att ? `<h4>L’attitude</h4><p class="catt">${esc(f.att)}</p>` : ''}${extra || ''}</div>`;
+}
+const calRange = (s, e) => {
+ const a = dayFmt(s, { day: 'numeric', month: 'long' }), b = dayFmt(e, { day: 'numeric', month: 'long', year: 'numeric' });
+ return `du ${a.replace(/^1 /, '1er ')} au ${b.replace(/^1 /, '1er ')}`;
+};
+function calRow(x, today) {
+ const badges = [x.obl ? '<span class="cb obl">Fête d’obligation</span>' : '', x.jeune ? '<span class="cb">Jeûne et abstinence</span>' : '', x.iso === today ? '<span class="cb now">Aujourd’hui</span>' : ''].join('');
+ const sub = [x.g, x.until ? calRange(x.iso, x.until) : ''].filter(Boolean).join(' · ');
+ const links = (LECT && LECT.d && LECT.d[x.iso] && x.kind !== 'jour') ? `<p class="clink"><a href="#messe-${x.iso}">Lectures de la messe de ce jour ›</a></p>` : '';
+ const fac = x.fac ? '<p class="cnote">Mémoire facultative : le prêtre peut choisir de la célébrer.</p>' : '';
+ return `<details class="cev k-${x.kind}"><summary><span class="cd"><b>${fromIso(x.iso).getUTCDate()}</b><span>${esc(dayFmt(x.iso, { weekday: 'short' }).replace('.', ''))}</span></span><span class="cdot" style="background:${x.kind === 'jour' ? 'transparent' : x.hex}"></span><span class="cbody"><span class="ct">${esc(x.t)}</span><span class="cg">${esc(sub)}</span>${badges ? `<span class="cbs">${badges}</span>` : ''}</span></summary>${calDesc(x.f, fac + links)}</details>`;
+}
+async function renderCal() {
+ const run = ++calRun, el = $('#cal');
+ if (!CALD || !LECT) el.innerHTML = '<div class="loading">Ouverture du calendrier…</div>';
+ await Promise.all([calDP(), lectP]);
+ if (run !== calRun) return;
+ const today = isoLocal(new Date());
+ const a1 = y => isoOf(LIT.advent1(y));
+ const startOf = iso => { const y = +iso.slice(0, 4); return iso >= a1(y) ? a1(y) : a1(y - 1); };
+ const endOf = iso => { const y = +iso.slice(0, 4); return shiftIso(iso >= a1(y) ? a1(y + 1) : a1(y), -1); };
+ const from = calPast ? startOf(today) : today, to = endOf(shiftIso(today, 120));
+ const days = [];
+ for (let iso = from; iso <= to; iso = shiftIso(iso, 1)) days.push(calDay(iso));
+ const rules = calRules(from, to);
+ // temps liturgiques : début, fin
+ const seasons = [];
+ for (const { D } of days) { const s = D.L.season; if (!seasons.length || seasons[seasons.length - 1].s !== s) seasons.push({ s, from: D.iso, to: D.iso }); else seasons[seasons.length - 1].to = D.iso; }
+ if (seasons.length) { let b = seasons[0].from; for (let i = 0; i < 400 && LIT.info(fromIso(shiftIso(b, -1))).season === seasons[0].s; i++) b = shiftIso(b, -1); seasons[0].start = b; }
+ // « en ce moment »
+ const T0 = days.find(x => x.D.iso === today) || days[0], cur = T0.D.L.season, tdesc = (CALD.temps || {})[cur];
+ let curEnd = today; while (curEnd < shiftIso(today, 200) && LIT.info(fromIso(shiftIso(curEnd, 1))).season === cur) curEnd = shiftIso(curEnd, 1);
+ const active = rules.filter(r => r.until && r.iso <= today && today <= r.until);
+ const nextBig = days.flatMap(x => x.ev).find(x => x.iso > today && (x.g === 'Solennité' || /triduum|entrée en carême/i.test(x.g)));
+ const inDays = nextBig ? Math.round((fromIso(nextBig.iso) - fromIso(today)) / 864e5) : 0;
+ let h = `<div class="mhead"><div class="kick">Calendrier chrétien</div><h1 class="litname">L’année avec le Christ</h1><p class="lead">Les fêtes, les temps liturgiques et les journées de l’Église, avec pour chacun ce que l’on célèbre, ce que l’on peut faire et l’attitude à vivre.</p></div>`;
+ h += `<section class="calnow" style="--c:${T0.D.hex}"><div class="kick">En ce moment</div><h2>${esc(cur)}</h2><p class="cg">${today === curEnd ? 'dernier jour' : 'jusqu’au ' + esc(dayFmt(curEnd, { weekday: 'long', day: 'numeric', month: 'long' }).replace(/ 1 /, ' 1er '))}${T0.D.L.cycle ? ' · ' + esc(T0.D.L.cycle) : ''}</p>${calDesc(tdesc)}`;
+ if (active.length) h += `<div class="calact">${active.map(r => `<details class="cev k-jour"><summary><span class="cbody"><span class="ct">${esc(r.t)}</span><span class="cg">${esc(calRange(r.iso, r.until))}</span></span></summary>${calDesc(r.f)}</details>`).join('')}</div>`;
+ if (nextBig) h += `<p class="cnext">Prochaine grande fête : <a href="#calendrier" data-jump="${nextBig.iso}">${esc(nextBig.t)}</a>, ${inDays === 1 ? 'demain' : 'dans ' + inDays + ' jours'}.</p>`;
+ h += `</section>`;
+ const F = [['tout', 'Tout'], ['fete', 'Fêtes'], ['saint', 'Saints'], ['dimanche', 'Dimanches'], ['jour', 'Journées']];
+ h += `<div class="calbar"><div class="seg calf" role="group" aria-label="Afficher">${F.map(([k, l]) => `<button type="button" data-f="${k}" aria-pressed="${calFilter === k}">${l}</button>`).join('')}</div>
+  <button type="button" class="btn calpast">${calPast ? 'Masquer les jours passés' : 'Depuis le début de l’année liturgique'}</button></div>`;
+ // liste
+ const all = days.flatMap(x => x.ev).concat(rules.filter(r => r.iso >= from && r.iso <= to)).filter(x => calFilter === 'tout' || x.kind === calFilter);
+ const order = { jour: 0, fete: 1, dimanche: 2, saint: 3 };
+ all.sort((a, b) => a.iso < b.iso ? -1 : a.iso > b.iso ? 1 : (order[a.kind] - order[b.kind]));
+ const lastAelf = LECT && LECT.jusqua;
+ let month = '', si = 0, year = '', noteDone = false;
+ h += '<div class="callist">';
+ const seasonHead = s => `<details class="cseason" style="--c:${(days.find(x => x.D.iso === s.from) || T0).D.hex}"><summary><span class="kick">${esc(s.s)}</span><span class="cg">${esc(calRange(s.start || s.from, s.to))}</span></summary>${calDesc((CALD.temps || {})[s.s])}</details>`;
+ const yearHead = iso => { const y = +iso.slice(0, 4), L = LIT.info(fromIso(iso)); return `<h2 class="cyear">Année liturgique ${y}-${y + 1}<small>${esc(L.cycle)} · en semaine, année ${(y + 1) % 2 ? 'impaire' : 'paire'}</small></h2>`; };
+ let k = 0;
+ if (from !== a1(+from.slice(0, 4))) h += yearHead(startOf(from));
+ const firstAelf = LECT && LECT.d ? Object.keys(LECT.d).sort()[0] : null;
+ if (calPast && firstAelf && from < firstAelf) h += `<p class="cnote wide">Avant le ${esc(dayFmt(firstAelf, { day: 'numeric', month: 'long', year: 'numeric' }))}, seuls les dimanches, solennités et fêtes sont affichés.</p>`;
+ for (const x of all) {
+  while (si < seasons.length && seasons[si].from <= x.iso) {
+   const s = seasons[si];
+   if (s.s === 'Avent' && s.from === a1(+s.from.slice(0, 4))) { h += yearHead(s.from); month = ''; }
+   if (calFilter === 'tout' || calFilter === 'fete') { const m = s.from.slice(0, 7); if (m !== month) { month = m; h += `<h3 class="cmonth">${esc(cap(dayFmt(s.from, { month: 'long', year: 'numeric' })))}</h3>`; } h += seasonHead(s); }
+   si++;
+  }
+  if (lastAelf && !noteDone && x.iso > lastAelf) { noteDone = true; h += `<p class="cnote wide">Après le ${esc(dayFmt(lastAelf, { day: 'numeric', month: 'long', year: 'numeric' }))}, seuls les dimanches, solennités et fêtes sont affichés : les mémoires des saints apparaîtront dès que l’AELF publiera le calendrier officiel (mise à jour automatique chaque semaine).</p>`; }
+  const m = x.iso.slice(0, 7);
+  if (m !== month) { month = m; h += `<h3 class="cmonth">${esc(cap(dayFmt(x.iso, { month: 'long', year: 'numeric' })))}</h3>`; }
+  h += `<div id="cal-${x.iso}-${k++}" data-iso="${x.iso}">${calRow(x, today)}</div>`;
+ }
+ h += '</div><p class="cnote wide">Célébrations : calendrier liturgique officiel de l’AELF pour la France. Explications : Lectio, d’après les normes de l’Église ; elles sont relues et mises à jour chaque année.</p>';
+ el.innerHTML = h;
+ el.querySelectorAll('.calf [data-f]').forEach(b => b.onclick = () => { calFilter = b.dataset.f; renderCal(); });
+ el.querySelector('.calpast').onclick = () => { calPast = !calPast; renderCal(); };
+ el.querySelectorAll('[data-jump]').forEach(a => a.onclick = ev => { ev.preventDefault(); const t = el.querySelector(`[data-iso="${a.dataset.jump}"] details`); if (t) { t.open = true; t.scrollIntoView({ behavior: 'smooth', block: 'center' }); } });
+}
 /* ---------- navigation ---------- */
 const current = { view: null };
 let homeY = 0; // la page d’accueil retrouve l’endroit où on l’avait laissée
@@ -1612,7 +1824,7 @@ function show(v) {
  if (current.view === 'bible' && v !== 'bible') homeY = window.scrollY;
  current.view = v;
  document.querySelectorAll('.view').forEach(s => s.classList.toggle('on', s.id === 'v-' + v));
- const tab = { bible: 'bible', livre: 'bible', lire: 'bible', apropos: 'bible', messe: 'messe', fil: 'fil', favoris: 'favoris', compte: null }[v];
+ const tab = { bible: 'bible', livre: 'bible', lire: 'bible', apropos: 'bible', messe: 'messe', calendrier: 'calendrier', fil: 'fil', favoris: 'favoris', compte: null }[v];
  document.querySelectorAll('nav.tabs a').forEach(a => a.setAttribute('aria-current', a.dataset.tab === tab ? 'page' : 'false'));
 }
 function go(h) { if (location.hash === h) route(); else location.hash = h; }
@@ -1624,6 +1836,7 @@ function route() {
  if ((m = h.match(/^reprendre-([a-z0-9]+)-(\d+)-(\d+)$/))) { show('lire'); renderReader(m[1], +m[2], null, +m[3]); return; }
  if ((m = h.match(/^livre-([a-z0-9]+)$/))) { show('livre'); renderBook(m[1]); return; }
  if ((m = h.match(/^messe(?:-(\d{4}-\d{2}-\d{2}))?$/))) { show('messe'); renderMesse(m[1] || null); window.scrollTo(0, 0); return; }
+ if (h === 'calendrier') { show('calendrier'); renderCal(); window.scrollTo(0, 0); return; }
  if (h === 'fil') { show('fil'); buildFeed(); setTimeout(() => $('#feed').focus({ preventScroll: true }), 50); return; }
  if (h === 'favoris') { show('favoris'); renderFavs(); window.scrollTo(0, 0); return; }
  if (h === 'compte') { show('compte'); renderAccount(); window.scrollTo(0, 0); return; }

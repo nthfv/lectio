@@ -51,6 +51,18 @@ Chaque lundi, `.github/workflows/lectionnaire.yml` lance `outils/lectionnaire.py
 
 Pour contrôler que chaque lecture affichée correspond bien au passage lu à la messe : onglet **Actions › Vérification des lectures › Run workflow** (`outils/verifier-lectures.py` compare chaque passage Crampon au texte officiel de l’AELF, sans le recopier, et signale les décalages de numérotation). Les correspondances de numérotation déjà contrôlées (Siracide, Tobie, Judith, Esther) sont dans `VMAP`, au début de `outils/lectionnaire.py` ; `outils/correspondances.py` aide à en établir de nouvelles.
 
+## Calendrier chrétien
+
+L’onglet **Calendrier** présente l’année liturgique : temps liturgiques, solennités, fêtes, mémoires des saints, dimanches et journées de l’Église (unité des chrétiens, malades, vocations, mois de Marie, neuvaine à l’Esprit Saint, Création, missions, pauvres…). Pour chacun : ce que l’on célèbre, ce que l’on peut faire, l’attitude à vivre.
+
+- Les célébrations de chaque jour viennent de `data/lectionnaire.json` (calendrier officiel de l’AELF pour la France, complété chaque semaine). Au-delà, l’appli calcule les dimanches, solennités et fêtes (`LIT`, dans `index.html`).
+- Les explications sont dans `data/calendrier.json` : `temps` (un texte par temps liturgique), `dimanche`, `fetes` (mots-clés `k` cherchés dans le nom de la célébration, date `d` « MM-JJ » pour les fêtes fixes), `types` (texte pour les mémoires sans fiche propre, selon le type de saint) et `jours` (journées et périodes, avec leur règle de date : `date`, `periode`, `mois`, `paques` (+ n jours), `paquesPeriode`, `nDimanche` (n-ième ou, si négatif, avant-dernier/dernier dimanche du mois), `dimTO` (n-ième dimanche du temps ordinaire)).
+- Après toute modification de `data/calendrier.json` : `python3 outils/nouvelle-version.py`, puis publier.
+
+## Mise à jour de chaque année
+
+Chaque année, avant le premier dimanche de l’Avent, l’appli est relue et mise à jour : vérification des lectures de la messe de la nouvelle année (Actions › Vérification des lectures), nouveaux saints ou journées inscrits au calendrier, relecture des fiches du calendrier, puis nouvelle version publiée et contrôlée en ligne (Actions › Vérification des lectures, avec « site »).
+
 ## Sources et licences
 
 - Texte biblique : **Sainte Bible néo-Crampon Libre**, traduction d’Augustin Crampon révisée, © 2022 Fraternité de Tibériade, licence [Creative Commons BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.fr), texte obtenu sur eBible.org. Modifications : mise en page, séparation des intertitres, correction de quelques coquilles typographiques, remarques de l’éditeur imprimées dans le corps du texte (Dn 3, 23 et 90 ; Dn 12, 13 ; 2 S 13, 21 ; 1 Ch 11, 46) placées dans les notes. Ces modifications n’engagent pas la Fraternité de Tibériade ; le texte biblique de l’appli reste sous licence CC BY-SA 4.0.
